@@ -69,7 +69,7 @@ static_assert(sizeof(v128) == ARITY * sizeof(elem), num2str(ARITY) " elements sh
 
 // The following is gcc specific, see: https://stackoverflow.com/a/35268748
 // whereas _mm_set1_epi16(ELEM_MAX) would be more cross platform
-static const v128 v128_max = { { UINT64_MAX, UINT64_MAX } };
+static const v128 v128_max = { { ~0LL, ~0LL } };
 
 //// Heap types helper functions: ////
 
@@ -125,7 +125,7 @@ elem* extend_heap(size_t n) {
       if (new_capacity < new_size) {
         new_capacity = align_up(new_size, ARITY);
       }
-      elem* new_heap = aligned_alloc(ALIGN, new_capacity * sizeof(elem));
+      elem* new_heap = (elem*)aligned_alloc(ALIGN, new_capacity * sizeof(elem));
       if (!new_heap) {
         return NULL;
       }
