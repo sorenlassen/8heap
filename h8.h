@@ -6,6 +6,8 @@
 
 typedef uint16_t elem;
 
+extern void clear();
+
 extern size_t heap_size();
 
 // Increases heap by n consecutive element positions at the end and returns a

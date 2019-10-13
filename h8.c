@@ -98,6 +98,14 @@ static v128* heap_vector(size_t p) {
 
 //// Public functions: ////
 
+void clear() {
+  free(heap);
+  heap = NULL;
+  capacity = 0;
+  padded = 0;
+  size = 0;
+}
+
 size_t heap_size() { return size; }
 
 // Increases heap by n consecutive element positions at the end and returns a
@@ -124,6 +132,7 @@ elem* extend_heap(size_t n) {
       // TODO(soren): Measure if it's faster to utilize that we copy an integral
       // number of aligned v128s, e.g. with SSE instructions.
       memcpy(new_heap, heap, align_up(size, ARITY) * sizeof(elem));
+      free(heap);
       heap = new_heap;
       capacity = new_capacity;
     }
