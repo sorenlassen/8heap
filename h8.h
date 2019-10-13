@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdbool.h> // bool
 #include <stddef.h> // size_t
 #include <stdint.h> // uint16_t
