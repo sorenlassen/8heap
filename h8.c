@@ -1,5 +1,5 @@
 /*
-   gcc -g -std=c11 -msse4 -c h8.c
+   gcc -g -std=c11 -msse4 -c h8.c # optimize with -O2 -DNDEBUG
 */
 
 #include "h8.h"
