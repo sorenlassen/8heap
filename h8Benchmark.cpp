@@ -22,40 +22,46 @@ void fill(elem* ptr, size_t sz, bool sorted) {
   }
 }
 
-void do_heapify(uint32_t n, size_t sz, bool sorted, bool std) {
+void heapify_h8(uint32_t n, size_t sz, bool sorted) {
   elem x = 0;
-  elem* ptr = std ? (elem*)malloc(sz * sizeof(elem)) : extend_heap(sz);
+  elem* ptr = extend_heap(sz);
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {
       fill(ptr, sz, sorted);
     }
-    if (std) {
-      std::make_heap(ptr, ptr + sz);
-      x ^= ptr[0];
-    } else {
-      heapify(0);
-      x ^= top();
-    }
+    heapify(0);
+    x ^= top();
   }
   doNotOptimizeAway(x);
-  if (std) {
-    free(ptr);
-  } else {
-    clear();
-  }
+  clear();
 }
-void heapify_sorted(uint32_t n, size_t sz) { do_heapify(n, sz, true, false); }
-void heapify_unsorted(uint32_t n, size_t sz) { do_heapify(n, sz, false, false); }
-void heapify_sorted_std(uint32_t n, size_t sz) { do_heapify(n, sz, true, true); }
-void heapify_unsorted_std(uint32_t n, size_t sz) { do_heapify(n, sz, false, true); }
-BENCHMARK_PARAM(heapify_sorted, 1000)
-BENCHMARK_RELATIVE_PARAM(heapify_sorted_std, 1000)
-BENCHMARK_PARAM(heapify_sorted, 100000)
-BENCHMARK_RELATIVE_PARAM(heapify_sorted_std, 100000)
-BENCHMARK_PARAM(heapify_unsorted, 1000)
-BENCHMARK_RELATIVE_PARAM(heapify_unsorted_std, 1000)
-BENCHMARK_PARAM(heapify_unsorted, 100000)
-BENCHMARK_RELATIVE_PARAM(heapify_unsorted_std, 100000)
+
+void heapify_std(uint32_t n, size_t sz, bool sorted) {
+  elem x = 0;
+  elem* ptr = (elem*)malloc(sz * sizeof(elem));
+  for (int i = 0; i < n; ++i) {
+    BENCHMARK_SUSPEND {
+      fill(ptr, sz, sorted);
+    }
+    std::make_heap(ptr, ptr + sz);
+    x ^= ptr[0];
+  }
+  doNotOptimizeAway(x);
+  free(ptr);
+}
+
+void heapify_h8_sorted(uint32_t n, size_t sz) { heapify_h8(n, sz, true); }
+void heapify_h8_unsorted(uint32_t n, size_t sz) { heapify_h8(n, sz, false); }
+void heapify_std_sorted(uint32_t n, size_t sz) { heapify_std(n, sz, true); }
+void heapify_std_unsorted(uint32_t n, size_t sz) { heapify_std(n, sz, false); }
+BENCHMARK_PARAM(heapify_h8_sorted, 1000)
+BENCHMARK_RELATIVE_PARAM(heapify_std_sorted, 1000)
+BENCHMARK_PARAM(heapify_h8_sorted, 100000)
+BENCHMARK_RELATIVE_PARAM(heapify_std_sorted, 100000)
+BENCHMARK_PARAM(heapify_h8_unsorted, 1000)
+BENCHMARK_RELATIVE_PARAM(heapify_std_unsorted, 1000)
+BENCHMARK_PARAM(heapify_h8_unsorted, 100000)
+BENCHMARK_RELATIVE_PARAM(heapify_std_unsorted, 100000)
 
 int main(int argc, char** argv) {
   runBenchmarks();
