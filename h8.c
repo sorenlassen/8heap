@@ -1,5 +1,5 @@
-/* Build and run after 'brew install gcc':
-   gcc-9 -g -std=c11 -msse4 -c h8.c
+/*
+   gcc -g -std=c11 -msse4 -c h8.c
 */
 
 #include "h8.h"
@@ -53,8 +53,6 @@ static void* aligned_alloc(size_t alignment, size_t sz) {
 
 // 8-ary min heap with element type unsigned 16 bit integers.
 typedef uint16_t elem;
-// #define ELEM_BITS 16 // CHAR_BIT * sizeof(elem)
-// #define ELEM_MASK 0xffff // ~((~0) << ELEM_BITS)
 #define ELEM_MAX UINT16_MAX;
 #define ARITY 8
 #define ALIGN 16 // ARITY * sizeof(elem)
@@ -67,16 +65,13 @@ typedef union {
 } v128;
 
 static_assert(alignof(v128) == ALIGN, "v128 alignment should be " num2str(ALIGN));
-static_assert(sizeof(v128) == ARITY * sizeof(elem));
+static_assert(sizeof(v128) == ARITY * sizeof(elem), num2str(ARITY) " elements should fill up v128");
 
-// #define max128 ({ _mm_set1_epi16(0xffff) })
-// The following would be gcc specific, see: https://stackoverflow.com/a/35268748
-// const __m128i max128 = { UINT64_MAX, UINT64_MAX };
+// The following is gcc specific, see: https://stackoverflow.com/a/35268748
+// whereas _mm_set1_epi16(ELEM_MAX) would be more cross platform
 static const v128 v128_max = { { UINT64_MAX, UINT64_MAX } };
 
 //// Heap types helper functions: ////
-
-// inline void set128(void* p, v128 v) { *((v128*)p) = v; }
 
 typedef int minpos_type;
 static minpos_type minpos(v128 v) {
