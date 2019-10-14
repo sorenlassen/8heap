@@ -50,10 +50,10 @@ static void* aligned_alloc(size_t alignment, size_t sz) {
 // 8-ary min heap with element type unsigned 16 bit integers.
 #define ELEM_MAX UINT16_MAX;
 #define ARITY 8
-#define ALIGN 16 // ARITY * sizeof(elem)
+#define ALIGN 16 // ARITY * sizeof(elem_type)
 
 // https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html
-typedef elem elem_vector __attribute__ ((vector_size (ALIGN)));
+typedef elem_type elem_vector __attribute__ ((vector_size (ALIGN)));
 typedef union {
   __m128i mm;
   elem_vector elems;
@@ -63,8 +63,10 @@ typedef union {
 #define num2str(x) str(x)
 #define str(x) #x
 
-static_assert(alignof(v128) == ALIGN, "v128 alignment should be " num2str(ALIGN));
-static_assert(sizeof(v128) == ARITY * sizeof(elem), num2str(ARITY) " elements should fill up v128");
+static_assert(alignof(v128) == ALIGN,
+              "v128 alignment should be " num2str(ALIGN));
+static_assert(sizeof(v128) == ARITY * sizeof(elem_type),
+              num2str(ARITY) " elements should fill up v128");
 
 #undef str
 #undef num2str
@@ -79,14 +81,14 @@ typedef int minpos_type;
 static minpos_type minpos(v128 v) {
   return _mm_cvtsi128_si32(_mm_minpos_epu16(v.mm));
 }
-static elem minpos_min(minpos_type x) { return (uint16_t)x; }
+static elem_type minpos_min(minpos_type x) { return (uint16_t)x; }
 static size_t minpos_pos(minpos_type x) { return x >> 16; }
 
 //// Heap state: ////
 
 // The empty heap is represented by NULL if capacity is zero,
 // otherwise heap points to a memory block of size capacity.
-static elem* heap = NULL;
+static elem_type* heap = NULL;
 size_t capacity = 0;
 size_t padded = 0;
 size_t size = 0;
@@ -118,7 +120,7 @@ size_t heap_size() { return size; }
 // heap array and then call heapify on those n positions.
 //
 // Returns NULL if memory allocation fails,
-elem* extend_heap(size_t n) {
+elem_type* extend_heap(size_t n) {
   size_t new_size = size + n;
 
   if (new_size > padded) {
@@ -127,13 +129,14 @@ elem* extend_heap(size_t n) {
       if (new_capacity < new_size) {
         new_capacity = align_up(new_size, ARITY);
       }
-      elem* new_heap = (elem*)aligned_alloc(ALIGN, new_capacity * sizeof(elem));
+      elem_type* new_heap =
+          (elem_type*)aligned_alloc(ALIGN, new_capacity * sizeof(elem_type));
       if (!new_heap) {
         return NULL;
       }
       // TODO(soren): Measure if it's faster to utilize that we copy an integral
       // number of aligned v128s, e.g. with SSE instructions.
-      memcpy(new_heap, heap, align_up(size, ARITY) * sizeof(elem));
+      memcpy(new_heap, heap, align_up(size, ARITY) * sizeof(elem_type));
       free(heap);
       heap = new_heap;
       capacity = new_capacity;
@@ -149,11 +152,11 @@ elem* extend_heap(size_t n) {
   return heap + new_size - n;
 }
 
-void pull_up(elem b, size_t q) {
+void pull_up(elem_type b, size_t q) {
   assert(q < size);
   while (q >= ARITY) {
     size_t p = (q / ARITY) - 1;
-    elem a = heap[p];
+    elem_type a = heap[p];
     if (a <= b) break;
     heap[q] = a;
     q = p;
@@ -161,13 +164,13 @@ void pull_up(elem b, size_t q) {
   heap[q] = b;
 }
 
-void push_down(elem a, size_t p) {
+void push_down(elem_type a, size_t p) {
   assert(p < size);
   while (true) {
     size_t q = (p + 1) * ARITY;
     if (q >= size) break;
     minpos_type x = minpos(*heap_vector(q));
-    elem b = minpos_min(x);
+    elem_type b = minpos_min(x);
     if (a <= b) break;
     heap[p] = b;
     p = q + minpos_pos(x);
@@ -182,9 +185,9 @@ void heapify(size_t skip) {
   size_t q = align_down(size - 1, ARITY);
   do {
     minpos_type x = minpos(*heap_vector(q));
-    elem b = minpos_min(x);
+    elem_type b = minpos_min(x);
     size_t p = (q / ARITY) - 1;
-    elem a = heap[p];
+    elem_type a = heap[p];
     if (b < a) {
       heap[p] = b;
       push_down(a, q + minpos_pos(x));
@@ -193,7 +196,7 @@ void heapify(size_t skip) {
   } while (q > 0);
 }
 
-bool push(elem b) {
+bool push(elem_type b) {
   if (!extend_heap(1)) {
     return false;
   }
@@ -201,17 +204,17 @@ bool push(elem b) {
   return true;
 }
 
-elem top() {
+elem_type top() {
   assert(size > 0);
   minpos_type x = minpos(*heap_vector(0));
   return minpos_min(x);
 }
 
-elem pop() {
+elem_type pop() {
   assert(size > 0);
   minpos_type x = minpos(*heap_vector(0));
-  elem b = minpos_min(x);
-  elem a = heap[size - 1];
+  elem_type b = minpos_min(x);
+  elem_type a = heap[size - 1];
   heap[size - 1] = ELEM_MAX;
   size--;
   size_t p = minpos_pos(x);

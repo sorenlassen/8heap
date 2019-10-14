@@ -4,7 +4,7 @@
 #include <stddef.h> // size_t
 #include <stdint.h> // uint16_t
 
-typedef uint16_t elem;
+typedef uint16_t elem_type;
 
 extern void clear();
 
@@ -18,16 +18,16 @@ extern size_t heap_size();
 // heap array and then call heapify on those n positions.
 //
 // Returns NULL if memory allocation fails,
-extern elem* extend_heap(size_t n);
+extern elem_type* extend_heap(size_t n);
 
-extern void pull_up(elem b, size_t q);
+extern void pull_up(elem_type b, size_t q);
 
-extern void push_down(elem a, size_t p);
+extern void push_down(elem_type a, size_t p);
 
 extern void heapify(size_t skip);
 
-extern bool push(elem b);
+extern bool push(elem_type b);
 
-extern elem top();
+extern elem_type top();
 
-extern elem pop();
+extern elem_type pop();

@@ -15,16 +15,16 @@ extern "C" {
 
 using namespace folly;
 
-void fill(elem* ptr, size_t sz, bool sorted) {
+void fill(elem_type* ptr, size_t sz, bool sorted) {
   double f = 65536.0 / sz;
   for (size_t i = 0; i < sz; ++i) {
-    ptr[i] = (elem)((sorted ? i : (sz - 1 - i)) * f);
+    ptr[i] = (elem_type)((sorted ? i : (sz - 1 - i)) * f);
   }
 }
 
 void heapify_h8(uint32_t n, size_t sz, bool sorted) {
-  elem x = 0;
-  elem* ptr = extend_heap(sz);
+  elem_type x = 0;
+  elem_type* ptr = extend_heap(sz);
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {
       fill(ptr, sz, sorted);
@@ -37,8 +37,8 @@ void heapify_h8(uint32_t n, size_t sz, bool sorted) {
 }
 
 void heapify_std(uint32_t n, size_t sz, bool sorted) {
-  elem x = 0;
-  elem* ptr = (elem*)malloc(sz * sizeof(elem));
+  elem_type x = 0;
+  elem_type* ptr = (elem_type*)malloc(sz * sizeof(elem_type));
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {
       fill(ptr, sz, sorted);
