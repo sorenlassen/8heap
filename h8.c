@@ -179,7 +179,27 @@ void heap_push_down(heap* h, elem_type a, size_t p) {
 void heap_heapify(heap* h) {
   if (h->size <= ARITY) return;
 
-  for (size_t q = align_down(h->size - 1, ARITY); q > 0; q -= ARITY) {
+  size_t q = align_down(h->size - 1, ARITY);
+
+  // The first while loop is an optimization for the bottom level of the heap,
+  // inlining the call to heap_push_down which is trivial at the bottom level.
+  // Here "bottom level" means the 8-vectors without children.
+  size_t parent = (q / ARITY) - 1;
+  while (q > parent) {
+    minpos_type x = heap_vector_minpos(h, q);
+    elem_type b = minpos_min(x);
+    size_t p = (q / ARITY) - 1;
+    elem_type a = h->array[p];
+    if (b < a) {
+      h->array[p] = b;
+      // The next line inlines heap_push_down(h, a, q + minpos_pos(x))
+      // with the knowledge that (q + 1) * ARITY >= h->size.
+      h->array[q + minpos_pos(x)] = a;
+    }
+    q -= ARITY;
+  }
+
+  while (q > 0) {
     minpos_type x = heap_vector_minpos(h, q);
     elem_type b = minpos_min(x);
     size_t p = (q / ARITY) - 1;
@@ -188,6 +208,7 @@ void heap_heapify(heap* h) {
       h->array[p] = b;
       heap_push_down(h, a, q + minpos_pos(x));
     }
+    q -= ARITY;
   }
 }
 
