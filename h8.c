@@ -52,7 +52,6 @@ static void* aligned_alloc(size_t alignment, size_t sz) {
 //// Heap types: ////
 
 // 8-ary min heap with element type unsigned 16 bit integers.
-typedef uint16_t elem;
 #define ELEM_MAX UINT16_MAX;
 #define ARITY 8
 #define ALIGN 16 // ARITY * sizeof(elem)
