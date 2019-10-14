@@ -45,10 +45,6 @@ static void* aligned_alloc(size_t alignment, size_t sz) {
   return 0 == posix_memalign(&ptr, alignment, sz) ? ptr : NULL;
 }
 
-// From https://en.wikibooks.org/wiki/C_Programming/Preprocessor_directives_and_macros
-#define num2str(x) str(x)
-#define str(x) #x
-
 //// Heap types: ////
 
 // 8-ary min heap with element type unsigned 16 bit integers.
@@ -63,8 +59,15 @@ typedef union {
   elem_vector elems;
 } v128;
 
+// From https://en.wikibooks.org/wiki/C_Programming/Preprocessor_directives_and_macros
+#define num2str(x) str(x)
+#define str(x) #x
+
 static_assert(alignof(v128) == ALIGN, "v128 alignment should be " num2str(ALIGN));
 static_assert(sizeof(v128) == ARITY * sizeof(elem), num2str(ARITY) " elements should fill up v128");
+
+#undef str
+#undef num2str
 
 // The following is gcc specific, see: https://stackoverflow.com/a/35268748
 // whereas _mm_set1_epi16(ELEM_MAX) would be more cross platform
