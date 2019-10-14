@@ -12,6 +12,7 @@
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include "H8.hpp"
+#include "Heap8.hpp"
 #include "StdMinHeap.hpp"
 #include <folly/Benchmark.h>
 
@@ -61,22 +62,30 @@ void heapify(uint32_t n, size_t sz, bool ascending) {
 
 void heapify_h8_sorted(uint32_t n, size_t sz) { heapify<H8>(n, sz, true); }
 void heapify_h8_unsorted(uint32_t n, size_t sz) { heapify<H8>(n, sz, false); }
+void heapify_heap8_sorted(uint32_t n, size_t sz) { heapify<h8::Heap8>(n, sz, true); }
+void heapify_heap8_unsorted(uint32_t n, size_t sz) { heapify<h8::Heap8>(n, sz, false); }
 void heapify_std_sorted(uint32_t n, size_t sz) { heapify<StdMinHeap>(n, sz, true); }
 void heapify_std_unsorted(uint32_t n, size_t sz) { heapify<StdMinHeap>(n, sz, false); }
 
 } // namespace
 
 BENCHMARK_PARAM(heapify_h8_sorted, 1000)
+BENCHMARK_RELATIVE_PARAM(heapify_heap8_sorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_sorted, 1000)
 BENCHMARK_PARAM(heapify_h8_sorted, 100000)
+BENCHMARK_RELATIVE_PARAM(heapify_heap8_sorted, 100000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_sorted, 100000)
 BENCHMARK_PARAM(heapify_h8_sorted, 10000000)
+BENCHMARK_RELATIVE_PARAM(heapify_heap8_sorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_sorted, 10000000)
 BENCHMARK_PARAM(heapify_h8_unsorted, 1000)
+BENCHMARK_RELATIVE_PARAM(heapify_heap8_unsorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_unsorted, 1000)
 BENCHMARK_PARAM(heapify_h8_unsorted, 100000)
+BENCHMARK_RELATIVE_PARAM(heapify_heap8_unsorted, 100000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_unsorted, 100000)
 BENCHMARK_PARAM(heapify_h8_unsorted, 10000000)
+BENCHMARK_RELATIVE_PARAM(heapify_heap8_unsorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_unsorted, 10000000)
 
 int main(int argc, char** argv) {
