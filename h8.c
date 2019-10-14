@@ -176,12 +176,10 @@ void heap_push_down(heap* h, elem_type a, size_t p) {
   h->array[p] = a;
 }
 
-void heap_heapify(heap* h, size_t skip) {
-  if (skip < ARITY) skip = ARITY;
-  if (skip >= h->size) return;
+void heap_heapify(heap* h) {
+  if (h->size <= ARITY) return;
 
-  size_t q = align_down(h->size - 1, ARITY);
-  do {
+  for (size_t q = align_down(h->size - 1, ARITY); q > 0; q -= ARITY) {
     minpos_type x = heap_vector_minpos(h, q);
     elem_type b = minpos_min(x);
     size_t p = (q / ARITY) - 1;
@@ -190,8 +188,7 @@ void heap_heapify(heap* h, size_t skip) {
       h->array[p] = b;
       heap_push_down(h, a, q + minpos_pos(x));
     }
-    q -= 8;
-  } while (q > 0);
+  }
 }
 
 bool heap_push(heap* h, elem_type b) {

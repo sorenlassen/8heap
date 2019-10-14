@@ -31,7 +31,7 @@ void heapify_h8(uint32_t n, size_t sz, bool sorted) {
     BENCHMARK_SUSPEND {
       fill(ptr, sz, sorted);
     }
-    heap_heapify(&h, 0);
+    heap_heapify(&h);
     x ^= heap_top(&h);
   }
   doNotOptimizeAway(x);

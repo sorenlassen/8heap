@@ -32,7 +32,7 @@ extern void heap_pull_up(heap* h, elem_type b, size_t q);
 
 extern void heap_push_down(heap* h, elem_type a, size_t p);
 
-extern void heap_heapify(heap* h, size_t skip);
+extern void heap_heapify(heap* h);
 
 extern bool heap_push(heap* h, elem_type b);
 
