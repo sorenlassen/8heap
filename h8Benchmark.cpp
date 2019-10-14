@@ -24,16 +24,18 @@ void fill(elem_type* ptr, size_t sz, bool sorted) {
 
 void heapify_h8(uint32_t n, size_t sz, bool sorted) {
   elem_type x = 0;
-  elem_type* ptr = extend_heap(sz);
+  heap h;
+  heap_init(&h);
+  elem_type* ptr = heap_extend(&h, sz);
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {
       fill(ptr, sz, sorted);
     }
-    heapify(0);
-    x ^= top();
+    heap_heapify(&h, 0);
+    x ^= heap_top(&h);
   }
   doNotOptimizeAway(x);
-  clear();
+  heap_clear(&h);
 }
 
 void heapify_std(uint32_t n, size_t sz, bool sorted) {
