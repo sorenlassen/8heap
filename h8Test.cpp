@@ -56,12 +56,27 @@ TEST(h8, heap_heapify) {
   heap h;
   heap_init(&h);
   elem_type* ptr = heap_extend(&h, 3);
-  ptr[0] = 1;
-  ptr[1] = 3;
-  ptr[2] = 2;
+  ptr[0] = 2;
+  ptr[1] = 1;
+  ptr[2] = 3;
   heap_heapify(&h);
   EXPECT_EQ(1, heap_pop(&h));
   EXPECT_EQ(2, heap_pop(&h));
   EXPECT_EQ(3, heap_pop(&h));
+  heap_clear(&h);
+}
+
+TEST(h8, heap_push) {
+  heap h;
+  heap_init(&h);
+  EXPECT_TRUE(heap_push(&h, 2));
+  EXPECT_NE(nullptr, h.array);
+  EXPECT_GE(h.capacity, 1);
+  EXPECT_EQ(1, h.size);
+  EXPECT_EQ(2, heap_top(&h));
+  EXPECT_TRUE(heap_push(&h, 1));
+  EXPECT_EQ(1, heap_top(&h));
+  EXPECT_TRUE(heap_push(&h, 3));
+  EXPECT_EQ(1, heap_top(&h));
   heap_clear(&h);
 }
