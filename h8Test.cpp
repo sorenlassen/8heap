@@ -23,6 +23,22 @@ extern "C" {
 }
 #include <gtest/gtest.h>
 
+namespace {
+
+constexpr size_t arity = 8;
+
+size_t parent(size_t q) { return (q / arity) - 1; }
+
+size_t children(size_t p) { return (p + 1) * arity; }
+
+void EXPECT_HEAP(heap const* h) {
+  for (size_t i = arity; i < h->size; ++i) {
+    EXPECT_LE(h->array[parent(i)], h->array[i]);
+  }
+}
+
+} // namespace
+
 TEST(h8, heap_init) {
   heap h;
   heap_init(&h);
@@ -52,7 +68,7 @@ TEST(h8, heap_extend) {
   heap_clear(&h);
 }
 
-TEST(h8, heap_heapify) {
+TEST(h8, heap_heapify_3) {
   heap h;
   heap_init(&h);
   elem_type* ptr = heap_extend(&h, 3);
@@ -66,7 +82,23 @@ TEST(h8, heap_heapify) {
   heap_clear(&h);
 }
 
-TEST(h8, heap_push) {
+TEST(h8, heap_heapify_100) {
+  heap h;
+  heap_init(&h);
+  size_t n = 100;
+  elem_type* ptr = heap_extend(&h, n);
+  EXPECT_NE(nullptr, ptr);
+  EXPECT_EQ(n, h.size);
+  for (size_t i = 0; i < 100; ++i) ptr[i] = n - 1 - i;
+  heap_heapify(&h);
+  EXPECT_HEAP(&h);
+  for (size_t i = 0; i < 100; ++i) {
+    EXPECT_EQ(i, heap_pop(&h));
+  }
+  heap_clear(&h);
+}
+
+TEST(h8, heap_push_3) {
   heap h;
   heap_init(&h);
   EXPECT_TRUE(heap_push(&h, 2));
@@ -78,5 +110,20 @@ TEST(h8, heap_push) {
   EXPECT_EQ(1, heap_top(&h));
   EXPECT_TRUE(heap_push(&h, 3));
   EXPECT_EQ(1, heap_top(&h));
+  heap_clear(&h);
+}
+
+TEST(h8, heap_push_100) {
+  heap h;
+  heap_init(&h);
+  size_t n = 100;
+  for (size_t i = 0; i < 100; ++i) {
+    EXPECT_TRUE(heap_push(&h, n - 1 - i));
+  }
+  heap_heapify(&h);
+  EXPECT_HEAP(&h);
+  for (size_t i = 0; i < 100; ++i) {
+    EXPECT_EQ(i, heap_pop(&h));
+  }
   heap_clear(&h);
 }
