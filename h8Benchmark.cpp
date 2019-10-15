@@ -4,9 +4,9 @@
    g++ -g -std=c++14 -msse4 -O2 -DNDEBUG -lfollybenchmark h8.o h8Benchmark.cpp
 */
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
 #include <algorithm>
 extern "C" {
 #include "h8.h"
