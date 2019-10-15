@@ -86,6 +86,10 @@ static size_t minpos_pos(minpos_type x) { return x >> 16; }
 
 //// Private functions: ////
 
+static size_t parent(size_t q) { return (q / ARITY) - 1; }
+
+static size_t children(size_t p) { return (p + 1) * ARITY; }
+
 static void heap_vector_set(heap* h, size_t p, v128 v) {
   assert(is_aligned(p, ARITY));
   assert(p + 8 <= h->capacity);
@@ -153,7 +157,7 @@ elem_type* heap_extend(heap* h, size_t n) {
 void heap_pull_up(heap* h, elem_type b, size_t q) {
   assert(q < h->size);
   while (q >= ARITY) {
-    size_t p = (q / ARITY) - 1;
+    size_t p = parent(q);
     elem_type a = h->array[p];
     if (a <= b) break;
     h->array[q] = a;
@@ -165,7 +169,7 @@ void heap_pull_up(heap* h, elem_type b, size_t q) {
 void heap_push_down(heap* h, elem_type a, size_t p) {
   assert(p < h->size);
   while (true) {
-    size_t q = (p + 1) * ARITY;
+    size_t q = children(p);
     if (q >= h->size) break;
     minpos_type x = heap_vector_minpos(h, q);
     elem_type b = minpos_min(x);
@@ -184,16 +188,16 @@ void heap_heapify(heap* h) {
   // The first while loop is an optimization for the bottom level of the heap,
   // inlining the call to heap_push_down which is trivial at the bottom level.
   // Here "bottom level" means the 8-vectors without children.
-  size_t parent = (q / ARITY) - 1;
-  while (q > parent) {
+  size_t r = parent(q);
+  while (q > r) {
     minpos_type x = heap_vector_minpos(h, q);
     elem_type b = minpos_min(x);
-    size_t p = (q / ARITY) - 1;
+    size_t p = parent(q);
     elem_type a = h->array[p];
     if (b < a) {
       h->array[p] = b;
       // The next line inlines heap_push_down(h, a, q + minpos_pos(x))
-      // with the knowledge that (q + 1) * ARITY >= h->size.
+      // with the knowledge that children(q) >= h->size.
       h->array[q + minpos_pos(x)] = a;
     }
     q -= ARITY;
@@ -202,7 +206,7 @@ void heap_heapify(heap* h) {
   while (q > 0) {
     minpos_type x = heap_vector_minpos(h, q);
     elem_type b = minpos_min(x);
-    size_t p = (q / ARITY) - 1;
+    size_t p = parent(q);
     elem_type a = h->array[p];
     if (b < a) {
       h->array[p] = b;
