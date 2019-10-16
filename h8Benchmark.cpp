@@ -21,9 +21,12 @@ void fill(elem_type* ptr, size_t sz, bool sorted) {
 
 template<class Heap>
 void heapify(uint32_t n, size_t sz, bool sorted) {
-  typename Heap::elem_type x = 0;
   Heap h;
-  typename Heap::elem_type* ptr = h.extend(sz);
+  typename Heap::elem_type* ptr;
+  BENCHMARK_SUSPEND {
+    ptr = h.extend(sz);
+  }
+  typename Heap::elem_type x = 0;
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {
       fill(ptr, sz, sorted);
