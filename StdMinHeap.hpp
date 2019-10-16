@@ -5,38 +5,29 @@
 #include <cstdint>
 #include <algorithm>
 #include <functional>
-#include <memory>
+#include <vector>
 
 class StdMinHeap {
  public:
   typedef uint16_t elem_type;
   typedef std::size_t size_type;
 
-  StdMinHeap() : capacity(0), size(0) { }
+  StdMinHeap() { }
   ~StdMinHeap() { }
+  inline size_type size() const { return array.size(); }
   inline elem_type* extend(size_t n) {
-    size_t new_size = size + n;
-    if (new_size > capacity) {
-      size_t new_capacity = align_up(std::max(2 * capacity, new_size));
-      // TODO(soren): test if it's faster to use malloc() instead and change
-      // array and new_array to use free() as deleter
-      // (new[] needlessly initializes the memory it allocates).
-      std::unique_ptr<elem_type[]> new_array(new elem_type[new_capacity]);
-      std::move(array.get(), array.get() + size, new_array.get());
-      array = std::move(new_array);
-      capacity = new_capacity;
-    }
-    size = new_size;
-    return array.get() + new_size - n;
+    size_t old_size = array.size();
+    array.resize(old_size + n);
+    return &array[old_size];
   }
   inline void pull_up(elem_type b, size_t q) { }
   inline void push_down(elem_type a, size_t p) { }
   inline void heapify() {
-    std::make_heap(array.get(), array.get() + size, std::greater<elem_type>());
+    std::make_heap(array.begin(), array.end(), std::greater<elem_type>());
   }
   inline bool push(elem_type b) {
-    *extend(1) = b;
-    std::push_heap(array.get(), array.get() + size, std::greater<elem_type>());
+    array.push_back(b);
+    std::push_heap(array.begin(), array.end(), std::greater<elem_type>());
     return true;
   }
   inline elem_type top() const {
@@ -44,17 +35,12 @@ class StdMinHeap {
     return array[0];
   }
   inline elem_type pop() {
-    assert(size > 0);
-    std::pop_heap(array.get(), array.get() + size, std::greater<elem_type>());
-    size--;
-    return array.get()[size];
+    elem_type a = top();
+    std::pop_heap(array.begin(), array.end(), std::greater<elem_type>());
+    array.pop_back();
+    return a;
   }
 
  private:
-  static constexpr size_t align = 8; // capacity is always a multiple of this
-  static inline size_t align_up(size_t n) { return (n + align - 1) & ~(align - 1); }
-
-  std::unique_ptr<elem_type[]> array;
-  size_t capacity;
-  size_t size;
+  std::vector<elem_type> array;
 };
