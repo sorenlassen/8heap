@@ -42,10 +42,14 @@ BENCHMARK_PARAM(heapify_h8_sorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_sorted, 1000)
 BENCHMARK_PARAM(heapify_h8_sorted, 100000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_sorted, 100000)
+BENCHMARK_PARAM(heapify_h8_sorted, 10000000)
+BENCHMARK_RELATIVE_PARAM(heapify_std_sorted, 10000000)
 BENCHMARK_PARAM(heapify_h8_unsorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_unsorted, 1000)
 BENCHMARK_PARAM(heapify_h8_unsorted, 100000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_unsorted, 100000)
+BENCHMARK_PARAM(heapify_h8_unsorted, 10000000)
+BENCHMARK_RELATIVE_PARAM(heapify_std_unsorted, 10000000)
 
 int main(int argc, char** argv) {
   runBenchmarks();
