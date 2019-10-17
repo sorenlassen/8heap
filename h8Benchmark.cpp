@@ -1,38 +1,58 @@
 /*
    brew install folly
    gcc -g -std=c11 -msse4 -O2 -DNDEBUG -c h8.c
-   g++ -g -std=c++14 -msse4 -O2 -DNDEBUG -lfollybenchmark h8.o h8Benchmark.cpp
+   g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark h8.o h8Benchmark.cpp
 */
 
 #include <cstddef>
 #include <cstdint>
+#include <limits>
+#include <boost/iterator/counting_iterator.hpp>
+#include <boost/iterator/reverse_iterator.hpp>
+#include <boost/iterator/transform_iterator.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 #include "H8.hpp"
 #include "StdMinHeap.hpp"
 #include <folly/Benchmark.h>
 
+using boost::iterators::counting_iterator;
+using boost::iterators::reverse_iterator;
+using boost::iterators::transform_iterator;
 using namespace folly;
 
-void fill(elem_type* ptr, size_t sz, bool sorted) {
-  double f = 65536.0 / sz;
-  for (size_t i = 0; i < sz; ++i) {
-    ptr[i] = (elem_type)((sorted ? i : (sz - 1 - i)) * f);
+template<class CountType, class FunctionType>
+auto iter(CountType n, FunctionType f) -> decltype(auto) {
+  return transform_iterator<FunctionType, counting_iterator<CountType>>(n, f);
+}
+
+template<class Heap>
+void fill(Heap& heap, typename Heap::size_type sz, bool ascending) {
+  typedef typename Heap::size_type size_type;
+  typedef typename Heap::elem_type elem_type;
+  elem_type max = std::numeric_limits<elem_type>::max();
+  double mult = (max + 1.0) / sz;
+  auto f = [=](size_type i) { return boost::numeric_cast<elem_type>(i * mult); };
+  auto begin = iter(size_type(0), f);
+  auto end = begin + sz;
+  if (ascending) {
+    heap.append(begin, end);
+  } else {
+    heap.append(reverse_iterator(end), reverse_iterator(begin));
   }
 }
 
 template<class Heap>
-void heapify(uint32_t n, size_t sz, bool sorted) {
+void heapify(uint32_t n, size_t sz, bool ascending) {
+  typedef typename Heap::elem_type elem_type;
   Heap h;
-  typename Heap::elem_type* ptr;
-  BENCHMARK_SUSPEND {
-    ptr = h.extend(sz);
-  }
-  typename Heap::elem_type x = 0;
+  elem_type x = 0;
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {
-      fill(ptr, sz, sorted);
+      fill(h, sz, ascending);
     }
     h.heapify();
     x ^= h.top();
+    h.clear();
   }
   doNotOptimizeAway(x);
 }
