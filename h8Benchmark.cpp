@@ -20,6 +20,8 @@ using boost::iterators::reverse_iterator;
 using boost::iterators::transform_iterator;
 using namespace folly;
 
+namespace {
+
 template<class CountType, class FunctionType>
 auto iter(CountType n, FunctionType f) -> decltype(auto) {
   return transform_iterator<FunctionType, counting_iterator<CountType>>(n, f);
@@ -61,6 +63,9 @@ void heapify_h8_sorted(uint32_t n, size_t sz) { heapify<H8>(n, sz, true); }
 void heapify_h8_unsorted(uint32_t n, size_t sz) { heapify<H8>(n, sz, false); }
 void heapify_std_sorted(uint32_t n, size_t sz) { heapify<StdMinHeap>(n, sz, true); }
 void heapify_std_unsorted(uint32_t n, size_t sz) { heapify<StdMinHeap>(n, sz, false); }
+
+} // namespace
+
 BENCHMARK_PARAM(heapify_h8_sorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_sorted, 1000)
 BENCHMARK_PARAM(heapify_h8_sorted, 100000)
