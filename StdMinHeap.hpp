@@ -15,8 +15,8 @@ class StdMinHeap {
   StdMinHeap() { }
   ~StdMinHeap() { }
   size_type size() const { return array.size(); }
-  elem_type* extend(size_t n) {
-    size_t old_size = array.size();
+  elem_type* extend(size_type n) {
+    size_type old_size = array.size();
     array.resize(old_size + n);
     return &array[old_size];
   }
@@ -24,8 +24,8 @@ class StdMinHeap {
   void append(InputIterator begin, InputIterator end) {
     array.insert(array.end(), begin, end);
   }
-  void pull_up(elem_type b, size_t q) { }
-  void push_down(elem_type a, size_t p) { }
+  void pull_up(elem_type b, size_type q) { }
+  void push_down(elem_type a, size_type p) { }
   void heapify() {
     std::make_heap(array.begin(), array.end(), std::greater<elem_type>());
   }
