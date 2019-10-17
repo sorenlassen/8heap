@@ -18,7 +18,6 @@
 */
 
 #include <stddef>
-#include <limits>
 extern "C" {
 #include "h8.h"
 }
