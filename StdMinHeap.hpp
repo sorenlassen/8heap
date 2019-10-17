@@ -31,7 +31,7 @@ class StdMinHeap {
     return true;
   }
   inline elem_type top() const {
-    assert(size > 0);
+    assert(size() > 0);
     return array[0];
   }
   inline elem_type pop() {
