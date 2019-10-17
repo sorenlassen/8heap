@@ -27,6 +27,7 @@ class H8 {
   }
   inline elem_type top() const { return heap_top(&h); }
   inline elem_type pop() { return heap_pop(&h); }
+  inline void clear() { heap_clear(&h); }
 
  private:
   [[noreturn]] static inline void throw_bad_alloc() {

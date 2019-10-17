@@ -40,6 +40,10 @@ class StdMinHeap {
     array.pop_back();
     return a;
   }
+  inline void clear() {
+    std::vector<elem_type> empty;
+    array.swap(empty);
+  }
 
  private:
   std::vector<elem_type> array;
