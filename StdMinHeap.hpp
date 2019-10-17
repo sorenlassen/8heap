@@ -20,6 +20,10 @@ class StdMinHeap {
     array.resize(old_size + n);
     return &array[old_size];
   }
+  template<class InputIterator>
+  inline void append(InputIterator begin, InputIterator end) {
+    array.insert(array.end(), begin, end);
+  }
   inline void pull_up(elem_type b, size_t q) { }
   inline void push_down(elem_type a, size_t p) { }
   inline void heapify() {

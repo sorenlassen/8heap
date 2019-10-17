@@ -1,6 +1,7 @@
 #pragma once
 
 #include <new>
+#include <iterator>
 extern "C" {
 #include "h8.h"
 }
@@ -17,6 +18,11 @@ class H8 {
     elem_type* ptr = heap_extend(&h, n);
     if (!ptr) throw_bad_alloc();
     return ptr;
+  }
+  template<class InputIterator>
+  inline void append(InputIterator begin, InputIterator end) {
+    elem_type* ptr = heap_extend(&h, std::distance(begin, end));
+    std::copy(begin, end, ptr);
   }
   inline void pull_up(elem_type b, size_type q) { heap_pull_up(&h, b, q); }
   inline void push_down(elem_type a, size_type p) { heap_push_down(&h, a, p); }
