@@ -13,7 +13,7 @@
    make install
    popd
 
-   gcc -g -std=c11 -msse4 -c h8.c
+   gcc -g -std=c11 -msse4 -c h8.c &&
    g++ -g -std=c++14 -msse4 -lgtest -lgtest_main h8.o h8Test.cpp
 */
 
@@ -36,8 +36,6 @@ void EXPECT_HEAP(heap const* h) {
     EXPECT_LE(h->array[parent(i)], h->array[i]);
   }
 }
-
-} // namespace
 
 TEST(h8, heap_init) {
   heap h;
@@ -127,3 +125,5 @@ TEST(h8, heap_push_100) {
   }
   heap_clear(&h);
 }
+
+} // namespace
