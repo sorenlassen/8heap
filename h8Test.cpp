@@ -29,8 +29,6 @@ constexpr size_t arity = 8;
 
 size_t parent(size_t q) { return (q / arity) - 1; }
 
-size_t children(size_t p) { return (p + 1) * arity; }
-
 void EXPECT_HEAP(heap const* h) {
   for (size_t i = arity; i < h->size; ++i) {
     EXPECT_LE(h->array[parent(i)], h->array[i]);
