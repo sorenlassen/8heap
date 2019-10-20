@@ -13,6 +13,9 @@ class H8 {
 
   H8() { heap_init(&h); }
   ~H8() { heap_clear(&h); }
+  H8(const H8&) = delete;
+  H8& operator=(const H8&) = delete;
+
   size_type size() const { return h.size; }
   elem_type* extend(size_type n) {
     elem_type* ptr = heap_extend(&h, n);

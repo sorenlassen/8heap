@@ -45,6 +45,8 @@ class Heap8 {
  public:
   Heap8() : size_(0) { }
   ~Heap8() = default;
+  Heap8(const Heap8&) = delete;
+  Heap8& operator=(const Heap8&) = delete;
 
   size_type size() const { return size_; }
 

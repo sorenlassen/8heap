@@ -14,6 +14,8 @@ class StdMinHeap {
 
   StdMinHeap() { }
   ~StdMinHeap() = default;
+  StdMinHeap(const StdMinHeap&) = delete;
+  StdMinHeap& operator=(const StdMinHeap&) = delete;
 
   size_type size() const { return array.size(); }
   elem_type* extend(size_type n) {
