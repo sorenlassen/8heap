@@ -13,7 +13,8 @@ class StdMinHeap {
   typedef std::size_t size_type;
 
   StdMinHeap() { }
-  ~StdMinHeap() { }
+  ~StdMinHeap() = default;
+
   size_type size() const { return array.size(); }
   elem_type* extend(size_type n) {
     size_type old_size = array.size();

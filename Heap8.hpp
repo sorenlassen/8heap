@@ -44,6 +44,7 @@ class Heap8 {
 
  public:
   Heap8() : size_(0) { }
+  ~Heap8() = default;
 
   size_type size() const { return size_; }
 
