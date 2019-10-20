@@ -51,7 +51,7 @@ TYPED_TEST(HeapTest, Push3) {
 }
 
 TYPED_TEST(HeapTest, Heapify3) {
-  std::vector<elem_type> values = {1, 2, 3};
+  std::vector<elem_type> values = {2, 1, 3};
   this->heap_.append(values.begin(), values.end());
   this->heap_.heapify();
   EXPECT_EQ(1, this->heap_.pop());
