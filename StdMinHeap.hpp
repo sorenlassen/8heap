@@ -51,8 +51,8 @@ class StdMinHeap {
     return a;
   }
   void clear() {
-    std::vector<elem_type> empty;
-    array_.swap(empty);
+    array_.clear();
+    array_.shrink_to_fit(); // to match heap_clear(heap*)
   }
 
  private:

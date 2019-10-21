@@ -180,8 +180,8 @@ class Heap8 {
   }
 
   void clear() {
-    std::vector<v128> empty;
-    vectors_.swap(empty);
+    vectors_.clear();
+    vectors_.shrink_to_fit(); // to match heap_clear(heap*)
     size_ = 0;
   }
 
