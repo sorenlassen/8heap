@@ -34,6 +34,8 @@ extern void heap_push_down(heap* h, elem_type a, size_t p);
 
 extern void heap_heapify(heap* h);
 
+extern bool heap_is_heap(heap const* h);
+
 extern bool heap_push(heap* h, elem_type b);
 
 extern elem_type heap_top(heap const* h);

@@ -216,6 +216,20 @@ void heap_heapify(heap* h) {
   }
 }
 
+bool heap_is_heap(heap const* h) {
+  if (h->size <= ARITY) return true;
+  size_t q = align_down(h->size - 1, ARITY);
+  while (q > 0) {
+    minpos_type x = heap_vector_minpos(h, q);
+    elem_type b = minpos_min(x);
+    size_t p = parent(q);
+    elem_type a = h->array[p];
+    if (b < a) return false;
+    q -= ARITY;
+  }
+  return true;
+}
+
 bool heap_push(heap* h, elem_type b) {
   if (!heap_extend(h, 1)) {
     return false;

@@ -137,6 +137,21 @@ class Heap8 {
     }
   }
 
+  bool is_heap() const {
+    if (size_ <= arity) return true;
+    elem_type const* array = data();
+    size_t q = (size_ - 1) & ~(arity - 1); // align_down(size_ - 1, arity);
+    while (q > 0) {
+      minpos_type x = minpos(vectors_[q / arity]);
+      elem_type b = minpos_min(x);
+      size_t p = parent(q);
+      elem_type a = array[p];
+      if (b < a) return false;
+      q -= arity;
+    }
+    return true;
+  }
+
   void push(elem_type b) {
     if (size_ == arity * vectors_.size()) vectors_.push_back(v128_max);
     size_++;

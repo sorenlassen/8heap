@@ -32,6 +32,9 @@ class StdMinHeap {
   void heapify() {
     std::make_heap(array.begin(), array.end(), std::greater<elem_type>());
   }
+  bool is_heap() const {
+    return std::is_heap(array.begin(), array.end(), std::greater<elem_type>());
+  }
   bool push(elem_type b) {
     array.push_back(b);
     std::push_heap(array.begin(), array.end(), std::greater<elem_type>());

@@ -34,6 +34,7 @@ class H8 {
     bool ok = heap_push(&h, b);
     if (!ok) throw_bad_alloc();
   }
+  bool is_heap() const { return heap_is_heap(&h); }
   elem_type top() const { return heap_top(&h); }
   elem_type pop() { return heap_pop(&h); }
   void clear() { heap_clear(&h); }
