@@ -1,18 +1,5 @@
 /*
-   # The following instructions to install gtest on Mac are adapted from:
-   #   https://stackoverflow.com/a/46611467
-   #   https://github.com/google/googletest/blob/master/googletest/README.md
-   brew install cmake
-   pushd $HOME # or whereever you want to clone googletest
-   git clone https://github.com/google/googletest.git
-   cd googletest
-   mkdir build
-   cd build/
-   cmake ..
-   make
-   make install
-   popd
-
+   # first install gtest as described in h8Test.cpp
    gcc -g -std=c11 -msse4 -c h8.c &&
    g++ -g -std=c++17 -msse4 -lgtest -lgtest_main h8.o HeapTest.cpp
 */
