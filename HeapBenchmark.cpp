@@ -6,9 +6,9 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <iterator>
 #include <limits>
 #include <boost/iterator/counting_iterator.hpp>
-#include <boost/iterator/reverse_iterator.hpp>
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include "H8.hpp"
@@ -17,7 +17,6 @@
 #include <folly/Benchmark.h>
 
 using boost::iterators::counting_iterator;
-using boost::iterators::reverse_iterator;
 using boost::iterators::transform_iterator;
 using namespace folly;
 
@@ -40,7 +39,7 @@ void fill(Heap& heap, typename Heap::size_type sz, bool ascending) {
   if (ascending) {
     heap.append(begin, end);
   } else {
-    heap.append(reverse_iterator(end), reverse_iterator(begin));
+    heap.append(std::reverse_iterator(end), std::reverse_iterator(begin));
   }
 }
 
