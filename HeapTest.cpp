@@ -43,21 +43,27 @@ TYPED_TEST_SUITE(HeapTest, Implementations);
 
 TYPED_TEST(HeapTest, Push3) {
   EXPECT_EQ(0, this->heap_.size());
+  EXPECT_TRUE(this->heap_.is_heap());
   this->heap_.push(2);
   EXPECT_EQ(1, this->heap_.size());
   EXPECT_EQ(2, this->heap_.top());
+  EXPECT_TRUE(this->heap_.is_heap());
   this->heap_.push(1);
   EXPECT_EQ(2, this->heap_.size());
   EXPECT_EQ(1, this->heap_.top());
+  EXPECT_TRUE(this->heap_.is_heap());
   this->heap_.push(3);
   EXPECT_EQ(3, this->heap_.size());
   EXPECT_EQ(1, this->heap_.top());
+  EXPECT_TRUE(this->heap_.is_heap());
 }
 
 TYPED_TEST(HeapTest, Heapify3) {
   std::vector<elem_type> values = {2, 1, 3};
   this->heap_.append(values.begin(), values.end());
+  EXPECT_EQ(values.size(), this->heap_.size());
   this->heap_.heapify();
+  EXPECT_TRUE(this->heap_.is_heap());
   EXPECT_EQ(1, this->heap_.pop());
   EXPECT_EQ(2, this->heap_.pop());
   EXPECT_EQ(3, this->heap_.pop());
