@@ -21,10 +21,14 @@
 #include "Heap8.hpp"
 #include "StdMinHeap.hpp"
 #include <vector>
+#include <boost/iterator/counting_iterator.hpp>
+#include <boost/iterator/transform_iterator.hpp>
 #include <gtest/gtest.h>
 
 namespace {
 
+using boost::iterators::counting_iterator;
+using boost::iterators::transform_iterator;
 using testing::Types;
 
 template <class T>
@@ -57,6 +61,24 @@ TYPED_TEST(HeapTest, Heapify3) {
   EXPECT_EQ(1, this->heap_.pop());
   EXPECT_EQ(2, this->heap_.pop());
   EXPECT_EQ(3, this->heap_.pop());
+}
+
+TYPED_TEST(HeapTest, Heapify100) {
+  typedef typename TypeParam::elem_type elem_type;
+  elem_type const count = 100;
+  counting_iterator<elem_type> zero(0);
+  auto revert = [=](elem_type i) { return count - 1 - i; };
+  auto begin = transform_iterator(zero, revert);
+  this->heap_.append(begin, begin + count);
+  EXPECT_EQ(count, this->heap_.size());
+  // 8 is the arity of H8 and Heap8 (dirty implementation detail, oh well)
+  EXPECT_LE(count - 8, this->heap_.top());
+  this->heap_.heapify();
+  EXPECT_TRUE(this->heap_.is_heap());
+  EXPECT_EQ(0, this->heap_.top());
+  for (elem_type i = 0; i < count; ++i) {
+    EXPECT_EQ(i, this->heap_.pop());
+  }
 }
 
 } // namespace
