@@ -36,6 +36,7 @@ void fill(Heap& heap, typename Heap::size_type sz, bool ascending) {
   auto f = [=](size_type i) { return boost::numeric_cast<elem_type>(i * mult); };
   auto begin = iter(size_type(0), f);
   auto end = begin + sz;
+  heap.clear();
   if (ascending) {
     heap.append(begin, end);
   } else {
@@ -54,7 +55,6 @@ void heapify(uint32_t n, size_t sz, bool ascending) {
     }
     h.heapify();
     x ^= h.top();
-    h.clear();
   }
   doNotOptimizeAway(x);
 }
