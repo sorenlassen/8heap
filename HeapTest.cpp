@@ -28,8 +28,15 @@ typedef Types<H8, h8::Heap8, StdMinHeap> Implementations;
 
 TYPED_TEST_SUITE(HeapTest, Implementations);
 
-TYPED_TEST(HeapTest, Push3) {
+TYPED_TEST(HeapTest, Clear) {
   EXPECT_EQ(0, this->heap_.size());
+  this->heap_.push(1);
+  EXPECT_EQ(1, this->heap_.size());
+  this->heap_.clear();
+  EXPECT_EQ(0, this->heap_.size());
+}
+
+TYPED_TEST(HeapTest, Push3) {
   EXPECT_TRUE(this->heap_.is_heap());
   this->heap_.push(2);
   EXPECT_EQ(1, this->heap_.size());
