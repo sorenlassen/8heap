@@ -30,10 +30,10 @@ auto iter(CountType n, FunctionType f) -> decltype(auto) {
 template<class Appendable>
 void fill(Appendable& out, typename Appendable::size_type sz, bool ascending) {
   typedef typename Appendable::size_type size_type;
-  typedef typename Appendable::elem_type elem_type;
-  elem_type max = std::numeric_limits<elem_type>::max();
+  typedef typename Appendable::value_type value_type;
+  value_type max = std::numeric_limits<value_type>::max();
   double mult = (max + 1.0) / sz;
-  auto f = [=](size_type i) { return boost::numeric_cast<elem_type>(i * mult); };
+  auto f = [=](size_type i) { return boost::numeric_cast<value_type>(i * mult); };
   auto begin = iter(size_type(0), f);
   auto end = begin + sz;
   out.clear();
@@ -46,7 +46,6 @@ void fill(Appendable& out, typename Appendable::size_type sz, bool ascending) {
 
 // vector with added append() method
 struct AppendableVector : public std::vector<uint16_t> {
-  typedef value_type elem_type;
   template<class InputIterator>
   void append(InputIterator from, InputIterator to) {
     insert(end(), from, to);
@@ -55,9 +54,9 @@ struct AppendableVector : public std::vector<uint16_t> {
 
 template<class Heap>
 void heapify(uint32_t n, size_t sz, bool ascending) {
-  typedef typename Heap::elem_type elem_type;
+  typedef typename Heap::value_type value_type;
   Heap h;
-  elem_type x = 0;
+  value_type x = 0;
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {
       fill(h, sz, ascending);
@@ -70,9 +69,9 @@ void heapify(uint32_t n, size_t sz, bool ascending) {
 
 template<class Heap>
 void heapsort(uint32_t n, size_t sz, bool ascending) {
-  typedef typename Heap::elem_type elem_type;
+  typedef typename Heap::value_type value_type;
   Heap h;
-  std::vector<elem_type> result(sz);
+  std::vector<value_type> result(sz);
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {
       fill(h, sz, ascending);
@@ -84,7 +83,7 @@ void heapsort(uint32_t n, size_t sz, bool ascending) {
 }
 
 void sort(uint32_t n, size_t sz, bool ascending) {
-  typedef typename AppendableVector::elem_type elem_type;
+  typedef typename AppendableVector::value_type value_type;
   AppendableVector result;
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {

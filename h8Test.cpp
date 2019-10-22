@@ -40,7 +40,7 @@ TEST(h8, heap_init) {
 TEST(h8, heap_clear) {
   heap h;
   heap_init(&h);
-  elem_type* ptr = heap_extend(&h, 3);
+  value_type* ptr = heap_extend(&h, 3);
   heap_clear(&h);
   EXPECT_EQ(nullptr, h.array);
   EXPECT_EQ(0, h.capacity);
@@ -50,7 +50,7 @@ TEST(h8, heap_clear) {
 TEST(h8, heap_extend) {
   heap h;
   heap_init(&h);
-  elem_type* ptr = heap_extend(&h, 3);
+  value_type* ptr = heap_extend(&h, 3);
   EXPECT_NE(nullptr, ptr);
   EXPECT_EQ(ptr, h.array);
   EXPECT_GE(h.capacity, 3);
@@ -61,7 +61,7 @@ TEST(h8, heap_extend) {
 TEST(h8, heap_heapify_3) {
   heap h;
   heap_init(&h);
-  elem_type* ptr = heap_extend(&h, 3);
+  value_type* ptr = heap_extend(&h, 3);
   ptr[0] = 2;
   ptr[1] = 1;
   ptr[2] = 3;
@@ -76,7 +76,7 @@ TEST(h8, heap_heapify_100) {
   heap h;
   heap_init(&h);
   size_t const n = 100;
-  elem_type* ptr = heap_extend(&h, n);
+  value_type* ptr = heap_extend(&h, n);
   EXPECT_NE(nullptr, ptr);
   EXPECT_EQ(n, h.size);
   for (size_t i = 0; i < n; ++i) ptr[i] = n - 1 - i;

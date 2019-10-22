@@ -53,7 +53,7 @@ TYPED_TEST(HeapTest, Push3) {
 }
 
 TYPED_TEST(HeapTest, Heapify3) {
-  std::vector<elem_type> values{2, 1, 3};
+  std::vector<value_type> values{2, 1, 3};
   this->heap_.append(values.begin(), values.end());
   EXPECT_EQ(values.size(), this->heap_.size());
   this->heap_.heapify();
@@ -64,10 +64,10 @@ TYPED_TEST(HeapTest, Heapify3) {
 }
 
 TYPED_TEST(HeapTest, Heapify100) {
-  typedef typename TypeParam::elem_type elem_type;
-  elem_type const count = 100;
-  counting_iterator<elem_type> zero(0);
-  auto revert = [=](elem_type i) { return count - 1 - i; };
+  typedef typename TypeParam::value_type value_type;
+  value_type const count = 100;
+  counting_iterator<value_type> zero(0);
+  auto revert = [=](value_type i) { return count - 1 - i; };
   auto begin = transform_iterator(zero, revert);
   this->heap_.append(begin, begin + count);
   EXPECT_EQ(count, this->heap_.size());
@@ -76,7 +76,7 @@ TYPED_TEST(HeapTest, Heapify100) {
   this->heap_.heapify();
   EXPECT_TRUE(this->heap_.is_heap());
   EXPECT_EQ(0, this->heap_.top());
-  for (elem_type i = 0; i < count; ++i) {
+  for (value_type i = 0; i < count; ++i) {
     EXPECT_EQ(i, this->heap_.pop());
   }
 }
