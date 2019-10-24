@@ -18,7 +18,7 @@
 */
 
 #include <cstddef>
-#include <cstdint>
+#include <limits>
 extern "C" {
 #include "h8.h"
 }
@@ -65,7 +65,7 @@ TEST(h8, heap_extend_too_much) {
   EXPECT_TRUE(heap_push(&h, 42));
   EXPECT_EQ(1, h.size);
   EXPECT_EQ(42, heap_top(&h));
-  EXPECT_EQ(NULL, heap_extend(&h, SIZE_MAX));
+  EXPECT_EQ(nullptr, heap_extend(&h, std::numeric_limits<size_t>::max()));
   EXPECT_EQ(1, h.size);
   EXPECT_EQ(42, heap_top(&h));
   heap_clear(&h);
