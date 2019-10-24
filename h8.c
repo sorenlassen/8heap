@@ -9,7 +9,7 @@
 #include <stdarg.h> // va_list, va_start, va_end
 #include <stdbool.h> // bool
 #include <stddef.h> // size_t, NULL
-#include <stdint.h> // uint16_t, UINT16_MAX
+#include <stdint.h> // uint16_t, UINT16_MAX, SIZE_MAX
 #include <stdnoreturn.h> // noreturn
 #include <stdlib.h> // exit
 #include <string.h> // memcpy
@@ -116,8 +116,8 @@ void heap_clear(heap* h) {
 }
 
 value_type* heap_extend(heap* h, size_t n) {
+  if (n >= SIZE_MAX - h->size) return NULL;
   size_t new_size = h->size + n;
-
   size_t padded_size = align_up(h->size, ARITY);
   if (new_size > padded_size) {
     size_t padded_new_size = align_up(new_size, ARITY);
@@ -128,9 +128,7 @@ value_type* heap_extend(heap* h, size_t n) {
       }
       value_type* new_array =
           (value_type*)aligned_alloc(ALIGN, new_capacity * sizeof(value_type));
-      if (!new_array) {
-        return NULL;
-      }
+      if (!new_array) return NULL;
       // TODO(soren): Measure if it's faster to utilize that we copy an integral
       // number of aligned v128s, e.g. with SSE instructions.
       memcpy(new_array, h->array, padded_size * sizeof(value_type));
@@ -141,7 +139,6 @@ value_type* heap_extend(heap* h, size_t n) {
     // Unnecessary if new_size == padded_new_size but we just do it always.
     heap_vector_set(h, padded_new_size - ARITY, v128_max);
   }
-
   h->size = new_size;
   return h->array + new_size - n;
 }

@@ -18,6 +18,7 @@
 */
 
 #include <cstddef>
+#include <cstdint>
 extern "C" {
 #include "h8.h"
 }
@@ -55,6 +56,18 @@ TEST(h8, heap_extend) {
   EXPECT_EQ(ptr, h.array);
   EXPECT_GE(h.capacity, 3);
   EXPECT_EQ(3, h.size);
+  heap_clear(&h);
+}
+
+TEST(h8, heap_extend_too_much) {
+  heap h;
+  heap_init(&h);
+  EXPECT_TRUE(heap_push(&h, 42));
+  EXPECT_EQ(1, h.size);
+  EXPECT_EQ(42, heap_top(&h));
+  EXPECT_EQ(NULL, heap_extend(&h, SIZE_MAX));
+  EXPECT_EQ(1, h.size);
+  EXPECT_EQ(42, heap_top(&h));
   heap_clear(&h);
 }
 
