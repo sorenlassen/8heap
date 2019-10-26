@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <new>
 #include <vector>
 #include <emmintrin.h>
 #include <smmintrin.h>
@@ -17,8 +18,10 @@ class Heap8 {
 
  private:
   static constexpr value_type value_max = std::numeric_limits<value_type>::max();
-
   static constexpr size_type arity = 8;
+  static constexpr size_type size_max =
+    std::numeric_limits<size_type>::max() - (arity - 1);
+
   static size_type parent(size_type q) { return (q / arity) - 1; }
   static size_type children(size_type p) { return (p + 1) * arity; }
 
@@ -51,8 +54,11 @@ class Heap8 {
   size_type size() const { return size_; }
 
   value_type* extend(size_type n) {
+    if (n > size_max - size_) throw_bad_alloc();
     size_type new_size = size_ + n;
     if (new_size > arity * vectors_.size()) {
+      static_assert(std::numeric_limits<vectors_type::size_type>::max() >=
+                    std::numeric_limits<size_type>::max() / arity);
       // Smallest new_vectors_size s.t. size <= arity * new_vectors_size.
       size_type new_vectors_size = (new_size + (arity - 1)) / arity;
       vectors_.resize(new_vectors_size, v128_max);
@@ -187,10 +193,14 @@ class Heap8 {
   }
 
  private:
+  [[noreturn]] static void throw_bad_alloc() {
+    std::bad_alloc exception;
+    throw exception;
+  }
   value_type* data() { return reinterpret_cast<value_type*>(vectors_.data()); }
   value_type const* data() const { return reinterpret_cast<value_type const*>(vectors_.data()); }
-
-  std::vector<v128> vectors_;
+  typedef std::vector<v128> vectors_type;
+  vectors_type vectors_;
   size_type size_;
 };
 

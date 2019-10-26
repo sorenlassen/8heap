@@ -5,12 +5,15 @@
 #include <cstdint>
 #include <algorithm>
 #include <functional>
+#include <limits>
+#include <new>
 #include <vector>
 
 class StdMinHeap {
+  typedef std::vector<value_type> array_type;
  public:
   typedef uint16_t value_type;
-  typedef std::size_t size_type;
+  typedef array_type::size_type size_type;
 
   StdMinHeap() { }
   ~StdMinHeap() = default;
@@ -20,6 +23,7 @@ class StdMinHeap {
   size_type size() const { return array_.size(); }
   value_type* extend(size_type n) {
     size_type old_size = array_.size();
+    if (n > std::numeric_limits<size_type>::max() - old_size) throw_bad_alloc();
     array_.resize(old_size + n);
     return &array_[old_size];
   }
@@ -56,5 +60,9 @@ class StdMinHeap {
   }
 
  private:
-  std::vector<value_type> array_;
+  [[noreturn]] static void throw_bad_alloc() {
+    std::bad_alloc exception;
+    throw exception;
+  }
+  array_type array_;
 };
