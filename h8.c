@@ -9,7 +9,7 @@
 #include <stdarg.h> // va_list, va_start, va_end
 #include <stdbool.h> // bool
 #include <stddef.h> // size_t, NULL
-#include <stdint.h> // uint16_t, UINT16_MAX, SIZE_MAX
+#include <stdint.h> // uint16_t, UINT16_MAX
 #include <stdnoreturn.h> // noreturn
 #include <stdlib.h> // exit
 #include <string.h> // memcpy
@@ -49,8 +49,7 @@ static void* aligned_alloc(size_t alignment, size_t sz) {
 
 // 8-ary min heap with value type unsigned 16 bit integers.
 #define VALUE_MAX UINT16_MAX;
-#define ARITY 8
-#define ALIGN 16 // ARITY * sizeof(value_type)
+#define ALIGN 16 // H8_ARITY * sizeof(value_type)
 
 // https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html
 typedef value_type value_vector __attribute__ ((vector_size (ALIGN)));
@@ -63,10 +62,16 @@ typedef union {
 #define num2str(x) str(x)
 #define str(x) #x
 
+static_assert(H8_ARITY <= H8_SIZE_MAX,
+              "arity " num2str(H8_ARITY) " may not exceed H8_SIZE_MAX");
+static_assert(H8_SIZE_MAX % H8_ARITY == 0,
+              "H8_SIZE_MAX must be a multiple of arity " num2str(H8_ARITY));
+static_assert(H8_SIZE_MAX <= SIZE_MAX / sizeof(value_type),
+              "H8_SIZE_MAX * sizeof(value_type) may not exceed SIZE_MAX");
 static_assert(alignof(v128) == ALIGN,
               "v128 alignment should be " num2str(ALIGN));
-static_assert(sizeof(v128) == ARITY * sizeof(value_type),
-              num2str(ARITY) " values should fill up v128");
+static_assert(sizeof(v128) == H8_ARITY * sizeof(value_type),
+              num2str(H8_ARITY) " values should fill up v128");
 
 #undef str
 #undef num2str
@@ -86,18 +91,18 @@ static size_t minpos_pos(minpos_type x) { return x >> 16; }
 
 //// Private functions: ////
 
-static size_t parent(size_t q) { return (q / ARITY) - 1; }
+static size_t parent(size_t q) { return (q / H8_ARITY) - 1; }
 
-static size_t children(size_t p) { return (p + 1) * ARITY; }
+static size_t children(size_t p) { return (p + 1) * H8_ARITY; }
 
 static void heap_vector_set(heap* h, size_t p, v128 v) {
-  assert(is_aligned(p, ARITY));
+  assert(is_aligned(p, H8_ARITY));
   assert(p + 8 <= h->capacity);
   *(v128*)(h->array + p) = v;
 }
 
 static minpos_type heap_vector_minpos(heap const* h, size_t p) {
-  assert(is_aligned(p, ARITY));
+  assert(is_aligned(p, H8_ARITY));
   assert(p < h->size);
   return minpos(*(v128 const*)(h->array + p));
 }
@@ -116,18 +121,28 @@ void heap_clear(heap* h) {
 }
 
 value_type* heap_extend(heap* h, size_t n) {
-  if (n >= SIZE_MAX - h->size) return NULL;
+  if (n >= H8_SIZE_MAX - h->size) return NULL;
   size_t new_size = h->size + n;
-  size_t padded_size = align_up(h->size, ARITY);
+  // padded_size and padded_new_size below are <= H8_SIZE_MAX because h->size
+  // and new_size are and because H8_SIZE_MAX is a multiple of H8_ARITY.
+  size_t padded_size = align_up(h->size, H8_ARITY);
   if (new_size > padded_size) {
-    size_t padded_new_size = align_up(new_size, ARITY);
+    size_t padded_new_size = align_up(new_size, H8_ARITY);
     if (new_size > h->capacity) {
-      size_t new_capacity = h->capacity == 0 ? ARITY : (2 * h->capacity);
+      // Guaranteed to not exceed H8_SIZE_MAX because H8_ARITY <= H8_SIZE_MAX.
+      size_t new_capacity =
+        h->capacity == 0
+        ? H8_ARITY
+        : h->capacity <= H8_SIZE_MAX / 2
+          ? 2 * h->capacity
+          : H8_SIZE_MAX;
       if (new_capacity < padded_new_size) {
         new_capacity = padded_new_size;
       }
-      value_type* new_array =
-          (value_type*)aligned_alloc(ALIGN, new_capacity * sizeof(value_type));
+      // Guaranteed to not overflow/wrap-around or exceed SIZE_MAX because
+      // new_capacity <= H8_SIZE_MAX <= SIZE_MAX / sizeof(value_type).
+      size_t num_bytes = new_capacity * sizeof(value_type);
+      value_type* new_array = (value_type*)aligned_alloc(ALIGN, num_bytes);
       if (!new_array) return NULL;
       // TODO(soren): Measure if it's faster to utilize that we copy an integral
       // number of aligned v128s, e.g. with SSE instructions.
@@ -137,7 +152,7 @@ value_type* heap_extend(heap* h, size_t n) {
       h->capacity = new_capacity;
     }
     // Unnecessary if new_size == padded_new_size but we just do it always.
-    heap_vector_set(h, padded_new_size - ARITY, v128_max);
+    heap_vector_set(h, padded_new_size - H8_ARITY, v128_max);
   }
   h->size = new_size;
   return h->array + new_size - n;
@@ -145,7 +160,7 @@ value_type* heap_extend(heap* h, size_t n) {
 
 void heap_pull_up(heap* h, value_type b, size_t q) {
   assert(q < h->size);
-  while (q >= ARITY) {
+  while (q >= H8_ARITY) {
     size_t p = parent(q);
     value_type a = h->array[p];
     if (a <= b) break;
@@ -170,9 +185,9 @@ void heap_push_down(heap* h, value_type a, size_t p) {
 }
 
 void heap_heapify(heap* h) {
-  if (h->size <= ARITY) return;
+  if (h->size <= H8_ARITY) return;
 
-  size_t q = align_down(h->size - 1, ARITY);
+  size_t q = align_down(h->size - 1, H8_ARITY);
 
   // The first while loop is an optimization for the bottom level of the heap,
   // inlining the call to heap_push_down which is trivial at the bottom level.
@@ -189,7 +204,7 @@ void heap_heapify(heap* h) {
       // with the knowledge that children(q) >= h->size.
       h->array[q + minpos_pos(x)] = a;
     }
-    q -= ARITY;
+    q -= H8_ARITY;
   }
 
   while (q > 0) {
@@ -201,20 +216,20 @@ void heap_heapify(heap* h) {
       h->array[p] = b;
       heap_push_down(h, a, q + minpos_pos(x));
     }
-    q -= ARITY;
+    q -= H8_ARITY;
   }
 }
 
 bool heap_is_heap(heap const* h) {
-  if (h->size <= ARITY) return true;
-  size_t q = align_down(h->size - 1, ARITY);
+  if (h->size <= H8_ARITY) return true;
+  size_t q = align_down(h->size - 1, H8_ARITY);
   while (q > 0) {
     minpos_type x = heap_vector_minpos(h, q);
     value_type b = minpos_min(x);
     size_t p = parent(q);
     value_type a = h->array[p];
     if (b < a) return false;
-    q -= ARITY;
+    q -= H8_ARITY;
   }
   return true;
 }
