@@ -29,14 +29,15 @@ class Heap8 {
   // https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html
   typedef value_type value_vector __attribute__ ((vector_size (align)));
   union v128 {
-    __m128i mm;
     value_vector values;
+    __m128i mm;
   };
   static_assert(alignof(v128) == align);
   static_assert(sizeof(v128) == arity * sizeof(value_type));
-  // The following is gcc specific, see: https://stackoverflow.com/a/35268748
-  // whereas _mm_set1_epi16(value_max) would be more cross platform.
-  static constexpr v128 v128_max = { { ~0LL, ~0LL } };
+  static constexpr v128 v128_max = { {
+    value_max, value_max, value_max, value_max,
+    value_max, value_max, value_max, value_max,
+  } };
 
   typedef int minpos_type;
   static minpos_type minpos(v128 v) {

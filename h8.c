@@ -48,14 +48,14 @@ static void* aligned_alloc(size_t alignment, size_t sz) {
 //// Heap types: ////
 
 // 8-ary min heap with value type unsigned 16 bit integers.
-#define VALUE_MAX UINT16_MAX;
+#define VALUE_MAX UINT16_MAX
 #define ALIGN 16 // H8_ARITY * sizeof(value_type)
 
 // https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html
 typedef value_type value_vector __attribute__ ((vector_size (ALIGN)));
 typedef union {
-  __m128i mm;
   value_vector values;
+  __m128i mm;
 } v128;
 
 // From https://en.wikibooks.org/wiki/C_Programming/Preprocessor_directives_and_macros
@@ -76,9 +76,10 @@ static_assert(sizeof(v128) == H8_ARITY * sizeof(value_type),
 #undef str
 #undef num2str
 
-// The following is gcc specific, see: https://stackoverflow.com/a/35268748
-// whereas _mm_set1_epi16(VALUE_MAX) would be more cross platform
-static const v128 v128_max = { { ~0LL, ~0LL } };
+static const v128 v128_max = { {
+  VALUE_MAX, VALUE_MAX, VALUE_MAX, VALUE_MAX,
+  VALUE_MAX, VALUE_MAX, VALUE_MAX, VALUE_MAX,
+} };
 
 //// Heap types helper functions: ////
 
