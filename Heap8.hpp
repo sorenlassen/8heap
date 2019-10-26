@@ -1,13 +1,14 @@
 #pragma once
 
+extern "C" {
+#include "minpos.h"
+}
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <new>
 #include <vector>
-#include <emmintrin.h>
-#include <smmintrin.h>
 
 namespace h8 {
 
@@ -38,13 +39,6 @@ class Heap8 {
     value_max, value_max, value_max, value_max,
     value_max, value_max, value_max, value_max,
   } };
-
-  typedef int minpos_type;
-  static minpos_type minpos(v128 v) {
-    return _mm_cvtsi128_si32(_mm_minpos_epu16(v.mm));
-  }
-  static value_type minpos_min(minpos_type x) { return static_cast<std::uint16_t>(x); }
-  static size_type minpos_pos(minpos_type x) { return x >> 16; }
 
  public:
   Heap8() : size_(0) { }
@@ -100,7 +94,7 @@ class Heap8 {
     while (true) {
       size_t q = children(p);
       if (q >= size_) break;
-      minpos_type x = minpos(vectors_[q / arity]);
+      minpos_type x = minpos(vectors_[q / arity].mm);
       value_type b = minpos_min(x);
       if (a <= b) break;
       array[p] = b;
@@ -119,7 +113,7 @@ class Heap8 {
     // Here "bottom level" means the 8-vectors without children.
     size_t r = parent(q);
     while (q > r) {
-      minpos_type x = minpos(vectors_[q / arity]);
+      minpos_type x = minpos(vectors_[q / arity].mm);
       value_type b = minpos_min(x);
       size_t p = parent(q);
       value_type a = array[p];
@@ -133,7 +127,7 @@ class Heap8 {
     }
 
     while (q > 0) {
-      minpos_type x = minpos(vectors_[q / arity]);
+      minpos_type x = minpos(vectors_[q / arity].mm);
       value_type b = minpos_min(x);
       size_t p = parent(q);
       value_type a = array[p];
@@ -150,7 +144,7 @@ class Heap8 {
     value_type const* array = data();
     size_t q = (size_ - 1) & ~(arity - 1); // align_down(size_ - 1, arity);
     while (q > 0) {
-      minpos_type x = minpos(vectors_[q / arity]);
+      minpos_type x = minpos(vectors_[q / arity].mm);
       value_type b = minpos_min(x);
       size_t p = parent(q);
       value_type a = array[p];
@@ -168,13 +162,13 @@ class Heap8 {
 
   value_type const top() {
     assert(size_ > 0);
-    minpos_type x = minpos(vectors_[0]);
+    minpos_type x = minpos(vectors_[0].mm);
     return minpos_min(x);
   }
 
   value_type pop() {
     assert(size_ > 0);
-    minpos_type x = minpos(vectors_[0]);
+    minpos_type x = minpos(vectors_[0].mm);
     value_type b = minpos_min(x);
     value_type* array = data();
     value_type a = array[size_ - 1];

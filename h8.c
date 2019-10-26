@@ -3,7 +3,7 @@
 */
 
 #include "h8.h"
-
+#include "minpos.h"
 #include <assert.h> // assert, static_assert
 #include <stdalign.h> // alignof
 #include <stdarg.h> // va_list, va_start, va_end
@@ -13,10 +13,6 @@
 #include <stdnoreturn.h> // noreturn
 #include <stdlib.h> // exit
 #include <string.h> // memcpy
-
-#include <emmintrin.h> // __m128i
-#include <immintrin.h>
-#include <smmintrin.h>
 
 //// Generic helper functions: ////
 
@@ -81,15 +77,6 @@ static const v128 v128_max = { {
   VALUE_MAX, VALUE_MAX, VALUE_MAX, VALUE_MAX,
 } };
 
-//// Heap types helper functions: ////
-
-typedef int minpos_type;
-static minpos_type minpos(v128 v) {
-  return _mm_cvtsi128_si32(_mm_minpos_epu16(v.mm));
-}
-static value_type minpos_min(minpos_type x) { return (uint16_t)x; }
-static size_t minpos_pos(minpos_type x) { return x >> 16; }
-
 //// Private functions: ////
 
 static size_t parent(size_t q) { return (q / H8_ARITY) - 1; }
@@ -105,7 +92,7 @@ static void heap_vector_set(heap* h, size_t p, v128 v) {
 static minpos_type heap_vector_minpos(heap const* h, size_t p) {
   assert(is_aligned(p, H8_ARITY));
   assert(p < h->size);
-  return minpos(*(v128 const*)(h->array + p));
+  return minpos(((v128 const*)(h->array + p))->mm);
 }
 
 //// Public functions: ////
