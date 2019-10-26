@@ -51,12 +51,13 @@ class Heap8 {
   size_type size() const { return size_; }
 
   value_type* extend(size_type n) {
-    size_ += n;
-    if (size_ > arity * vectors_.size()) {
+    size_type new_size = size_ + n;
+    if (new_size > arity * vectors_.size()) {
       // Smallest new_vectors_size s.t. size <= arity * new_vectors_size.
-      size_type new_vectors_size = (size_ + arity - 1) / arity;
+      size_type new_vectors_size = (new_size + (arity - 1)) / arity;
       vectors_.resize(new_vectors_size, v128_max);
     }
+    size_ = new_size;
     value_type* array = data();
     return array + (size_ - n);
   }
