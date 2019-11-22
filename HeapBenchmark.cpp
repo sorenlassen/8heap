@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <iterator>
 #include <limits>
 #include <boost/iterator/counting_iterator.hpp>
@@ -31,17 +32,16 @@ template<class Appendable>
 void fill(Appendable& out, typename Appendable::size_type sz, bool ascending) {
   typedef typename Appendable::size_type size_type;
   typedef typename Appendable::value_type value_type;
+  typedef std::function<value_type(size_type)> transform_type;
   value_type max = std::numeric_limits<value_type>::max();
   double mult = (max + 1.0) / sz;
-  auto f = [=](size_type i) { return boost::numeric_cast<value_type>(i * mult); };
+  transform_type fAscending = [=](size_type i) { return boost::numeric_cast<value_type>(i * mult); };
+  transform_type fRandom = [=](size_type i) { return static_cast<value_type>(rand()); };
+  transform_type f = ascending ? fAscending : fRandom;
   auto begin = iter(size_type(0), f);
   auto end = begin + sz;
   out.clear();
-  if (ascending) {
-    out.append(begin, end);
-  } else {
-    out.append(std::reverse_iterator(end), std::reverse_iterator(begin));
-  }
+  out.append(begin, end);
 }
 
 // vector with added append() method
