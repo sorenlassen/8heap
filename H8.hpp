@@ -37,6 +37,7 @@ class H8 {
   bool is_heap() const { return heap_is_heap(&h_); }
   value_type top() const { return heap_top(&h_); }
   value_type pop() { return heap_pop(&h_); }
+  void sort() { heap_sort(&h_); }
   void clear() { heap_clear(&h_); }
 
  private:

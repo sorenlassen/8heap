@@ -77,7 +77,7 @@ void heapsort(uint32_t n, size_t sz, bool ascending) {
       fill(h, sz, ascending);
     }
     h.heapify();
-    for (size_t j = 0; j < sz; ++j) result[j] = h.pop();
+    h.sort();
   }
   doNotOptimizeAway(result[n % sz]);
 }

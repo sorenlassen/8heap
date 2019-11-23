@@ -49,3 +49,7 @@ extern bool heap_push(heap* h, value_type b);
 extern value_type heap_top(heap const* h);
 
 extern value_type heap_pop(heap* h);
+
+// Precondition: heap_is_heap(h).
+// Postcondition: h->array[0,h-size) is sorted in descending order.
+extern void heap_sort(heap* h);

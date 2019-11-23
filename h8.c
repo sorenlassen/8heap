@@ -251,3 +251,22 @@ value_type heap_pop(heap* h) {
   }
   return b;
 }
+
+void heap_sort(heap* h) {
+  v128 v = v128_max;
+  size_t x = h->size;
+  size_t i = x % H8_ARITY;
+  x -= i;
+  while (i > 0) {
+    --i;
+    v.values[i] = heap_pop(h);
+  }
+  heap_vector_set(h, x, v);
+  while (x > 0) {
+    x -= H8_ARITY;
+    for (size_t j = H8_ARITY; j > 0; --j) {
+      v.values[j - 1] = heap_pop(h);
+    }
+    heap_vector_set(h, x, v);
+  }
+}

@@ -54,6 +54,9 @@ class StdMinHeap {
     array_.pop_back();
     return a;
   }
+  void sort() {
+    for (size_type i = size(); i > 0; --i) array_[i - 1] = pop();
+  }
   void clear() {
     array_.clear();
     array_.shrink_to_fit(); // to match heap_clear(heap*)

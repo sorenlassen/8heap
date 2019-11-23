@@ -181,6 +181,25 @@ class Heap8 {
     return b;
   }
 
+  void sort() {
+    v128 v = v128_max;
+    size_type x = size_;
+    size_type i = x % arity;
+    x -= i;
+    while (i > 0) {
+      --i;
+      v.values[i] = pop();
+    }
+    vectors_[x / arity] = v;
+    while (x > 0) {
+      x -= arity;
+      for (size_type j = arity; j > 0; --j) {
+        v.values[j - 1] = pop();
+      }
+      vectors_[x / arity] = v;
+    }
+  }
+
   void clear() {
     vectors_.clear();
     vectors_.shrink_to_fit(); // to match heap_clear(heap*)
