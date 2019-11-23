@@ -1,12 +1,14 @@
 /*
    Branch free sorting of 8 uint16 numbers with _mm_minpos_epu16.
 
-   g++ -g -std=c++17 -msse4 sort8.cpp
+   g++ -g -std=c++17 -msse4 sort8.cpp -o sort8.out
+   ./sort8.out 7 9 13 3 2 3 2 3
 */
 
 #include <cassert>
 #include <cstddef> // size_t
 #include <cstdint> // uint16_t
+#include <cstdlib> // atoi
 #include <limits>
 #include <iostream>
 #include <emmintrin.h> // __m128i
@@ -74,7 +76,14 @@ value_vector sort8(v128& v) {
 } // namespace
 
 int main(int argc, char** argv) {
-  v128 v = { { 7, 9, 13, 1, 2, 3, 4, 5 } };
+  if (argc != 1 + arity) {
+    cerr << "Usage: sort8.out 7 9 13 3 2 3 2 3\n";
+    return 1;
+  }
+  v128 v;
+  for (int i = 0; i < arity; ++i) {
+    v.values[i] = atoi(argv[1 + i]);
+  }
   value_vector r = sort8(v);
   for (int i = 0; i < arity; ++i) {
     cout << r[i] << " ";
