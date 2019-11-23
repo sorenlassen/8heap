@@ -6,6 +6,7 @@ extern "C" {
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <algorithm>
 #include <limits>
 #include <new>
 #include <vector>
@@ -47,6 +48,10 @@ class Heap8 {
   Heap8& operator=(const Heap8&) = delete;
 
   size_type size() const { return size_; }
+
+  value_type& operator[](size_type index) {
+    return data()[index];
+  }
 
   value_type* extend(size_type n) {
     if (n > size_max - size_) throw_bad_alloc();
@@ -198,6 +203,10 @@ class Heap8 {
       }
       vectors_[x / arity] = v;
     }
+  }
+
+  bool is_sorted(size_type sz) const {
+    return std::is_sorted(data(), data() + sz, std::greater<value_type>());
   }
 
   void clear() {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <new>
+#include <algorithm>
 #include <iterator>
 extern "C" {
 #include "h8.h"
@@ -17,6 +18,9 @@ class H8 {
   H8& operator=(const H8&) = delete;
 
   size_type size() const { return h_.size; }
+  value_type& operator[](size_type index) {
+    return h_.array[index];
+  }
   value_type* extend(size_type n) {
     value_type* ptr = heap_extend(&h_, n);
     if (!ptr) throw_bad_alloc();
@@ -38,6 +42,9 @@ class H8 {
   value_type top() const { return heap_top(&h_); }
   value_type pop() { return heap_pop(&h_); }
   void sort() { heap_sort(&h_); }
+  bool is_sorted(size_type sz) const {
+    return std::is_sorted(h_.array, h_.array + sz, std::greater<value_type>());
+  }
   void clear() { heap_clear(&h_); }
 
  private:

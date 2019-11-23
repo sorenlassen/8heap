@@ -63,6 +63,18 @@ TYPED_TEST(HeapTest, Heapify3) {
   EXPECT_EQ(3, this->heap_.pop());
 }
 
+TYPED_TEST(HeapTest, Sort3) {
+  std::vector<value_type> values{2, 1, 3};
+  this->heap_.append(values.begin(), values.end());
+  this->heap_.heapify();
+  this->heap_.sort();
+  EXPECT_EQ(0, this->heap_.size());
+  EXPECT_EQ(3, this->heap_[0]);
+  EXPECT_EQ(2, this->heap_[1]);
+  EXPECT_EQ(1, this->heap_[2]);
+  EXPECT_TRUE(this->heap_.is_sorted(values.size()));
+}
+
 TYPED_TEST(HeapTest, Heapify100) {
   typedef typename TypeParam::value_type value_type;
   value_type const count = 100;

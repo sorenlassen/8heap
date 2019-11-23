@@ -21,6 +21,9 @@ class StdMinHeap {
   StdMinHeap& operator=(const StdMinHeap&) = delete;
 
   size_type size() const { return array_.size(); }
+  value_type& operator[](size_type index) {
+    return array_[index];
+  }
   value_type* extend(size_type n) {
     size_type old_size = array_.size();
     if (n > std::numeric_limits<size_type>::max() - old_size) throw_bad_alloc();
@@ -56,6 +59,9 @@ class StdMinHeap {
   }
   void sort() {
     for (size_type i = size(); i > 0; --i) array_[i - 1] = pop();
+  }
+  bool is_sorted(size_type sz) const {
+    return std::is_sorted(array_.begin(), array_.begin() + sz, std::greater<value_type>());
   }
   void clear() {
     array_.clear();
