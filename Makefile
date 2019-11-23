@@ -5,5 +5,5 @@ h8.o: h8.c h8.h minpos.h
 	gcc -g -std=c11 -msse4 -O2 -DNDEBUG -c h8.c
 
 clean:
-	rm *.o a.out
-	rm -r a.out.*
+	rm -f *.o *.out
+	rm -rf *.out.*
