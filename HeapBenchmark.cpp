@@ -36,7 +36,7 @@ void fill(Appendable& out, typename Appendable::size_type sz, bool ascending) {
   value_type max = std::numeric_limits<value_type>::max();
   double mult = (max + 1.0) / sz;
   transform_type fAscending = [=](size_type i) { return boost::numeric_cast<value_type>(i * mult); };
-  transform_type fRandom = [=](size_type i) { return static_cast<value_type>(rand()); };
+  transform_type fRandom = [=](size_type i) { return static_cast<value_type>(std::rand()); };
   transform_type f = ascending ? fAscending : fRandom;
   auto begin = iter(size_type(0), f);
   auto end = begin + sz;
