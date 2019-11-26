@@ -10,9 +10,11 @@
 #include <vector>
 
 class StdMinHeap {
-  typedef std::vector<value_type> array_type;
  public:
   typedef uint16_t value_type;
+ private:
+  typedef std::vector<value_type> array_type;
+ public:
   typedef array_type::size_type size_type;
 
   StdMinHeap() { }
