@@ -53,6 +53,7 @@ TYPED_TEST(HeapTest, Push3) {
 }
 
 TYPED_TEST(HeapTest, Heapify3) {
+  typedef typename TypeParam::value_type value_type;
   std::vector<value_type> values{2, 1, 3};
   this->heap_.append(values.begin(), values.end());
   EXPECT_EQ(values.size(), this->heap_.size());
@@ -64,6 +65,7 @@ TYPED_TEST(HeapTest, Heapify3) {
 }
 
 TYPED_TEST(HeapTest, Sort3) {
+  typedef typename TypeParam::value_type value_type;
   std::vector<value_type> values{2, 1, 3};
   this->heap_.append(values.begin(), values.end());
   this->heap_.heapify();
