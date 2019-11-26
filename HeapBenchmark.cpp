@@ -4,6 +4,9 @@
    g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark h8.o HeapBenchmark.cpp
 */
 
+#include "H8.hpp"
+#include "Heap8.hpp"
+#include "StdMinHeap.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -12,9 +15,6 @@
 #include <boost/iterator/counting_iterator.hpp>
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/numeric/conversion/cast.hpp>
-#include "H8.hpp"
-#include "Heap8.hpp"
-#include "StdMinHeap.hpp"
 #include <folly/Benchmark.h>
 
 using boost::iterators::counting_iterator;

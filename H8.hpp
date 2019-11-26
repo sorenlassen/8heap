@@ -1,11 +1,11 @@
 #pragma once
 
-#include <new>
-#include <algorithm>
-#include <iterator>
 extern "C" {
 #include "h8.h"
 }
+#include <new>
+#include <algorithm>
+#include <iterator>
 
 class H8 {
  public:
