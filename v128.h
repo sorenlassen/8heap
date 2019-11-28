@@ -10,7 +10,10 @@ typedef union {
   __m128i mm;
 } v128;
 
-static inline v128 mm2v128(__m128i mm) { return { .mm = mm }; }
+static inline v128 mm2v128(__m128i mm) {
+  v128 v = { .mm = mm };
+  return v;
+}
 
 #ifdef __cplusplus
 inline bool operator==(v128 a, v128 b) {
