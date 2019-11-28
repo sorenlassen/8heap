@@ -21,23 +21,29 @@ using namespace folly;
 
 namespace {
 
+std::default_random_engine gen;
+
+template<class value_type>
+struct Random {
+  static std::uniform_int_distribution<value_type> distr;
+};
+
+template<class value_type>
+std::uniform_int_distribution<value_type> Random<value_type>::distr(
+  std::numeric_limits<value_type>::min(),
+  std::numeric_limits<value_type>::max());
+
 template<class value_type, class size_type>
 std::function<value_type(size_type)>
-transform_ascending(size_type sz, value_type lower, value_type upper) {
-  return
-    [lower,
-     mult = (upper - lower + 1.0) / sz]
-    (size_type i) { return lower + boost::numeric_cast<value_type>(i * mult); };
+transform_ascending(size_type sz) {
+  const double mult = (std::numeric_limits<value_type>::max() + 1.0) / sz;
+  return [mult](size_type i) { return boost::numeric_cast<value_type>(i * mult); };
 }
 
 template<class value_type, class size_type>
 std::function<value_type(size_type)>
-transform_random(size_type sz, value_type lower, value_type upper) {
-  return
-    [lower, upper,
-     gen = std::default_random_engine(),
-     distr = std::uniform_int_distribution<uint16_t>(lower, upper)]
-    (size_type i) mutable { return distr(gen); };
+transform_random(size_type sz) {
+  return [](size_type i) { return Random<value_type>::distr(gen); };
 }
 
 template<class CountType, class FunctionType>
@@ -51,10 +57,9 @@ template<class Appendable>
 void fill(Appendable& out, typename Appendable::size_type sz, bool ascending) {
   typedef typename Appendable::size_type size_type;
   typedef typename Appendable::value_type value_type;
-  constexpr value_type max = std::numeric_limits<uint16_t>::max();
   auto transform = ascending
-    ? transform_ascending<value_type, size_type>(sz, 0, max)
-    : transform_random<value_type, size_type>(sz, 0, max);
+    ? transform_ascending<value_type, size_type>(sz)
+    : transform_random<value_type, size_type>(sz);
   auto begin = iter(size_type(0), transform);
   auto end = begin + sz;
   out.clear();
