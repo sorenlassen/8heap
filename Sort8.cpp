@@ -28,6 +28,8 @@ typedef union {
   __m128i mm;
 } v128;
 
+u16x8 mm2u16x8(__m128i mm) { return reinterpret_cast<u16x8>(mm); }
+
 constexpr v128 kMasks[8] = {
   { { kMax, 0, 0, 0, 0, 0, 0, 0 } },
   { { 0, kMax, 0, 0, 0, 0, 0, 0 } },
@@ -53,7 +55,7 @@ __m128i sort8(__m128i mm) {
     mm |= kMasks[minpos_pos(x)].mm;
   }
   for (int i = 0; i < kArity; ++i) {
-    assert(v.values[i] == kMax);
+    assert(mm2u16x8(mm)[i] == kMax);
   }
   return r.mm;
 }
