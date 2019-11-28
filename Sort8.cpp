@@ -5,10 +5,8 @@
 extern "C" {
 #include "minpos.h"
 }
-#include <cassert>
 #include <cstddef> // size_t
 #include <cstdint> // uint16_t
-#include <cstdlib> // atoi
 #include <limits>
 #include <emmintrin.h> // __m128i
 
@@ -28,8 +26,6 @@ typedef union {
   __m128i mm;
 } v128;
 
-u16x8 mm2u16x8(__m128i mm) { return reinterpret_cast<u16x8>(mm); }
-
 constexpr v128 kMasks[8] = {
   { { kMax, 0, 0, 0, 0, 0, 0, 0 } },
   { { 0, kMax, 0, 0, 0, 0, 0, 0 } },
@@ -45,17 +41,11 @@ constexpr v128 kMasks[8] = {
 
 __m128i sort8(__m128i mm) {
   v128 r;
-  uint16_t last = 0;
   for (int i = 0; i < kArity; ++i) {
     minpos_type x = minpos(mm);
     uint16_t m = minpos_min(x);
-    assert(m >= last);
-    last = m;
     r.values[i] = m;
     mm |= kMasks[minpos_pos(x)].mm;
-  }
-  for (int i = 0; i < kArity; ++i) {
-    assert(mm2u16x8(mm)[i] == kMax);
   }
   return r.mm;
 }
