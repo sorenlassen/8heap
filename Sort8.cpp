@@ -3,6 +3,7 @@
 */
 
 #include "minpos.h"
+#include "v128.h"
 #include <cstddef> // size_t
 #include <cstdint> // uint16_t
 #include <limits>
@@ -16,13 +17,6 @@ constexpr uint16_t kMax = std::numeric_limits<uint16_t>::max();
 constexpr size_t kArity = 8;
 
 static_assert(sizeof(__m128i) == kArity * sizeof(uint16_t));
-
-// https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html
-typedef uint16_t u16x8 __attribute__ ((vector_size (kArity * sizeof(uint16_t))));
-typedef union {
-  u16x8 values;
-  __m128i mm;
-} v128;
 
 constexpr v128 kMasks[8] = {
   { { kMax, 0, 0, 0, 0, 0, 0, 0 } },

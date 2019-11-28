@@ -3,9 +3,8 @@
    g++ -g -std=c++17 -msse4 -lgtest -lgtest_main minposTest.cpp
 */
 
-extern "C" {
 #include "minpos.h"
-}
+#include "v128.h"
 #include <stdalign.h> // no <cstdalign> on mac
 #include <cstdint>
 #include <gtest/gtest.h>
@@ -13,18 +12,7 @@ extern "C" {
 namespace {
 
 // SSE register size and memory alignment
-#define ALIGN 16
-
-// https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html
-typedef uint16_t u16x8 __attribute__ ((vector_size (ALIGN)));
-typedef union {
-  u16x8 values;
-  __m128i mm;
-} v128;
-
-static_assert(sizeof(__m128i) == ALIGN);
-static_assert(alignof(v128) == alignof(__m128i));
-static_assert(alignof(v128) == ALIGN);
+#define kAlign 16
 
 TEST(minpos, minpos) {
   constexpr uint16_t M = 65535;
@@ -36,7 +24,7 @@ TEST(minpos, minpos) {
 
 TEST(minpos, minpos8) {
   constexpr uint16_t M = 65535;
-  alignas(ALIGN) uint16_t vs[8] = {
+  alignas(kAlign) uint16_t vs[8] = {
     M - 7, M - 9, M - 13, M - 3, M - 2, M - 3, M - 2, M - 3
   };
   minpos_type mp = minpos8(vs);
@@ -46,7 +34,7 @@ TEST(minpos, minpos8) {
 
 TEST(minpos, minpos16) {
   constexpr uint16_t M = 65535;
-  alignas(ALIGN) uint16_t vs[16] = {
+  alignas(kAlign) uint16_t vs[16] = {
     M - 7, M - 9, M - 13, M - 3, M - 2, M - 3, M - 2, M - 3,
     M - 107, M - 109, M - 113, M - 13, 12, 13, 12, 13
   };
@@ -57,7 +45,7 @@ TEST(minpos, minpos16) {
 
 TEST(minpos, minpos32) {
   constexpr uint16_t M = 65535;
-  alignas(ALIGN) uint16_t vs[32] = {
+  alignas(kAlign) uint16_t vs[32] = {
     M - 7, M - 9, M - 13, M - 3, M - 2, M - 3, M - 2, M - 3,
     M - 107, M - 109, M - 113, M - 13, 12, 13, 12, 13,
     7, 9, 13, 3, 2, 3, 2, 3,

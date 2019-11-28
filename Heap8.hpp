@@ -1,6 +1,7 @@
 #pragma once
 
 #include "minpos.h"
+#include "v128.h"
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -17,26 +18,17 @@ class Heap8 {
   typedef std::size_t size_type;
 
  private:
-  static constexpr value_type value_max = std::numeric_limits<value_type>::max();
-  static constexpr size_type arity = 8;
-  static constexpr size_type size_max =
-    std::numeric_limits<size_type>::max() - (arity - 1);
+  static constexpr value_type kMax = std::numeric_limits<value_type>::max();
+  static constexpr size_type kArity = 8;
+  static constexpr size_type kSizeMax =
+    std::numeric_limits<size_type>::max() - (kArity - 1);
 
-  static size_type parent(size_type q) { return (q / arity) - 1; }
-  static size_type children(size_type p) { return (p + 1) * arity; }
+  static size_type parent(size_type q) { return (q / kArity) - 1; }
+  static size_type children(size_type p) { return (p + 1) * kArity; }
 
-  static constexpr size_type align = 16;
-  // https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html
-  typedef value_type value_vector __attribute__ ((vector_size (align)));
-  union v128 {
-    value_vector values;
-    __m128i mm;
-  };
-  static_assert(alignof(v128) == align);
-  static_assert(sizeof(v128) == arity * sizeof(value_type));
+  static_assert(sizeof(v128) == kArity * sizeof(value_type));
   static constexpr v128 v128_max = { {
-    value_max, value_max, value_max, value_max,
-    value_max, value_max, value_max, value_max,
+    kMax, kMax, kMax, kMax, kMax, kMax, kMax, kMax,
   } };
 
  public:
@@ -52,13 +44,13 @@ class Heap8 {
   }
 
   value_type* extend(size_type n) {
-    if (n > size_max - size_) throw_bad_alloc();
+    if (n > kSizeMax - size_) throw_bad_alloc();
     size_type new_size = size_ + n;
-    if (new_size > arity * vectors_.size()) {
+    if (new_size > kArity * vectors_.size()) {
       static_assert(std::numeric_limits<vectors_type::size_type>::max() >=
-                    std::numeric_limits<size_type>::max() / arity);
-      // Smallest new_vectors_size s.t. size <= arity * new_vectors_size.
-      size_type new_vectors_size = (new_size + (arity - 1)) / arity;
+                    std::numeric_limits<size_type>::max() / kArity);
+      // Smallest new_vectors_size s.t. size <= kArity * new_vectors_size.
+      size_type new_vectors_size = (new_size + (kArity - 1)) / kArity;
       vectors_.resize(new_vectors_size, v128_max);
     }
     size_ = new_size;
@@ -70,7 +62,7 @@ class Heap8 {
   void append(InputIterator begin, InputIterator end) {
     value_type* array = data();
     while (begin != end) {
-      if (size_ == arity * vectors_.size()) {
+      if (size_ == kArity * vectors_.size()) {
         vectors_.push_back(v128_max);
         array = data();
       }
@@ -81,7 +73,7 @@ class Heap8 {
   void pull_up(value_type b, size_type q) {
     assert(q < size_);
     value_type* array = data();
-    while (q >= arity) {
+    while (q >= kArity) {
       size_t p = parent(q);
       value_type a = array[p];
       if (a <= b) break;
@@ -97,7 +89,7 @@ class Heap8 {
     while (true) {
       size_t q = children(p);
       if (q >= size_) break;
-      minpos_type x = minpos(vectors_[q / arity].mm);
+      minpos_type x = minpos(vectors_[q / kArity].mm);
       value_type b = minpos_min(x);
       if (a <= b) break;
       array[p] = b;
@@ -107,16 +99,16 @@ class Heap8 {
   }
 
   void heapify() {
-    if (size_ <= arity) return;
+    if (size_ <= kArity) return;
     value_type* array = data();
-    size_t q = (size_ - 1) & ~(arity - 1); // align_down(size_ - 1, arity);
+    size_t q = (size_ - 1) & ~(kArity - 1); // align_down(size_ - 1, kArity);
 
     // The first while loop is an optimization for the bottom level of the heap,
     // inlining the call to heap_push_down which is trivial at the bottom level.
     // Here "bottom level" means the 8-vectors without children.
     size_t r = parent(q);
     while (q > r) {
-      minpos_type x = minpos(vectors_[q / arity].mm);
+      minpos_type x = minpos(vectors_[q / kArity].mm);
       value_type b = minpos_min(x);
       size_t p = parent(q);
       value_type a = array[p];
@@ -126,11 +118,11 @@ class Heap8 {
         // with the knowledge that children(q) >= h->size.
         array[q + minpos_pos(x)] = a;
       }
-      q -= arity;
+      q -= kArity;
     }
 
     while (q > 0) {
-      minpos_type x = minpos(vectors_[q / arity].mm);
+      minpos_type x = minpos(vectors_[q / kArity].mm);
       value_type b = minpos_min(x);
       size_t p = parent(q);
       value_type a = array[p];
@@ -138,27 +130,27 @@ class Heap8 {
         array[p] = b;
         push_down(a, q + minpos_pos(x));
       }
-      q -= arity;
+      q -= kArity;
     }
   }
 
   bool is_heap() const {
-    if (size_ <= arity) return true;
+    if (size_ <= kArity) return true;
     value_type const* array = data();
-    size_t q = (size_ - 1) & ~(arity - 1); // align_down(size_ - 1, arity);
+    size_t q = (size_ - 1) & ~(kArity - 1); // align_down(size_ - 1, kArity);
     while (q > 0) {
-      minpos_type x = minpos(vectors_[q / arity].mm);
+      minpos_type x = minpos(vectors_[q / kArity].mm);
       value_type b = minpos_min(x);
       size_t p = parent(q);
       value_type a = array[p];
       if (b < a) return false;
-      q -= arity;
+      q -= kArity;
     }
     return true;
   }
 
   void push(value_type b) {
-    if (size_ == arity * vectors_.size()) vectors_.push_back(v128_max);
+    if (size_ == kArity * vectors_.size()) vectors_.push_back(v128_max);
     size_++;
     pull_up(b, size_ - 1);
   }
@@ -175,7 +167,7 @@ class Heap8 {
     value_type b = minpos_min(x);
     value_type* array = data();
     value_type a = array[size_ - 1];
-    array[size_ - 1] = value_max;
+    array[size_ - 1] = kMax;
     size_--;
     size_type p = minpos_pos(x);
     if (p != size_) {
@@ -187,19 +179,19 @@ class Heap8 {
   void sort() {
     v128 v = v128_max;
     size_type x = size_;
-    size_type i = x % arity;
+    size_type i = x % kArity;
     x -= i;
     while (i > 0) {
       --i;
       v.values[i] = pop();
     }
-    vectors_[x / arity] = v;
+    vectors_[x / kArity] = v;
     while (x > 0) {
-      x -= arity;
-      for (size_type j = arity; j > 0; --j) {
+      x -= kArity;
+      for (size_type j = kArity; j > 0; --j) {
         v.values[j - 1] = pop();
       }
-      vectors_[x / arity] = v;
+      vectors_[x / kArity] = v;
     }
   }
 

@@ -4,6 +4,7 @@
 */
 
 #include "Sort8.hpp"
+#include "v128.h"
 #include <emmintrin.h>
 #include <cstddef>
 #include <cstdint>
@@ -18,20 +19,6 @@ constexpr uint16_t kMax = numeric_limits<uint16_t>::max();
 constexpr size_t kArity = 8;
 
 static_assert(sizeof(__m128i) == kArity * sizeof(uint16_t));
-
-// https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html
-typedef uint16_t u16x8 __attribute__ ((vector_size (kArity * sizeof(uint16_t))));
-typedef union {
-  u16x8 values;
-  __m128i mm;
-} v128;
-
-bool operator==(v128 a, v128 b) {
-  for (int i = 0; i < kArity; ++i) {
-    if (a.values[i] != b.values[i]) return false;
-  }
-  return true;
-}
 
 v128 v128sort(v128 v) {
   v128 r;

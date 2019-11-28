@@ -4,6 +4,7 @@
 
 #include "h8.h"
 #include "minpos.h"
+#include "v128.h"
 #include <assert.h> // assert, static_assert
 #include <stdalign.h> // alignof
 #include <stdarg.h> // va_list, va_start, va_end
@@ -48,13 +49,6 @@ static void* aligned_alloc(size_t alignment, size_t sz) {
 // 8-ary min heap with value type unsigned 16 bit integers.
 #define VALUE_MAX UINT16_MAX
 #define ALIGN 16 // H8_ARITY * sizeof(h8_value_type)
-
-// https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html
-typedef h8_value_type value_vector __attribute__ ((vector_size (ALIGN)));
-typedef union {
-  value_vector values;
-  __m128i mm;
-} v128;
 
 // From https://en.wikibooks.org/wiki/C_Programming/Preprocessor_directives_and_macros
 #define num2str(x) str(x)
