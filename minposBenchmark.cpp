@@ -3,9 +3,7 @@
    g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark minposBenchmark.cpp
 */
 
-extern "C" {
 #include "minpos.h"
-}
 #include <stdalign.h> // no <cstdalign> on mac
 #include <cstdint>
 #include <limits>

@@ -1,8 +1,6 @@
 #pragma once
 
-extern "C" {
 #include "minpos.h"
-}
 #include <cassert>
 #include <cstddef>
 #include <cstdint>

@@ -2,9 +2,7 @@
    Branch free sorting of 8 uint16 numbers with _mm_minpos_epu16.
 */
 
-extern "C" {
 #include "minpos.h"
-}
 #include <cstddef> // size_t
 #include <cstdint> // uint16_t
 #include <limits>
