@@ -17,9 +17,9 @@ typedef struct {
   size_t size;
 } h8_heap;
 
-extern void h8_heap_init(h8_heap* h);
+void h8_heap_init(h8_heap* h);
 
-extern void h8_heap_clear(h8_heap* h);
+void h8_heap_clear(h8_heap* h);
 
 // Increases heap by n consecutive value positions at the end and returns a
 // pointer to the first of those positions.
@@ -29,27 +29,27 @@ extern void h8_heap_clear(h8_heap* h);
 // heap array and then call heapify on those n positions.
 //
 // Returns NULL if memory allocation fails or h->size + n > H8_SIZE_MAX.
-extern h8_value_type* h8_heap_extend(h8_heap* h, size_t n);
+h8_value_type* h8_heap_extend(h8_heap* h, size_t n);
 
-extern void h8_heap_pull_up(h8_heap* h, h8_value_type b, size_t q);
+void h8_heap_pull_up(h8_heap* h, h8_value_type b, size_t q);
 
-extern void h8_heap_push_down(h8_heap* h, h8_value_type a, size_t p);
+void h8_heap_push_down(h8_heap* h, h8_value_type a, size_t p);
 
-extern void h8_heap_heapify(h8_heap* h);
+void h8_heap_heapify(h8_heap* h);
 
 // Returns true if h->array points to h->size values that satisfy
 // the min-heap invariant for arity H8_ARITY.
-extern bool h8_heap_is_heap(h8_heap const* h);
+bool h8_heap_is_heap(h8_heap const* h);
 
 // Adds b to heap and adjusts it to maintain the heap invariant.
 // Precondition: h8_heap_is_heap(h).
 // Returns false is memory allocation fails or h->size == H8_SIZE_MAX.
-extern bool h8_heap_push(h8_heap* h, h8_value_type b);
+bool h8_heap_push(h8_heap* h, h8_value_type b);
 
-extern h8_value_type h8_heap_top(h8_heap const* h);
+h8_value_type h8_heap_top(h8_heap const* h);
 
-extern h8_value_type h8_heap_pop(h8_heap* h);
+h8_value_type h8_heap_pop(h8_heap* h);
 
 // Precondition: h8_heap_is_heap(h).
 // Postcondition: h->array[0,h-size) is sorted in descending order.
-extern void h8_heap_sort(h8_heap* h);
+void h8_heap_sort(h8_heap* h);
