@@ -5,9 +5,9 @@
 */
 
 #include "Sort8.hpp"
-#include <emmintrin.h> // __m128i
+#include <emmintrin.h>
+#include <cstddef>
 #include <cstdint>
-#include <cstdlib>
 #include <algorithm>
 #include <limits>
 #include <random>

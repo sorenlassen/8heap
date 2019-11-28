@@ -4,6 +4,8 @@
 */
 
 #include "Sort8.hpp"
+#include <emmintrin.h>
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <gtest/gtest.h>
