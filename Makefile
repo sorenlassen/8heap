@@ -38,7 +38,7 @@ Sort8Test.out: Sort8Test.cpp Sort8.hpp v128.h Sort8.o
 minposTest.out: minposTest.cpp v128.h minpos.h
 	g++ -g -std=c++17 -msse4 -lgtest -lgtest_main minposTest.cpp -o minposTest.out
 
-h8.o: h8.c h8.h minpos.h
+h8.o: h8.c h8.h v128.h minpos.h
 	gcc -g -std=c11 -msse4 -O2 -DNDEBUG -c h8.c
 
 Sort8.o: Sort8.cpp Sort8.hpp minpos.h
