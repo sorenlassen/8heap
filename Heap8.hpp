@@ -27,9 +27,6 @@ class Heap8 {
   static size_type children(size_type p) { return (p + 1) * kArity; }
 
   static_assert(sizeof(v128) == kArity * sizeof(value_type));
-  static constexpr v128 v128_max = { {
-    kMax, kMax, kMax, kMax, kMax, kMax, kMax, kMax,
-  } };
 
  public:
   Heap8() : size_(0) { }
@@ -51,7 +48,7 @@ class Heap8 {
                     std::numeric_limits<size_type>::max() / kArity);
       // Smallest new_vectors_size s.t. size <= kArity * new_vectors_size.
       size_type new_vectors_size = (new_size + (kArity - 1)) / kArity;
-      vectors_.resize(new_vectors_size, v128_max);
+      vectors_.resize(new_vectors_size, kV128Max);
     }
     size_ = new_size;
     value_type* array = data();
@@ -63,7 +60,7 @@ class Heap8 {
     value_type* array = data();
     while (begin != end) {
       if (size_ == kArity * vectors_.size()) {
-        vectors_.push_back(v128_max);
+        vectors_.push_back(kV128Max);
         array = data();
       }
       array[size_++] = *begin++;
@@ -150,7 +147,7 @@ class Heap8 {
   }
 
   void push(value_type b) {
-    if (size_ == kArity * vectors_.size()) vectors_.push_back(v128_max);
+    if (size_ == kArity * vectors_.size()) vectors_.push_back(kV128Max);
     size_++;
     pull_up(b, size_ - 1);
   }
@@ -177,7 +174,7 @@ class Heap8 {
   }
 
   void sort() {
-    v128 v = v128_max;
+    v128 v = kV128Max;
     size_type x = size_;
     size_type i = x % kArity;
     x -= i;

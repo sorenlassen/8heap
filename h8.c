@@ -44,9 +44,8 @@ static void* aligned_alloc(size_t alignment, size_t sz) {
 }
 #endif
 
-//// Heap types: ////
+//// Private constants: ////
 
-// 8-ary min heap with value type unsigned 16 bit integers.
 #define VALUE_MAX UINT16_MAX
 #define ALIGN 16 // H8_ARITY * sizeof(h8_value_type)
 
@@ -67,11 +66,6 @@ static_assert(sizeof(v128) == H8_ARITY * sizeof(h8_value_type),
 
 #undef str
 #undef num2str
-
-static const v128 v128_max = { {
-  VALUE_MAX, VALUE_MAX, VALUE_MAX, VALUE_MAX,
-  VALUE_MAX, VALUE_MAX, VALUE_MAX, VALUE_MAX,
-} };
 
 //// Private functions: ////
 
@@ -136,7 +130,7 @@ h8_value_type* h8_heap_extend(h8_heap* h, size_t n) {
       h->capacity = new_capacity;
     }
     // Unnecessary if new_size == padded_new_size but we just do it always.
-    heap_vector_set(h, padded_new_size - H8_ARITY, v128_max);
+    heap_vector_set(h, padded_new_size - H8_ARITY, kV128Max);
   }
   h->size = new_size;
   return h->array + new_size - n;
@@ -247,7 +241,7 @@ h8_value_type h8_heap_pop(h8_heap* h) {
 }
 
 void h8_heap_sort(h8_heap* h) {
-  v128 v = v128_max;
+  v128 v = kV128Max;
   size_t x = h->size;
   size_t i = x % H8_ARITY;
   x -= i;

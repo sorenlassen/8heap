@@ -10,6 +10,11 @@ typedef union {
   __m128i mm;
 } v128;
 
+static const v128 kV128Max = { {
+  UINT16_MAX, UINT16_MAX, UINT16_MAX, UINT16_MAX,
+  UINT16_MAX, UINT16_MAX, UINT16_MAX, UINT16_MAX,
+} };
+
 static inline v128 mm2v128(__m128i mm) {
   v128 v = { .mm = mm };
   return v;
