@@ -88,7 +88,7 @@ static void heap_vector_set(h8_heap* h, size_t p, v128 v) {
 static minpos_type heap_vector_minpos(h8_heap const* h, size_t p) {
   assert(is_aligned(p, H8_ARITY));
   assert(p < h->size);
-  return minpos(((v128 const*)(h->array + p))->mm);
+  return minpos8(h->array + p);
 }
 
 //// Public functions: ////
