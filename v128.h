@@ -10,6 +10,8 @@ typedef union {
   __m128i mm;
 } v128;
 
+static inline v128 mm2v128(__m128i mm) { return { .mm = mm }; }
+
 #ifdef __cplusplus
 inline bool operator==(v128 a, v128 b) {
   for (int i = 0; i < 8; ++i) {
