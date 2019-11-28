@@ -91,9 +91,7 @@ void heapify(uint32_t n, size_t sz, bool ascending) {
 
 template<class Heap>
 void heapsort(uint32_t n, size_t sz, bool ascending) {
-  typedef typename Heap::value_type value_type;
   Heap h;
-  std::vector<value_type> result(sz);
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {
       fill(h, sz, ascending);
@@ -101,11 +99,10 @@ void heapsort(uint32_t n, size_t sz, bool ascending) {
     h.heapify();
     h.sort();
   }
-  doNotOptimizeAway(result[n % sz]);
+  doNotOptimizeAway(h[0]);
 }
 
 void sort(uint32_t n, size_t sz, bool ascending) {
-  typedef typename AppendableVector::value_type value_type;
   AppendableVector result;
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {
@@ -113,7 +110,7 @@ void sort(uint32_t n, size_t sz, bool ascending) {
     }
     std::sort(result.begin(), result.end());
   }
-  doNotOptimizeAway(result[n % sz]);
+  doNotOptimizeAway(result[0]);
 }
 
 void heapify_h8_sorted(uint32_t n, size_t sz) { heapify<H8>(n, sz, true); }
