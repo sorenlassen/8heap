@@ -41,7 +41,7 @@ minposTest.out: minposTest.cpp minpos.h
 h8.o: h8.c h8.h minpos.h
 	gcc -g -std=c11 -msse4 -O2 -DNDEBUG -c h8.c
 
-Sort8.o: Sort8.hpp minpos.h
+Sort8.o: Sort8.cpp Sort8.hpp minpos.h
 	g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -c Sort8.cpp
 
 clean:
