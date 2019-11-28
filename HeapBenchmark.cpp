@@ -9,22 +9,41 @@
 #include "StdMinHeap.hpp"
 #include <cstddef>
 #include <cstdint>
-#include <cstdlib>
 #include <iterator>
 #include <limits>
+#include <random>
 #include <boost/iterator/counting_iterator.hpp>
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <folly/Benchmark.h>
 
-using boost::iterators::counting_iterator;
-using boost::iterators::transform_iterator;
 using namespace folly;
 
 namespace {
 
+template<class value_type, class size_type>
+std::function<value_type(size_type)>
+transform_ascending(size_type sz, value_type lower, value_type upper) {
+  return
+    [lower,
+     mult = (upper - lower + 1.0) / sz]
+    (size_type i) { return lower + boost::numeric_cast<value_type>(i * mult); };
+}
+
+template<class value_type, class size_type>
+std::function<value_type(size_type)>
+transform_random(size_type sz, value_type lower, value_type upper) {
+  return
+    [lower, upper,
+     gen = std::default_random_engine(),
+     distr = std::uniform_int_distribution<uint16_t>(lower, upper)]
+    (size_type i) mutable { return distr(gen); };
+}
+
 template<class CountType, class FunctionType>
 auto iter(CountType n, FunctionType f) -> decltype(auto) {
+  using boost::iterators::counting_iterator;
+  using boost::iterators::transform_iterator;
   return transform_iterator<FunctionType, counting_iterator<CountType>>(n, f);
 }
 
@@ -32,13 +51,11 @@ template<class Appendable>
 void fill(Appendable& out, typename Appendable::size_type sz, bool ascending) {
   typedef typename Appendable::size_type size_type;
   typedef typename Appendable::value_type value_type;
-  typedef std::function<value_type(size_type)> transform_type;
-  value_type max = std::numeric_limits<value_type>::max();
-  double mult = (max + 1.0) / sz;
-  transform_type fAscending = [=](size_type i) { return boost::numeric_cast<value_type>(i * mult); };
-  transform_type fRandom = [=](size_type i) { return static_cast<value_type>(std::rand()); };
-  transform_type f = ascending ? fAscending : fRandom;
-  auto begin = iter(size_type(0), f);
+  constexpr value_type max = std::numeric_limits<uint16_t>::max();
+  auto transform = ascending
+    ? transform_ascending<value_type, size_type>(sz, 0, max)
+    : transform_random<value_type, size_type>(sz, 0, max);
+  auto begin = iter(size_type(0), transform);
   auto end = begin + sz;
   out.clear();
   out.append(begin, end);
