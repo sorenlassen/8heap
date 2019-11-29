@@ -1,7 +1,7 @@
 /*
-   brew install folly
+   brew install folly gflags
    gcc -g -std=c11 -msse4 -O2 -DNDEBUG -c h8.c &&
-   g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark h8.o HeapBenchmark.cpp
+   g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark -lgflags h8.o HeapBenchmark.cpp
 */
 
 #include "H8.hpp"
@@ -16,6 +16,7 @@
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <folly/Benchmark.h>
+#include <gflags/gflags.h>
 
 using namespace folly;
 
@@ -177,6 +178,7 @@ BENCHMARK_RELATIVE_PARAM(heapsort_std_unsorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(sort_unsorted, 10000000)
 
 int main(int argc, char** argv) {
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
   runBenchmarks();
   return 0;
 }

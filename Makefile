@@ -10,13 +10,13 @@ runbenchmarks: buildbenchmarks
 buildbenchmarks: HeapBenchmark.out Sort8Benchmark.out minposBenchmark.out
 
 HeapBenchmark.out: HeapBenchmark.cpp StdMinHeap.hpp Heap8.hpp H8.hpp minpos.h v128.h h8.h h8.o
-	g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark h8.o HeapBenchmark.cpp -o HeapBenchmark.out
+	g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark -lgflags h8.o HeapBenchmark.cpp -o HeapBenchmark.out
 
 Sort8Benchmark.out: Sort8Benchmark.cpp Sort8.hpp Sort8.o
-	g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark Sort8.o Sort8Benchmark.cpp -o Sort8Benchmark.out
+	g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark -lgflags Sort8.o Sort8Benchmark.cpp -o Sort8Benchmark.out
 
 minposBenchmark.out: minposBenchmark.cpp minpos.h
-	g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark minposBenchmark.cpp -o minposBenchmark.out
+	g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark -lgflags minposBenchmark.cpp -o minposBenchmark.out
 
 runtests: buildtests
 	./minposTest.out

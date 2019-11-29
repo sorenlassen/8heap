@@ -1,7 +1,7 @@
 /*
-   brew install folly
+   brew install folly gflags
    g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -c Sort8.cpp &&
-   g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark Sort8.o Sort8Benchmark.cpp
+   g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark -lgflags Sort8.o Sort8Benchmark.cpp
 */
 
 #include "Sort8.hpp"
@@ -12,6 +12,7 @@
 #include <limits>
 #include <random>
 #include <folly/Benchmark.h>
+#include <gflags/gflags.h>
 
 using namespace folly;
 using namespace std;
@@ -22,7 +23,7 @@ constexpr size_t kArity = 8;
 constexpr size_t kCount = 10000;
 __m128i mms[kCount];
 
-void init() {
+void initData() {
   default_random_engine gen;
   uniform_int_distribution<uint16_t> distr(0, numeric_limits<uint16_t>::max());
   uint16_t* vs = reinterpret_cast<uint16_t*>(mms);
@@ -51,7 +52,8 @@ BENCHMARK_RELATIVE(std_sort) {
 }
 
 int main(int argc, char** argv) {
-  init();
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  initData();
   runBenchmarks();
   return 0;
 }
