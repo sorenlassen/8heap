@@ -10,8 +10,6 @@
 #include <new>
 #include <vector>
 
-namespace h8 {
-
 class Heap8 {
  public:
   typedef std::uint16_t value_type;
@@ -213,5 +211,3 @@ class Heap8 {
   vectors_type vectors_;
   size_type size_;
 };
-
-} // namespace h8

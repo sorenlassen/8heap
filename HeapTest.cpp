@@ -24,7 +24,7 @@ class HeapTest : public testing::Test {
   T heap_;
 };
 
-typedef Types<H8, h8::Heap8, StdMinHeap> Implementations;
+typedef Types<H8, Heap8, StdMinHeap> Implementations;
 
 TYPED_TEST_SUITE(HeapTest, Implementations);
 
