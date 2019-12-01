@@ -4,6 +4,7 @@
 */
 
 #include "minpos.h"
+#include "align.h"
 #include <stdalign.h> // no <cstdalign> on mac
 #include <cstdint>
 #include <limits>
@@ -14,14 +15,6 @@
 using namespace folly;
 
 namespace {
-
-#if defined(__clang__) && __clang_major__ < 11
-// C11 aligned_alloc is not available on mac.
-void* aligned_alloc(size_t alignment, size_t sz) {
-  void* ptr = NULL;
-  return 0 == posix_memalign(&ptr, alignment, sz) ? ptr : NULL;
-}
-#endif
 
 constexpr std::size_t kAlign = 64; // cache line
 

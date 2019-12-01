@@ -5,6 +5,7 @@
 #include "h8.h"
 #include "minpos.h"
 #include "v128.h"
+#include "align.h"
 #include <assert.h> // assert, static_assert
 #include <stdalign.h> // alignof
 #include <stdarg.h> // va_list, va_start, va_end
@@ -35,14 +36,6 @@ static size_t align_down(size_t n, size_t alignment) {
 static size_t align_up(size_t n, size_t alignment) {
   return align_down(n + alignment - 1, alignment);
 }
-
-#if defined(__clang__) && __clang_major__ < 11
-// C11 aligned_alloc is not available on mac.
-static void* aligned_alloc(size_t alignment, size_t sz) {
-  void* ptr = NULL;
-  return 0 == posix_memalign(&ptr, alignment, sz) ? ptr : NULL;
-}
-#endif
 
 //// Private constants: ////
 
