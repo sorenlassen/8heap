@@ -17,6 +17,10 @@ typedef struct {
   size_t size;
 } h8_heap;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void h8_heap_init(h8_heap* h);
 
 void h8_heap_clear(h8_heap* h);
@@ -53,3 +57,7 @@ h8_value_type h8_heap_pop(h8_heap* h);
 // Precondition: h8_heap_is_heap(h).
 // Postcondition: h->array[0,h-size) is sorted in descending order.
 void h8_heap_sort(h8_heap* h);
+
+#ifdef __cplusplus
+}
+#endif

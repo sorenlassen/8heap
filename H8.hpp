@@ -1,8 +1,6 @@
 #pragma once
 
-extern "C" {
 #include "h8.h"
-}
 #include <new>
 #include <algorithm>
 #include <iterator>

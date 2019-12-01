@@ -17,9 +17,7 @@
    g++ -g -std=c++14 -msse4 -lgtest -lgtest_main h8.o h8Test.cpp
 */
 
-extern "C" {
 #include "h8.h"
-}
 #include <cstddef>
 #include <limits>
 #include <gtest/gtest.h>
