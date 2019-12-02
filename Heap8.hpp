@@ -2,6 +2,7 @@
 
 #include "minpos.h"
 #include "v128.h"
+#include "align.h"
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -18,8 +19,7 @@ class Heap8 {
  private:
   static constexpr value_type kMax = std::numeric_limits<value_type>::max();
   static constexpr size_type kArity = 8;
-  static constexpr size_type kSizeMax =
-    std::numeric_limits<size_type>::max() - (kArity - 1);
+  static constexpr size_type kSizeMax = align_down(std::numeric_limits<size_type>::max(), kArity);
 
   static size_type parent(size_type q) { return (q / kArity) - 1; }
   static size_type children(size_type p) { return (p + 1) * kArity; }
@@ -45,7 +45,7 @@ class Heap8 {
       static_assert(std::numeric_limits<vectors_type::size_type>::max() >=
                     std::numeric_limits<size_type>::max() / kArity);
       // Smallest new_vectors_size s.t. size <= kArity * new_vectors_size.
-      size_type new_vectors_size = (new_size + (kArity - 1)) / kArity;
+      size_type new_vectors_size = align_up(new_size, kArity) / kArity;
       vectors_.resize(new_vectors_size, kV128Max);
     }
     size_ = new_size;
@@ -96,7 +96,7 @@ class Heap8 {
   void heapify() {
     if (size_ <= kArity) return;
     value_type* array = data();
-    size_t q = (size_ - 1) & ~(kArity - 1); // align_down(size_ - 1, kArity);
+    size_t q = align_down(size_ - 1, kArity);
 
     // The first while loop is an optimization for the bottom level of the heap,
     // inlining the call to heap_push_down which is trivial at the bottom level.
@@ -132,7 +132,7 @@ class Heap8 {
   bool is_heap() const {
     if (size_ <= kArity) return true;
     value_type const* array = data();
-    size_t q = (size_ - 1) & ~(kArity - 1); // align_down(size_ - 1, kArity);
+    size_t q = align_down(size_ - 1, kArity);
     while (q > 0) {
       minpos_type x = minpos(vectors_[q / kArity].mm);
       value_type b = minpos_min(x);

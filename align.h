@@ -10,3 +10,27 @@ static void* aligned_alloc(size_t alignment, size_t sz) {
   return 0 == posix_memalign(&ptr, alignment, sz) ? ptr : NULL;
 }
 #endif
+
+#ifdef __cplusplus
+#define ALIGN_CONSTEXPR constexpr
+#else
+#define ALIGN_CONSTEXPR
+#endif
+
+// Similar to boost/align but for number, not pointer.
+static inline bool ALIGN_CONSTEXPR is_aligned(size_t n, size_t alignment) {
+  return n % alignment == 0;
+}
+
+// Similar to boost/align but for number, not pointer.
+static inline size_t ALIGN_CONSTEXPR align_down(size_t n, size_t alignment) {
+  return n - (n % alignment);
+}
+
+// Similar to boost/align but for number, not pointer.
+static inline size_t ALIGN_CONSTEXPR align_up(size_t n, size_t alignment) {
+  size_t m = n % alignment;
+  return n + (m ? alignment - m : 0);
+}
+
+#undef ALIGN_CONSTEXPR

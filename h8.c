@@ -16,27 +16,6 @@
 #include <stdlib.h> // exit
 #include <string.h> // memcpy
 
-//// Generic helper functions: ////
-
-// Similar to boost/align but for number, not pointer.
-static bool is_aligned(size_t n, size_t alignment) {
-  assert(alignment > 0);
-  assert((alignment & (alignment - 1)) == 0); // is power of 2
-  return (n & (alignment - 1)) == 0;
-}
-
-// Similar to boost/align but for number, not pointer.
-static size_t align_down(size_t n, size_t alignment) {
-  assert(alignment > 0);
-  assert((alignment & (alignment - 1)) == 0); // is power of 2
-  return n & ~(alignment - 1);
-}
-
-// Similar to boost/align but for number, not pointer.
-static size_t align_up(size_t n, size_t alignment) {
-  return align_down(n + alignment - 1, alignment);
-}
-
 //// Private constants: ////
 
 #define VALUE_MAX UINT16_MAX
