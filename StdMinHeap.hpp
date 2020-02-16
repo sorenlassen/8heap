@@ -36,8 +36,37 @@ class StdMinHeap {
   void append(InputIterator begin, InputIterator end) {
     array_.insert(array_.end(), begin, end);
   }
-  void pull_up(value_type b, size_type q) { }
-  void push_down(value_type a, size_type p) { }
+  void pull_up(value_type b, size_type q) {
+    assert(q < size());
+    while (q > 0) {
+      size_t p = parent(q);
+      value_type a = array_[p];
+      if (a <= b) break;
+      array_[q] = a;
+      q = p;
+    }
+    array_[q] = b;
+  }
+  void push_down(value_type a, size_type p) {
+    size_type sz = size();
+    assert(p < sz);
+    while (true) {
+      size_t q = children(p);
+      if (q + 1 > sz) break;
+      value_type b = array_[q];
+      if (q + 1 < sz) {
+        value_type c = array_[q + 1];
+        if (c < b) {
+          q += 1;
+          b = c;
+        }
+      }
+      if (a <= b) break;
+      array_[p] = b;
+      p = q;
+    }
+    array_[p] = a;
+  }
   void heapify() {
     std::make_heap(array_.begin(), array_.end(), std::greater<value_type>());
   }
@@ -71,6 +100,8 @@ class StdMinHeap {
   }
 
  private:
+  static size_type parent(size_type q) { return (q - 1) / 2; }
+  static size_type children(size_type p) { return (p * 2) + 1; }
   [[noreturn]] static void throw_bad_alloc() {
     std::bad_alloc exception;
     throw exception;
