@@ -75,7 +75,11 @@ class StdMinHeap {
   }
   void push(value_type b) {
     array_.push_back(b);
+#ifdef STD_PUSH_HEAP
     std::push_heap(array_.begin(), array_.end(), std::greater<value_type>());
+#else
+    pull_up(b, size() - 1);
+#endif
   }
   value_type top() const {
     assert(size() > 0);
@@ -83,8 +87,16 @@ class StdMinHeap {
   }
   value_type pop() {
     value_type a = top();
+#ifdef STD_POP_HEAP
     std::pop_heap(array_.begin(), array_.end(), std::greater<value_type>());
     array_.pop_back();
+#else
+    value_type b = array_.back();
+    array_.pop_back();
+    if (size() > 0) {
+      push_down(b, 0);
+    }
+#endif
     return a;
   }
   void sort() {
