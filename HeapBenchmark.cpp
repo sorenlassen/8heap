@@ -1,7 +1,11 @@
 /*
    brew install folly gflags
    gcc -g -std=c11 -msse4 -O2 -DNDEBUG -c h8.c &&
-   g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark -lgflags h8.o HeapBenchmark.cpp
+   g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark -lgflags h8.o HeapBenchmark.cpp -o HeapBenchmark.out
+
+   ./HeapBenchmark.out                                         # all
+   ./HeapBenchmark.out --bm_regex push                         # only push
+   ./HeapBenchmark.out --bm_regex std | awk '{print$1,$3,$4}'  # std w/o relative column
 */
 
 #include "H8.hpp"
@@ -55,6 +59,19 @@ auto iter(CountType n, FunctionType f) -> decltype(auto) {
 }
 
 template<class Appendable>
+void push(Appendable& out, typename Appendable::size_type sz, bool ascending) {
+  typedef typename Appendable::size_type size_type;
+  typedef typename Appendable::value_type value_type;
+  auto transform = ascending
+    ? transform_ascending<value_type, size_type>(sz)
+    : transform_random<value_type, size_type>(sz);
+  auto begin = iter(size_type(0), transform);
+  auto end = begin + sz;
+  out.clear();
+  while (begin != end) out.push(*begin++);
+}
+
+template<class Appendable>
 void fill(Appendable& out, typename Appendable::size_type sz, bool ascending) {
   typedef typename Appendable::size_type size_type;
   typedef typename Appendable::value_type value_type;
@@ -67,13 +84,17 @@ void fill(Appendable& out, typename Appendable::size_type sz, bool ascending) {
   out.append(begin, end);
 }
 
-// vector with added append() method
-struct AppendableVector : public std::vector<uint16_t> {
-  template<class InputIterator>
-  void append(InputIterator from, InputIterator to) {
-    insert(end(), from, to);
+template<class Heap>
+void push(uint32_t n, size_t sz, bool ascending) {
+  typedef typename Heap::value_type value_type;
+  Heap h;
+  value_type x = 0;
+  for (int i = 0; i < n; ++i) {
+    push(h, sz, ascending);
+    x ^= h.top();
   }
-};
+  doNotOptimizeAway(x);
+}
 
 template<class Heap>
 void heapify(uint32_t n, size_t sz, bool ascending) {
@@ -103,6 +124,14 @@ void heapsort(uint32_t n, size_t sz, bool ascending) {
   doNotOptimizeAway(h[0]);
 }
 
+// vector with added append() method
+struct AppendableVector : public std::vector<uint16_t> {
+  template<class InputIterator>
+  void append(InputIterator from, InputIterator to) {
+    insert(end(), from, to);
+  }
+};
+
 void sort(uint32_t n, size_t sz, bool ascending) {
   AppendableVector result;
   for (int i = 0; i < n; ++i) {
@@ -113,6 +142,13 @@ void sort(uint32_t n, size_t sz, bool ascending) {
   }
   doNotOptimizeAway(result[0]);
 }
+
+void push_h8_sorted(uint32_t n, size_t sz) { push<H8>(n, sz, true); }
+void push_h8_unsorted(uint32_t n, size_t sz) { push<H8>(n, sz, false); }
+void push_heap8_sorted(uint32_t n, size_t sz) { push<Heap8>(n, sz, true); }
+void push_heap8_unsorted(uint32_t n, size_t sz) { push<Heap8>(n, sz, false); }
+void push_std_sorted(uint32_t n, size_t sz) { push<StdMinHeap>(n, sz, true); }
+void push_std_unsorted(uint32_t n, size_t sz) { push<StdMinHeap>(n, sz, false); }
 
 void heapify_h8_sorted(uint32_t n, size_t sz) { heapify<H8>(n, sz, true); }
 void heapify_h8_unsorted(uint32_t n, size_t sz) { heapify<H8>(n, sz, false); }
@@ -133,6 +169,25 @@ void sort_unsorted(uint32_t n, size_t sz) { sort(n, sz, false); }
 
 } // namespace
 
+BENCHMARK_PARAM(push_h8_sorted, 1000)
+BENCHMARK_RELATIVE_PARAM(push_heap8_sorted, 1000)
+BENCHMARK_RELATIVE_PARAM(push_std_sorted, 1000)
+BENCHMARK_PARAM(push_h8_sorted, 100000)
+BENCHMARK_RELATIVE_PARAM(push_heap8_sorted, 100000)
+BENCHMARK_RELATIVE_PARAM(push_std_sorted, 100000)
+BENCHMARK_PARAM(push_h8_sorted, 10000000)
+BENCHMARK_RELATIVE_PARAM(push_heap8_sorted, 10000000)
+BENCHMARK_RELATIVE_PARAM(push_std_sorted, 10000000)
+BENCHMARK_PARAM(push_h8_unsorted, 1000)
+BENCHMARK_RELATIVE_PARAM(push_heap8_unsorted, 1000)
+BENCHMARK_RELATIVE_PARAM(push_std_unsorted, 1000)
+BENCHMARK_PARAM(push_h8_unsorted, 100000)
+BENCHMARK_RELATIVE_PARAM(push_heap8_unsorted, 100000)
+BENCHMARK_RELATIVE_PARAM(push_std_unsorted, 100000)
+BENCHMARK_PARAM(push_h8_unsorted, 10000000)
+BENCHMARK_RELATIVE_PARAM(push_heap8_unsorted, 10000000)
+BENCHMARK_RELATIVE_PARAM(push_std_unsorted, 10000000)
+BENCHMARK_DRAW_LINE();
 BENCHMARK_PARAM(heapify_h8_sorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapify_heap8_sorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_sorted, 1000)
