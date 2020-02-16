@@ -73,10 +73,9 @@ class StdMinHeap {
   bool is_heap() const {
     return std::is_heap(array_.begin(), array_.end(), std::greater<value_type>());
   }
-  bool push(value_type b) {
+  void push(value_type b) {
     array_.push_back(b);
     std::push_heap(array_.begin(), array_.end(), std::greater<value_type>());
-    return true;
   }
   value_type top() const {
     assert(size() > 0);
