@@ -6,6 +6,7 @@
 
 #include "H8.hpp"
 #include "Heap8.hpp"
+#include "HeapN.hpp"
 #include "StdMinHeap.hpp"
 #include <vector>
 #include <boost/iterator/counting_iterator.hpp>
@@ -24,7 +25,7 @@ class HeapTest : public testing::Test {
   T heap_;
 };
 
-typedef Types<H8, Heap8, StdMinHeap> Implementations;
+typedef Types<H8, Heap8, HeapN<2, std::uint16_t>, StdMinHeap> Implementations;
 
 TYPED_TEST_SUITE(HeapTest, Implementations);
 
