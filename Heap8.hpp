@@ -109,8 +109,8 @@ class Heap8 {
       value_type a = array[p];
       if (b < a) {
         array[p] = b;
-        // The next line inlines heap_push_down(h, a, q + minpos_pos(x))
-        // with the knowledge that children(q) >= h->size.
+        // The next line inlines push_down(a, q + minpos_pos(x))
+        // with the knowledge that children(q) >= size_.
         array[q + minpos_pos(x)] = a;
       }
       q -= kArity;
