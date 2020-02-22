@@ -10,6 +10,7 @@
 
 #include "H8.hpp"
 #include "Heap8.hpp"
+#include "HeapN.hpp"
 #include "StdMinHeap.hpp"
 #include <cstddef>
 #include <cstdint>
@@ -143,10 +144,14 @@ void sort(uint32_t n, size_t sz, bool ascending) {
   doNotOptimizeAway(result[0]);
 }
 
+typedef HeapN<2, std::uint16_t> HeapN2;
+
 void push_h8_sorted(uint32_t n, size_t sz) { push<H8>(n, sz, true); }
 void push_h8_unsorted(uint32_t n, size_t sz) { push<H8>(n, sz, false); }
 void push_heap8_sorted(uint32_t n, size_t sz) { push<Heap8>(n, sz, true); }
 void push_heap8_unsorted(uint32_t n, size_t sz) { push<Heap8>(n, sz, false); }
+void push_heapN2_sorted(uint32_t n, size_t sz) { push<HeapN2>(n, sz, true); }
+void push_heapN2_unsorted(uint32_t n, size_t sz) { push<HeapN2>(n, sz, false); }
 void push_std_sorted(uint32_t n, size_t sz) { push<StdMinHeap>(n, sz, true); }
 void push_std_unsorted(uint32_t n, size_t sz) { push<StdMinHeap>(n, sz, false); }
 
@@ -154,6 +159,8 @@ void heapify_h8_sorted(uint32_t n, size_t sz) { heapify<H8>(n, sz, true); }
 void heapify_h8_unsorted(uint32_t n, size_t sz) { heapify<H8>(n, sz, false); }
 void heapify_heap8_sorted(uint32_t n, size_t sz) { heapify<Heap8>(n, sz, true); }
 void heapify_heap8_unsorted(uint32_t n, size_t sz) { heapify<Heap8>(n, sz, false); }
+void heapify_heapN2_sorted(uint32_t n, size_t sz) { heapify<HeapN2>(n, sz, true); }
+void heapify_heapN2_unsorted(uint32_t n, size_t sz) { heapify<HeapN2>(n, sz, false); }
 void heapify_std_sorted(uint32_t n, size_t sz) { heapify<StdMinHeap>(n, sz, true); }
 void heapify_std_unsorted(uint32_t n, size_t sz) { heapify<StdMinHeap>(n, sz, false); }
 
@@ -161,6 +168,8 @@ void heapsort_h8_sorted(uint32_t n, size_t sz) { heapsort<H8>(n, sz, true); }
 void heapsort_h8_unsorted(uint32_t n, size_t sz) { heapsort<H8>(n, sz, false); }
 void heapsort_heap8_sorted(uint32_t n, size_t sz) { heapsort<Heap8>(n, sz, true); }
 void heapsort_heap8_unsorted(uint32_t n, size_t sz) { heapsort<Heap8>(n, sz, false); }
+void heapsort_heapN2_sorted(uint32_t n, size_t sz) { heapsort<HeapN2>(n, sz, true); }
+void heapsort_heapN2_unsorted(uint32_t n, size_t sz) { heapsort<HeapN2>(n, sz, false); }
 void heapsort_std_sorted(uint32_t n, size_t sz) { heapsort<StdMinHeap>(n, sz, true); }
 void heapsort_std_unsorted(uint32_t n, size_t sz) { heapsort<StdMinHeap>(n, sz, false); }
 
@@ -171,64 +180,82 @@ void sort_unsorted(uint32_t n, size_t sz) { sort(n, sz, false); }
 
 BENCHMARK_PARAM(push_h8_sorted, 1000)
 BENCHMARK_RELATIVE_PARAM(push_heap8_sorted, 1000)
+BENCHMARK_RELATIVE_PARAM(push_heapN2_sorted, 1000)
 BENCHMARK_RELATIVE_PARAM(push_std_sorted, 1000)
 BENCHMARK_PARAM(push_h8_sorted, 100000)
 BENCHMARK_RELATIVE_PARAM(push_heap8_sorted, 100000)
+BENCHMARK_RELATIVE_PARAM(push_heapN2_sorted, 100000)
 BENCHMARK_RELATIVE_PARAM(push_std_sorted, 100000)
 BENCHMARK_PARAM(push_h8_sorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(push_heap8_sorted, 10000000)
+BENCHMARK_RELATIVE_PARAM(push_heapN2_sorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(push_std_sorted, 10000000)
 BENCHMARK_PARAM(push_h8_unsorted, 1000)
 BENCHMARK_RELATIVE_PARAM(push_heap8_unsorted, 1000)
+BENCHMARK_RELATIVE_PARAM(push_heapN2_unsorted, 1000)
 BENCHMARK_RELATIVE_PARAM(push_std_unsorted, 1000)
 BENCHMARK_PARAM(push_h8_unsorted, 100000)
 BENCHMARK_RELATIVE_PARAM(push_heap8_unsorted, 100000)
+BENCHMARK_RELATIVE_PARAM(push_heapN2_unsorted, 100000)
 BENCHMARK_RELATIVE_PARAM(push_std_unsorted, 100000)
 BENCHMARK_PARAM(push_h8_unsorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(push_heap8_unsorted, 10000000)
+BENCHMARK_RELATIVE_PARAM(push_heapN2_unsorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(push_std_unsorted, 10000000)
 BENCHMARK_DRAW_LINE();
 BENCHMARK_PARAM(heapify_h8_sorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapify_heap8_sorted, 1000)
+BENCHMARK_RELATIVE_PARAM(heapify_heapN2_sorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_sorted, 1000)
 BENCHMARK_PARAM(heapify_h8_sorted, 100000)
 BENCHMARK_RELATIVE_PARAM(heapify_heap8_sorted, 100000)
+BENCHMARK_RELATIVE_PARAM(heapify_heapN2_sorted, 100000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_sorted, 100000)
 BENCHMARK_PARAM(heapify_h8_sorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(heapify_heap8_sorted, 10000000)
+BENCHMARK_RELATIVE_PARAM(heapify_heapN2_sorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_sorted, 10000000)
 BENCHMARK_PARAM(heapify_h8_unsorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapify_heap8_unsorted, 1000)
+BENCHMARK_RELATIVE_PARAM(heapify_heapN2_unsorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_unsorted, 1000)
 BENCHMARK_PARAM(heapify_h8_unsorted, 100000)
 BENCHMARK_RELATIVE_PARAM(heapify_heap8_unsorted, 100000)
+BENCHMARK_RELATIVE_PARAM(heapify_heapN2_unsorted, 100000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_unsorted, 100000)
 BENCHMARK_PARAM(heapify_h8_unsorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(heapify_heap8_unsorted, 10000000)
+BENCHMARK_RELATIVE_PARAM(heapify_heapN2_unsorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(heapify_std_unsorted, 10000000)
 BENCHMARK_DRAW_LINE();
 BENCHMARK_PARAM(heapsort_h8_sorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapsort_heap8_sorted, 1000)
+BENCHMARK_RELATIVE_PARAM(heapsort_heapN2_sorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapsort_std_sorted, 1000)
 BENCHMARK_RELATIVE_PARAM(sort_sorted, 1000)
 BENCHMARK_PARAM(heapsort_h8_sorted, 100000)
 BENCHMARK_RELATIVE_PARAM(heapsort_heap8_sorted, 100000)
+BENCHMARK_RELATIVE_PARAM(heapsort_heapN2_sorted, 100000)
 BENCHMARK_RELATIVE_PARAM(heapsort_std_sorted, 100000)
 BENCHMARK_RELATIVE_PARAM(sort_sorted, 100000)
 BENCHMARK_PARAM(heapsort_h8_sorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(heapsort_heap8_sorted, 10000000)
+BENCHMARK_RELATIVE_PARAM(heapsort_heapN2_sorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(heapsort_std_sorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(sort_sorted, 10000000)
 BENCHMARK_PARAM(heapsort_h8_unsorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapsort_heap8_unsorted, 1000)
+BENCHMARK_RELATIVE_PARAM(heapsort_heapN2_unsorted, 1000)
 BENCHMARK_RELATIVE_PARAM(heapsort_std_unsorted, 1000)
 BENCHMARK_RELATIVE_PARAM(sort_unsorted, 1000)
 BENCHMARK_PARAM(heapsort_h8_unsorted, 100000)
 BENCHMARK_RELATIVE_PARAM(heapsort_heap8_unsorted, 100000)
+BENCHMARK_RELATIVE_PARAM(heapsort_heapN2_unsorted, 100000)
 BENCHMARK_RELATIVE_PARAM(heapsort_std_unsorted, 100000)
 BENCHMARK_RELATIVE_PARAM(sort_unsorted, 100000)
 BENCHMARK_PARAM(heapsort_h8_unsorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(heapsort_heap8_unsorted, 10000000)
+BENCHMARK_RELATIVE_PARAM(heapsort_heapN2_unsorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(heapsort_std_unsorted, 10000000)
 BENCHMARK_RELATIVE_PARAM(sort_unsorted, 10000000)
 
