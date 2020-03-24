@@ -5,7 +5,7 @@ os: linux
 
 matrix:
   include:
-    - env: COMPILER=g++-6 BUILD=Debug STANDARD=14
+    - env: COMPILER=g++-6 BUILD=Debug STANDARD=17
       compiler: gcc
       addons:
         apt:
@@ -16,7 +16,7 @@ matrix:
           packages:
             - g++-6
             - boost1.67
-    - env: COMPILER=g++-6 BUILD=Release STANDARD=14
+    - env: COMPILER=g++-6 BUILD=Release STANDARD=17
       compiler: gcc
       addons:
         apt:
