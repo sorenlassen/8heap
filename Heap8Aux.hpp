@@ -61,7 +61,7 @@ template<class S> class Heap8Aux {
   }
 
   template<class InputIterator>
-  void append(InputIterator begin, InputIterator end) {
+  void append_entries(InputIterator begin, InputIterator end) {
     value_type* array = data();
     while (begin != end) {
       if (size_ == kArity * vectors_.size()) {
