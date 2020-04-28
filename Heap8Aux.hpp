@@ -44,6 +44,10 @@ template<class S> class Heap8Aux {
     return shadow_[index];
   }
 
+  entry_type entry(size_type index) const {
+    return std::make_pair(data()[index], shadow_[index]);
+  }
+
   value_type* extend(size_type n) {
     if (n > kSizeMax - size_) throw_bad_alloc();
     size_type new_size = size_ + n;
