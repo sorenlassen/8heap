@@ -8,7 +8,6 @@
 #include "Heap8.hpp"
 #include "Heap8Aux.hpp"
 #include "StdMinHeap.hpp"
-#include <utility>
 #include <vector>
 #include <boost/iterator/counting_iterator.hpp>
 #include <boost/iterator/transform_iterator.hpp>
@@ -23,16 +22,16 @@ using testing::Types;
 typedef Heap8Aux<int> Aux;
 
 template <class T>
-class HeapAux : public testing::Test {
+class HeapAuxTest : public testing::Test {
  protected:
   T heap_;
 };
 
 typedef Types<Aux> Implementations;
 
-TYPED_TEST_SUITE(HeapAux, Implementations);
+TYPED_TEST_SUITE(HeapAuxTest, Implementations);
 
-TYPED_TEST(HeapAux, Clear) {
+TYPED_TEST(HeapAuxTest, Clear) {
   EXPECT_EQ(0, this->heap_.size());
   this->heap_.push_entry(1, 100);
   EXPECT_EQ(1, this->heap_.size());
@@ -40,11 +39,11 @@ TYPED_TEST(HeapAux, Clear) {
   EXPECT_EQ(0, this->heap_.size());
 }
 
-TYPED_TEST(HeapAux, Push3) {
+TYPED_TEST(HeapAuxTest, Push3) {
   EXPECT_TRUE(this->heap_.is_heap());
   this->heap_.push_entry(2, 200);
   EXPECT_EQ(1, this->heap_.size());
-  std::pair<uint32_t, int> ht = this->heap_.top_entry();
+  auto ht = this->heap_.top_entry();
   EXPECT_EQ(2, ht.first);
   EXPECT_EQ(200, ht.second);
   EXPECT_TRUE(this->heap_.is_heap());
@@ -62,79 +61,53 @@ TYPED_TEST(HeapAux, Push3) {
   EXPECT_TRUE(this->heap_.is_heap());
 }
 
-
-/*
-TEST(Heap8Aux, Clear) {
-  Heap8Aux<int> heap_ = Heap8Aux<int>();
-  EXPECT_EQ(0, heap_.size());
-  heap_.push_entry(1, 32);
-  EXPECT_EQ(1, heap_.size());
-  heap_.clear();
-  EXPECT_EQ(0, heap_.size());
-}
-
-TYPED_TEST(Heap8Aux, Push3) {
-  Heap8Aux<int> heap_ = Heap8Aux<int>();
-  EXPECT_TRUE(heap_.is_heap());
-  heap_.push(2, 200);
-  EXPECT_EQ(1, heap_.size());
-
-  EXPECT_EQ(2, this->heap_.top_entry());
-  EXPECT_TRUE(this->heap_.is_heap());
-  this->heap_.push(1);
-  EXPECT_EQ(2, this->heap_.size());
-  EXPECT_EQ(1, this->heap_.top_entry());
-  EXPECT_TRUE(this->heap_.is_heap());
-  this->heap_.push(3);
-  EXPECT_EQ(3, this->heap_.size());
-  EXPECT_EQ(1, this->heap_.top_entry());
-  EXPECT_TRUE(this->heap_.is_heap());
-}
-
-*/
-/*
-TYPED_TEST(HeapTest, Heapify3) {
-  typedef typename TypeParam::value_type value_type;
-  std::vector<value_type> values{2, 1, 3};
-  this->heap_.append(values.begin(), values.end());
-  EXPECT_EQ(values.size(), this->heap_.size());
+TYPED_TEST(HeapAuxTest, Heapify3) {
+  typedef typename TypeParam::entry_type entry_type;
+  entry_type p1(1, 41), p2(2, 42), p3(3, 43);
+  std::vector<entry_type> entries{p2, p1, p3};
+  this->heap_.append_entries(entries.begin(), entries.end());
+  EXPECT_EQ(entries.size(), this->heap_.size());
   this->heap_.heapify();
   EXPECT_TRUE(this->heap_.is_heap());
-  EXPECT_EQ(1, this->heap_.pop());
-  EXPECT_EQ(2, this->heap_.pop());
-  EXPECT_EQ(3, this->heap_.pop());
+  EXPECT_EQ(p1, this->heap_.pop_entry());
+  EXPECT_EQ(p2, this->heap_.pop_entry());
+  EXPECT_EQ(p3, this->heap_.pop_entry());
 }
 
-TYPED_TEST(HeapTest, Sort3) {
-  typedef typename TypeParam::value_type value_type;
-  std::vector<value_type> values{2, 1, 3};
-  this->heap_.append(values.begin(), values.end());
+TYPED_TEST(HeapAuxTest, Sort3) {
+  typedef typename TypeParam::entry_type entry_type;
+  entry_type p1(1, 41), p2(2, 42), p3(3, 43);
+  std::vector<entry_type> entries{p2, p1, p3};
+  this->heap_.append_entries(entries.begin(), entries.end());
   this->heap_.heapify();
   this->heap_.sort();
   EXPECT_EQ(0, this->heap_.size());
-  EXPECT_EQ(3, this->heap_[0]);
-  EXPECT_EQ(2, this->heap_[1]);
-  EXPECT_EQ(1, this->heap_[2]);
-  EXPECT_TRUE(this->heap_.is_sorted(values.size()));
+  EXPECT_EQ(p3, this->heap_.entry(0));
+  EXPECT_EQ(p2, this->heap_.entry(1));
+  EXPECT_EQ(p1, this->heap_.entry(2));
+  EXPECT_TRUE(this->heap_.is_sorted(entries.size()));
 }
 
-TYPED_TEST(HeapTest, Heapify100) {
+TYPED_TEST(HeapAuxTest, Heapify100) {
   typedef typename TypeParam::value_type value_type;
+  typedef typename TypeParam::entry_type entry_type;
   value_type const count = 100;
   counting_iterator<value_type> zero(0);
-  auto revert = [=](value_type i) { return count - 1 - i; };
+  auto revert = [=](value_type i) {
+    value_type j = count - 1 - i;
+    return entry_type(j, 40 + j);
+  };
   auto begin = transform_iterator(zero, revert);
-  this->heap_.append(begin, begin + count);
+  this->heap_.append_entries(begin, begin + count);
   EXPECT_EQ(count, this->heap_.size());
-  // 8 is the arity of H8 and Heap8 (dirty implementation detail, oh well)
-  EXPECT_LE(count - 8, this->heap_.top_entry());
+  // 8 is the arity of Heap8Aux (dirty implementation detail, oh well)
+  EXPECT_LE(count - 8, this->heap_.top_entry().first);
   this->heap_.heapify();
   EXPECT_TRUE(this->heap_.is_heap());
-  EXPECT_EQ(0, this->heap_.top_entry());
+  EXPECT_EQ(entry_type(0, 40), this->heap_.top_entry());
   for (value_type i = 0; i < count; ++i) {
-    EXPECT_EQ(i, this->heap_.pop());
+    EXPECT_EQ(entry_type(i, i + 40), this->heap_.pop_entry());
   }
 }
-*/
 
 } // namespace
