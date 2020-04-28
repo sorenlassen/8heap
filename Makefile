@@ -27,8 +27,8 @@ runtests: buildtests
 
 buildtests: HeapTest.out h8Test.out Sort8Test.out minposTest.out HeapTest.out HeapAuxTest.out
 
-HeapAuxTest.out: HeapAuxTest.cpp Heap8Aux.hpp H8.hpp minpos.h v128.h align.h h8.h h8.o
-	g++ -g -std=c++17 -msse4 -lgtest -lgtest_main h8.o HeapAuxTest.cpp -o HeapAuxTest.out
+HeapAuxTest.out: HeapAuxTest.cpp Heap8Aux.hpp minpos.h v128.h align.h
+	g++ -g -std=c++17 -msse4 -lgtest -lgtest_main HeapAuxTest.cpp -o HeapAuxTest.out
 
 HeapTest.out: HeapTest.cpp StdMinHeap.hpp Heap8.hpp Heap8Aux.hpp H8.hpp minpos.h v128.h align.h h8.h h8.o
 	g++ -g -std=c++17 -msse4 -lgtest -lgtest_main h8.o HeapTest.cpp -o HeapTest.out

@@ -1,7 +1,7 @@
 /*
    # first install gtest as described in h8Test.cpp
-   gcc -g -std=c11 -msse4 -c h8.c &&
-   g++ -g -std=c++17 -msse4 -lgtest -lgtest_main h8.o HeapTest.cpp
+   g++ -g -std=c++17 -msse4 -lgtest -lgtest_main HeapAuxTest.cpp
+   ./a.out
 */
 
 #include "H8.hpp"
@@ -65,7 +65,7 @@ TYPED_TEST(HeapAux, Push3) {
 
 /*
 TEST(Heap8Aux, Clear) {
-  Heap8Aux<int> heap_ = Heap8Aux<int>(); 
+  Heap8Aux<int> heap_ = Heap8Aux<int>();
   EXPECT_EQ(0, heap_.size());
   heap_.push_entry(1, 32);
   EXPECT_EQ(1, heap_.size());
@@ -74,11 +74,11 @@ TEST(Heap8Aux, Clear) {
 }
 
 TYPED_TEST(Heap8Aux, Push3) {
-  Heap8Aux<int> heap_ = Heap8Aux<int>(); 
+  Heap8Aux<int> heap_ = Heap8Aux<int>();
   EXPECT_TRUE(heap_.is_heap());
   heap_.push(2, 200);
   EXPECT_EQ(1, heap_.size());
-  
+
   EXPECT_EQ(2, this->heap_.top_entry());
   EXPECT_TRUE(this->heap_.is_heap());
   this->heap_.push(1);
