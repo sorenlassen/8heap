@@ -22,9 +22,6 @@ before_install:
  - sudo cp -a include/gtest /usr/include
  - sudo cp -a libgtest_main.so libgtest.so /usr/lib/
  - which valgrind
- - tar -xzf boost_1_64_0.tar.gz
- - ./b2 -d0
- - ./b2 install -d0
  - cd "${TRAVIS_BUILD_DIR}"
  - g++ --version
  - g++-9 --version
