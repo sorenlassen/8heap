@@ -25,4 +25,5 @@ before_install:
  - cd "${TRAVIS_BUILD_DIR}"
 
 script:
+ - g++ --version
  - make runtests
