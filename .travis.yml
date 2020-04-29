@@ -13,6 +13,9 @@ matrix:
 
 before_install:
  - sudo apt-get -qq update
+ - sudo apt-get install -qq g++-6
+ - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
+
  - sudo apt-get install -y libgtest-dev valgrind cmake
  - sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
  - sudo tar xf release-1.7.0.tar.gz
@@ -24,12 +27,7 @@ before_install:
  - which valgrind
  - cd "${TRAVIS_BUILD_DIR}"
  - g++ --version
- - g++-9 --version
- - alias g++="g++-9"
- - g++ --version
 
 script:
- - g++ --version
- - g++-9 --version
  - g++ --version
  - make runtests
