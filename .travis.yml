@@ -26,4 +26,7 @@ before_install:
 
 script:
  - g++ --version
+ - g++-9 --version
+ - alias g++="g++-9"
+ - g++ --version
  - make runtests
