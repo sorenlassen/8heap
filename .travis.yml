@@ -33,5 +33,8 @@ before_install:
  - g++ --version
 
 script:
- - g++ --version
- - make runtests
+ - mkdir build
+ - cd build
+ - cmake ..
+ - make HeapAuxTest
+ - ./HeapAuxTest
