@@ -9,7 +9,9 @@ matrix:
     addons:
       apt:
         sources: ['ubuntu-toolchain-r-test']
-        packages: [g++-9, valgrind, boost1.71]
+        packages: 
+        - g++-9
+        - boost1.67
 
 before_install:
  - sudo apt-get -qq update
@@ -25,10 +27,7 @@ before_install:
  - sudo make
  - sudo cp -a include/gtest /usr/include
  - sudo cp -a libgtest_main.so libgtest.so /usr/lib/
-
- - sudo apt-get install libboost-all-dev
-
- - which valgrind
+#- sudo apt-get install libboost-all-dev
  - cd "${TRAVIS_BUILD_DIR}"
  - g++ --version
 
