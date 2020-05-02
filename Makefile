@@ -18,7 +18,7 @@ Sort8Benchmark.out: Sort8Benchmark.cpp Sort8.hpp Sort8.o
 	$(CC) -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark -lgflags Sort8.o Sort8Benchmark.cpp -o Sort8Benchmark.out
 
 minposBenchmark.out: minposBenchmark.cpp minpos.h
-	$(CC) -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark -lgflags minposBenchmark.cpp -o minposBenchmark.out
+	$(CC) -g -std=c++17 -msse4 -O2 -DNDEBUG -lbenchmark minposBenchmark.cpp -o minposBenchmark.out
 
 runtests: buildtests
 	./minposTest.out
