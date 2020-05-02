@@ -1,18 +1,14 @@
 /*
-   brew install folly gflags
-   g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lfollybenchmark -lgflags minposBenchmark.cpp
+   brew install google-benchmark
+   g++ -g -std=c++17 -msse4 -O2 -DNDEBUG -lbenchmark minposBenchmark.cpp
 */
 
 #include "minpos.h"
 #include "align.h"
-#include <stdalign.h> // no <cstdalign> on mac
 #include <cstdint>
 #include <limits>
 #include <random>
-#include <folly/Benchmark.h>
-#include <gflags/gflags.h>
-
-using namespace folly;
+#include <benchmark/benchmark.h>
 
 namespace {
 
@@ -29,54 +25,29 @@ void initData(std::size_t sz) {
 
 constexpr std::size_t kLineLen = kAlign / sizeof(uint16_t);
 
-void bm_minpos8(uint32_t n, std::size_t sz) {
-  minpos_type x = 0;
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j + kLineLen <= sz; j += kLineLen) {
-      x ^= minpos8(vs + j);
+template<class F>
+void bm_minpos(benchmark::State& state, F fn) {
+  for(auto _ : state) {
+    minpos_type x = 0;
+    for (int j = 0; j + kLineLen <= state.range(0); j += kLineLen) {
+      x ^= fn(vs + j);
     }
+    benchmark::DoNotOptimize(x);
   }
-  doNotOptimizeAway(x);
-}
-
-void bm_minpos16(uint32_t n, std::size_t sz) {
-  minpos_type x = 0;
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j + kLineLen <= sz; j += kLineLen) {
-      x ^= minpos16(vs + j);
-    }
-  }
-  doNotOptimizeAway(x);
-}
-
-void bm_minpos32(uint32_t n, std::size_t sz) {
-  minpos_type x = 0;
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j + kLineLen <= sz; j += kLineLen) {
-      x ^= minpos32(vs + j);
-    }
-  }
-  doNotOptimizeAway(x);
 }
 
 } // namespace
 
-BENCHMARK_PARAM         (bm_minpos8,  32000);
-BENCHMARK_RELATIVE_PARAM(bm_minpos16, 32000);
-BENCHMARK_RELATIVE_PARAM(bm_minpos32, 32000);
-BENCHMARK_DRAW_LINE();
-BENCHMARK_PARAM         (bm_minpos8 , 3200000);
-BENCHMARK_RELATIVE_PARAM(bm_minpos16, 3200000);
-BENCHMARK_RELATIVE_PARAM(bm_minpos32, 3200000);
-BENCHMARK_DRAW_LINE();
-BENCHMARK_PARAM         (bm_minpos8 , 320000000);
-BENCHMARK_RELATIVE_PARAM(bm_minpos16, 320000000);
-BENCHMARK_RELATIVE_PARAM(bm_minpos32, 320000000);
 constexpr std::size_t kLargestParam = 320000000;
+static void Arguments(benchmark::internal::Benchmark* b) {
+  b->Arg(32000)->Arg(3200000)->Arg(320000000);
+}
+BENCHMARK_CAPTURE(bm_minpos,  8, minpos8 )->Apply(Arguments);
+BENCHMARK_CAPTURE(bm_minpos, 16, minpos16)->Apply(Arguments);
+BENCHMARK_CAPTURE(bm_minpos, 32, minpos32)->Apply(Arguments);
 
 int main(int argc, char** argv) {
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
   initData(kLargestParam);
-  runBenchmarks();
-  return 0;
+  benchmark::Initialize(&argc, argv);
+  benchmark::RunSpecifiedBenchmarks();
 }
