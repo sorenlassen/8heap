@@ -62,7 +62,8 @@ template<class S> class Heap8Embed {
   entry_type entry(size_type index) const {
     node const* n = nod(index);
     size_type i = index % kArity;
-    return std::make_pair(n->values.values[i], n->shadows[i]);
+    auto a = n->values.values[i];
+    return std::make_pair(a, n->shadows[i]);
   }
 
   void extend(size_type n) {
