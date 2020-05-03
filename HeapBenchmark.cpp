@@ -147,22 +147,22 @@ void push_h8_sorted(uint32_t n, size_t sz) { push<H8>(n, sz, true); }
 void push_h8_unsorted(uint32_t n, size_t sz) { push<H8>(n, sz, false); }
 void push_heap8_sorted(uint32_t n, size_t sz) { push<Heap8>(n, sz, true); }
 void push_heap8_unsorted(uint32_t n, size_t sz) { push<Heap8>(n, sz, false); }
-void push_std_sorted(uint32_t n, size_t sz) { push<StdMinHeap>(n, sz, true); }
-void push_std_unsorted(uint32_t n, size_t sz) { push<StdMinHeap>(n, sz, false); }
+void push_std_sorted(uint32_t n, size_t sz) { push<StdMinHeap<>>(n, sz, true); }
+void push_std_unsorted(uint32_t n, size_t sz) { push<StdMinHeap<>>(n, sz, false); }
 
 void heapify_h8_sorted(uint32_t n, size_t sz) { heapify<H8>(n, sz, true); }
 void heapify_h8_unsorted(uint32_t n, size_t sz) { heapify<H8>(n, sz, false); }
 void heapify_heap8_sorted(uint32_t n, size_t sz) { heapify<Heap8>(n, sz, true); }
 void heapify_heap8_unsorted(uint32_t n, size_t sz) { heapify<Heap8>(n, sz, false); }
-void heapify_std_sorted(uint32_t n, size_t sz) { heapify<StdMinHeap>(n, sz, true); }
-void heapify_std_unsorted(uint32_t n, size_t sz) { heapify<StdMinHeap>(n, sz, false); }
+void heapify_std_sorted(uint32_t n, size_t sz) { heapify<StdMinHeap<>>(n, sz, true); }
+void heapify_std_unsorted(uint32_t n, size_t sz) { heapify<StdMinHeap<>>(n, sz, false); }
 
 void heapsort_h8_sorted(uint32_t n, size_t sz) { heapsort<H8>(n, sz, true); }
 void heapsort_h8_unsorted(uint32_t n, size_t sz) { heapsort<H8>(n, sz, false); }
 void heapsort_heap8_sorted(uint32_t n, size_t sz) { heapsort<Heap8>(n, sz, true); }
 void heapsort_heap8_unsorted(uint32_t n, size_t sz) { heapsort<Heap8>(n, sz, false); }
-void heapsort_std_sorted(uint32_t n, size_t sz) { heapsort<StdMinHeap>(n, sz, true); }
-void heapsort_std_unsorted(uint32_t n, size_t sz) { heapsort<StdMinHeap>(n, sz, false); }
+void heapsort_std_sorted(uint32_t n, size_t sz) { heapsort<StdMinHeap<>>(n, sz, true); }
+void heapsort_std_unsorted(uint32_t n, size_t sz) { heapsort<StdMinHeap<>>(n, sz, false); }
 
 void sort_sorted(uint32_t n, size_t sz) { sort(n, sz, true); }
 void sort_unsorted(uint32_t n, size_t sz) { sort(n, sz, false); }

@@ -39,7 +39,7 @@ class Heap8AuxDummy : public Heap8Aux<int> {
   value_type pop() { return pop_entry().first; }
 };
 
-typedef Types<H8, Heap8, Heap8AuxDummy, StdMinHeap> Implementations;
+typedef Types<H8, Heap8, Heap8AuxDummy, StdMinHeap<>> Implementations;
 
 TYPED_TEST_SUITE(HeapTest, Implementations);
 
