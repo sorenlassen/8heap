@@ -132,8 +132,8 @@ template<class S> class Heap8Aux {
         shadow_type s = shadow_[p];
         shadow_[p] = shadow_[q_new];
         array[p] = b;
-        // The next line inlines push_down(a, q + minpos_pos(x))
-        // with the knowledge that children(q) >= size_.
+        // The next line inlines push_down(a, s, q_new)
+        // with the knowledge that children(q_new) >= size_.
         array[q_new] = a;
         shadow_[q_new] = s;
       }
@@ -177,8 +177,8 @@ template<class S> class Heap8Aux {
 
   void push_entry(value_type b, shadow_type t) {
     if (size_ == kArity * vectors_.size()) vectors_.push_back(kV128Max);
-    shadow_.push_back(t);
     size_++;
+    shadow_.push_back(t); // to grow shadow_; pull_up overwrites the value
     pull_up(b, t, size_ - 1);
   }
 
@@ -202,6 +202,7 @@ template<class S> class Heap8Aux {
       shadow_type s = shadow_[size_];
       push_down(a, s, q);
     }
+    shadow_.pop_back();
     return std::make_pair(b, t);
   }
 
