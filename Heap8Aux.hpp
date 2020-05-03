@@ -15,8 +15,9 @@
 template<class S> class Heap8Aux {
  public:
   typedef std::uint16_t value_type;
-  typedef std::size_t size_type;
+  typedef S shadow_type;
   typedef std::pair<value_type, S> entry_type;
+  typedef std::size_t size_type;
 
  private:
   static constexpr value_type kMax = std::numeric_limits<value_type>::max();
@@ -79,7 +80,7 @@ template<class S> class Heap8Aux {
     }
   }
 
-  void pull_up(value_type b, S t, size_type q) {
+  void pull_up(value_type b, shadow_type t, size_type q) {
     assert(q < size_);
     value_type* array = data();
     while (q >= kArity) {
@@ -94,7 +95,7 @@ template<class S> class Heap8Aux {
     shadow_[q] = t;
   }
 
-  void push_down(value_type a, S s, size_type p) {
+  void push_down(value_type a, shadow_type s, size_type p) {
     assert(p < size_);
     value_type* array = data();
     while (true) {
@@ -128,13 +129,13 @@ template<class S> class Heap8Aux {
       value_type a = array[p];
       if (b < a) {
         size_t q_new = q + minpos_pos(x);
-        S s = shadow_[p];
-	shadow_[p] = shadow_[q_new];
+        shadow_type s = shadow_[p];
+        shadow_[p] = shadow_[q_new];
         array[p] = b;
         // The next line inlines push_down(a, q + minpos_pos(x))
         // with the knowledge that children(q) >= size_.
         array[q_new] = a;
-	shadow_[q_new] = s;
+        shadow_[q_new] = s;
       }
       q -= kArity;
     }
@@ -146,8 +147,8 @@ template<class S> class Heap8Aux {
       value_type a = array[p];
       if (b < a) {
         size_t q_new = q + minpos_pos(x);
-        S s = shadow_[p];
-	shadow_[p] = shadow_[q_new];
+        shadow_type s = shadow_[p];
+        shadow_[p] = shadow_[q_new];
         array[p] = b;
         push_down(a, s, q_new);
       }
@@ -170,7 +171,11 @@ template<class S> class Heap8Aux {
     return true;
   }
 
-  void push_entry(value_type b, S t) {
+  void push_entry(entry_type e) {
+    push_entry(e.first, e.second);
+  }
+
+  void push_entry(value_type b, shadow_type t) {
     if (size_ == kArity * vectors_.size()) vectors_.push_back(kV128Max);
     shadow_.push_back(t);
     size_++;
@@ -188,13 +193,13 @@ template<class S> class Heap8Aux {
     minpos_type x = minpos(vectors_[0].mm);
     value_type b = minpos_min(x);
     size_type q = minpos_pos(x);
-    S t = shadow_[q];
+    shadow_type t = shadow_[q];
     value_type* array = data();
     value_type a = array[size_ - 1];
     array[size_ - 1] = kMax;
     size_--;
     if (q != size_) {
-      S s = shadow_[size_];
+      shadow_type s = shadow_[size_];
       push_down(a, s, q);
     }
     return std::make_pair(b, t);
@@ -215,9 +220,9 @@ template<class S> class Heap8Aux {
     while (x > 0) {
       x -= kArity;
       for (size_type j = kArity; j > 0; --j) {
-	entry_type e = pop_entry();
+        entry_type e = pop_entry();
         v.values[j - 1] = e.first;
-	shadow_[x + j - 1] = e.second;
+        shadow_[x + j - 1] = e.second;
       }
       vectors_[x / kArity] = v;
     }
