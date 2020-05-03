@@ -234,32 +234,41 @@ template<class S> class Heap8Embed {
   }
 
   void sort() {
-    /*
-    v128 v = kV128Max;
+    v128 values = kV128Max;
     size_type x = size_;
     size_type i = x % kArity;
     x -= i;
-    while (i > 0) {
-      --i;
-      entry_type e = pop_entry();
-      v.values[i] = e.first;
-      shadow_[x + i] = e.second;
+    if (i != 0) {
+      node* n = nod(x);
+      do {
+        --i;
+        entry_type e = pop_entry();
+        values.values[i] = e.first;
+        n->shadows[i] = e.second;
+      } while (i > 0);
+      n->values = values;
     }
-    nodes_[x / kArity] = v;
     while (x > 0) {
       x -= kArity;
+      node* n = nod(x);
       for (size_type j = kArity; j > 0; --j) {
         entry_type e = pop_entry();
-        v.values[j - 1] = e.first;
-        shadow_[x + j - 1] = e.second;
+        values.values[j - 1] = e.first;
+        n->shadows[j - 1] = e.second;
       }
-      nodes_[x / kArity] = v;
+      n->values = values;
     }
-    */
   }
 
   bool is_sorted(size_type sz) const {
-    return true; // std::is_sorted(data(), data() + sz, std::greater<value_type>());
+    if (sz == 0) return true;
+    value_type v = this->operator[](0);
+    for (size_type p = 1; p < sz; ++p) {
+      value_type w = this->operator[](p);
+      if (v < w) return false;
+      v = w;
+    }
+    return true;
   }
 
   void clear() {
