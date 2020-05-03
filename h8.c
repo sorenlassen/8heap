@@ -217,11 +217,13 @@ void h8_heap_sort(h8_heap* h) {
   size_t x = h->size;
   size_t i = x % H8_ARITY;
   x -= i;
-  while (i > 0) {
-    --i;
-    v.values[i] = h8_heap_pop(h);
+  if (i != 0) {
+    do {
+      --i;
+      v.values[i] = h8_heap_pop(h);
+    } while (i > 0);
+    heap_vector_set(h, x, v);
   }
-  heap_vector_set(h, x, v);
   while (x > 0) {
     x -= H8_ARITY;
     for (size_t j = H8_ARITY; j > 0; --j) {
