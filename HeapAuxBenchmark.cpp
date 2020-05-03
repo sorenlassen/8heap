@@ -30,13 +30,6 @@ template<class value_type>
 std::uniform_int_distribution<value_type> Random<value_type>::distr(
   std::numeric_limits<value_type>::min(),
   std::numeric_limits<value_type>::max());
-/*template<class value_type, class size_type>
-std::function<value_type(size_type)>
-transform_ascending(size_type sz) {
-  const double mult = (std::numeric_limits<value_type>::max() + 1.0) / sz;
-  return [mult](size_type i) { return boost::numeric_cast<value_type>(i * mult); };
-}
-*/
 
 template<class value_type, class aux_type, class size_type>
 std::function<std::pair<value_type, aux_type>(size_type)>
@@ -44,17 +37,18 @@ transform_ascending_pair(size_type sz) {
   const double mult1 = (std::numeric_limits<value_type>::max() + 1.0) / sz;
   const double mult2 = (std::numeric_limits<aux_type>::max() + 1.0) / sz;
   return [mult1, mult2](size_type i) { 
-	  return std::make_pair(boost::numeric_cast<value_type>(i * mult1), 
-			        boost::numeric_cast<aux_type>(i * mult2));
-        };
+    return std::make_pair(boost::numeric_cast<value_type>(i * mult1), 
+                          boost::numeric_cast<aux_type>(i * mult2));
+  };
 }
 
 template<class value_type, class aux_type, class size_type>
 std::function<std::pair<value_type, aux_type>(size_type)>
 transform_random_pair(size_type sz) {
   return [](size_type i) { 
-  	return std::make_pair(Random<value_type>::distr(gen),
-		              Random<aux_type>::distr(gen)); };
+    return std::make_pair(Random<value_type>::distr(gen),
+                          Random<aux_type>::distr(gen)); 
+  };
 }
 
 template<class CountType, class FunctionType>
@@ -76,8 +70,6 @@ void push(Appendable& out, typename Appendable::size_type sz, bool ascending) {
   out.clear();
   while (begin != end) out.push_entry(*begin++);
 }
-
-
 
 template<class Appendable>
 void fill(Appendable& out, typename Appendable::size_type sz, bool ascending) {
