@@ -1,4 +1,5 @@
 #include "Heap8Aux.hpp"
+#include "Heap8Embed.hpp"
 #include <utility>
 #include <cstddef>
 #include <cstdint>
@@ -14,9 +15,25 @@
 
 using namespace folly;
 
-typedef Heap8Aux<uint32_t> Aux;
 
 namespace {
+
+struct ShadowArray {
+  ShadowArray(uint16_t i) : shadow{i, i, i} {}
+  std::array<uint16_t, 3> shadow;
+  bool operator==(ShadowArray const& other) const {
+    return shadow[0] == other.shadow[0]
+        && shadow[1] == other.shadow[1]
+        && shadow[2] == other.shadow[2];
+  }
+};
+
+bool operator==(uint16_t i, ShadowArray const& sa) {
+  return i == sa.shadow[0] && i == sa.shadow[1] && i == sa.shadow[2];
+}
+
+typedef Heap8Aux<int> Aux;
+typedef Heap8Embed<ShadowArray> Embed;
 
 std::default_random_engine gen;
 
@@ -35,10 +52,10 @@ template<class value_type, class aux_type, class size_type>
 std::function<std::pair<value_type, aux_type>(size_type)>
 transform_ascending_pair(size_type sz) {
   const double mult1 = (std::numeric_limits<value_type>::max() + 1.0) / sz;
-  const double mult2 = (std::numeric_limits<aux_type>::max() + 1.0) / sz;
+  const double mult2 = (std::numeric_limits<uint16_t>::max() + 1.0) / sz;
   return [mult1, mult2](size_type i) { 
     return std::make_pair(boost::numeric_cast<value_type>(i * mult1), 
-                          boost::numeric_cast<aux_type>(i * mult2));
+                          boost::numeric_cast<uint16_t>(i * mult2));
   };
 }
 
@@ -47,7 +64,7 @@ std::function<std::pair<value_type, aux_type>(size_type)>
 transform_random_pair(size_type sz) {
   return [](size_type i) { 
     return std::make_pair(Random<value_type>::distr(gen),
-                          Random<aux_type>::distr(gen)); 
+                          Random<uint16_t>::distr(gen)); 
   };
 }
 
@@ -151,39 +168,61 @@ void sort(uint32_t n, size_t sz, bool ascending) {
   doNotOptimizeAway(result[0]);
 }
 
+
 void push_heap8aux_sorted(uint32_t n, size_t sz) { push<Aux>(n, sz, true); }
+void push_heap8embed_sorted(uint32_t n, size_t sz) { push<Embed>(n, sz, true); }
 void push_heap8aux_unsorted(uint32_t n, size_t sz) { push<Aux>(n, sz, true); }
-
-
+void push_heap8embed_unsorted(uint32_t n, size_t sz) { push<Embed>(n, sz, true); }
 void heapify_heap8aux_sorted(uint32_t n, size_t sz) { heapify<Aux>(n, sz, true); }
+void heapify_heap8embed_sorted(uint32_t n, size_t sz) { heapify<Embed>(n, sz, true); }
 void heapify_heap8aux_unsorted(uint32_t n, size_t sz) { heapify<Aux>(n, sz, true); }
-
+void heapify_heap8embed_unsorted(uint32_t n, size_t sz) { heapify<Embed>(n, sz, true); }
 void heapsort_heap8aux_sorted(uint32_t n, size_t sz) { heapsort<Aux>(n, sz, true); }
+void heapsort_heap8embed_sorted(uint32_t n, size_t sz) { heapsort<Embed>(n, sz, true); }
 void heapsort_heap8aux_unsorted(uint32_t n, size_t sz) { heapsort<Aux>(n, sz, true); }
+void heapsort_heap8embed_unsorted(uint32_t n, size_t sz) { heapsort<Embed>(n, sz, true); }
 
 
 } // namespace
 
 BENCHMARK_PARAM(push_heap8aux_sorted, 1000)
+BENCHMARK_PARAM(push_heap8embed_sorted, 1000)
 BENCHMARK_PARAM(push_heap8aux_sorted, 100000)
+BENCHMARK_PARAM(push_heap8embed_sorted, 100000)
 BENCHMARK_PARAM(push_heap8aux_sorted, 10000000)
+BENCHMARK_PARAM(push_heap8embed_sorted, 10000000)
 BENCHMARK_PARAM(push_heap8aux_unsorted, 1000)
+BENCHMARK_PARAM(push_heap8embed_unsorted, 1000)
 BENCHMARK_PARAM(push_heap8aux_unsorted, 100000)
+BENCHMARK_PARAM(push_heap8embed_unsorted, 100000)
 BENCHMARK_PARAM(push_heap8aux_unsorted, 10000000)
+BENCHMARK_PARAM(push_heap8embed_unsorted, 10000000)
 BENCHMARK_DRAW_LINE();
 BENCHMARK_PARAM(heapify_heap8aux_sorted, 1000)
+BENCHMARK_PARAM(heapify_heap8embed_sorted, 1000)
 BENCHMARK_PARAM(heapify_heap8aux_sorted, 100000)
+BENCHMARK_PARAM(heapify_heap8embed_sorted, 100000)
 BENCHMARK_PARAM(heapify_heap8aux_sorted, 10000000)
+BENCHMARK_PARAM(heapify_heap8embed_sorted, 10000000)
 BENCHMARK_PARAM(heapify_heap8aux_unsorted, 1000)
+BENCHMARK_PARAM(heapify_heap8embed_unsorted, 1000)
 BENCHMARK_PARAM(heapify_heap8aux_unsorted, 100000)
+BENCHMARK_PARAM(heapify_heap8embed_unsorted, 100000)
 BENCHMARK_PARAM(heapify_heap8aux_unsorted, 10000000)
+BENCHMARK_PARAM(heapify_heap8embed_unsorted, 10000000)
 BENCHMARK_DRAW_LINE();
 BENCHMARK_PARAM(heapsort_heap8aux_sorted, 1000)
+BENCHMARK_PARAM(heapsort_heap8embed_sorted, 1000)
 BENCHMARK_PARAM(heapsort_heap8aux_sorted, 100000)
+BENCHMARK_PARAM(heapsort_heap8embed_sorted, 100000)
 BENCHMARK_PARAM(heapsort_heap8aux_sorted, 10000000)
+BENCHMARK_PARAM(heapsort_heap8embed_sorted, 10000000)
 BENCHMARK_PARAM(heapsort_heap8aux_unsorted, 1000)
+BENCHMARK_PARAM(heapsort_heap8embed_unsorted, 1000)
 BENCHMARK_PARAM(heapsort_heap8aux_unsorted, 100000)
+BENCHMARK_PARAM(heapsort_heap8embed_unsorted, 100000)
 BENCHMARK_PARAM(heapsort_heap8aux_unsorted, 10000000)
+BENCHMARK_PARAM(heapsort_heap8embed_unsorted, 10000000)
 
 int main(int argc, char** argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);

@@ -47,10 +47,6 @@ template<class S> class Heap8Embed {
 
   size_type size() const { return size_; }
 
-  value_type& operator[](size_type index) {
-    return nod(index)->values.values[index % kArity];
-  }
-
   value_type operator[](size_type index) const {
     return nod(index)->values.values[index % kArity];
   }
