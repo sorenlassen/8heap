@@ -115,7 +115,7 @@ template<class S> class Heap8Embed {
 
   void push_down(value_type a, shadow_type s, size_type p) {
     assert(p < size_);
-    node* m = nod(0);
+    node* m = nod(p);
     size_type i = p % kArity;
     while (true) {
       size_t q = children(p);
