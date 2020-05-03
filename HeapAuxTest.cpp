@@ -40,23 +40,19 @@ TYPED_TEST(HeapAuxTest, Clear) {
 }
 
 TYPED_TEST(HeapAuxTest, Push3) {
+  typedef typename TypeParam::entry_type entry_type;
+  entry_type p1(1, 100), p2(2, 200), p3(3, 300);
   EXPECT_TRUE(this->heap_.is_heap());
-  this->heap_.push_entry(2, 200);
+  this->heap_.push_entry(p2);
   EXPECT_EQ(1, this->heap_.size());
-  auto ht = this->heap_.top_entry();
-  EXPECT_EQ(2, ht.first);
-  EXPECT_EQ(200, ht.second);
+  EXPECT_EQ(p2, this->heap_.top_entry());
   EXPECT_TRUE(this->heap_.is_heap());
-  this->heap_.push_entry(1, 100);
-  ht = this->heap_.top_entry();
-  EXPECT_EQ(1, ht.first);
-  EXPECT_EQ(100, ht.second);
+  this->heap_.push_entry(p1);
+  EXPECT_EQ(p1, this->heap_.top_entry());
   EXPECT_EQ(2, this->heap_.size());
   EXPECT_TRUE(this->heap_.is_heap());
-  this->heap_.push_entry(3, 300);
-  ht = this->heap_.top_entry();
-  EXPECT_EQ(1, ht.first);
-  EXPECT_EQ(100, ht.second);
+  this->heap_.push_entry(p3);
+  EXPECT_EQ(p1, this->heap_.top_entry());
   EXPECT_EQ(3, this->heap_.size());
   EXPECT_TRUE(this->heap_.is_heap());
 }
