@@ -211,13 +211,15 @@ template<class S> class Heap8Aux {
     size_type x = size_;
     size_type i = x % kArity;
     x -= i;
-    while (i > 0) {
-      --i;
-      entry_type e = pop_entry();
-      v.values[i] = e.first;
-      shadow_[x + i] = e.second;
+    if (i != 0) {
+      do {
+        --i;
+        entry_type e = pop_entry();
+        v.values[i] = e.first;
+        shadow_[x + i] = e.second;
+      } while (i > 0);
+      vectors_[x / kArity] = v;
     }
-    vectors_[x / kArity] = v;
     while (x > 0) {
       x -= kArity;
       for (size_type j = kArity; j > 0; --j) {

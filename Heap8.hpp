@@ -176,11 +176,13 @@ class Heap8 {
     size_type x = size_;
     size_type i = x % kArity;
     x -= i;
-    while (i > 0) {
-      --i;
-      v.values[i] = pop();
+    if (i != 0) {
+      do {
+        --i;
+        v.values[i] = pop();
+      } while (i > 0);
+      vectors_[x / kArity] = v;
     }
-    vectors_[x / kArity] = v;
     while (x > 0) {
       x -= kArity;
       for (size_type j = kArity; j > 0; --j) {
