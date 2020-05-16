@@ -4,8 +4,6 @@
    ./a.out
 */
 
-#include "H8.hpp"
-#include "Heap8.hpp"
 #include "Heap8Aux.hpp"
 #include "Heap8Embed.hpp"
 #include <cstdint>
