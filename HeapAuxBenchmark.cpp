@@ -32,7 +32,7 @@ bool operator==(uint16_t i, ShadowArray const& sa) {
   return i == sa.shadow[0] && i == sa.shadow[1] && i == sa.shadow[2];
 }
 
-typedef Heap8Aux<int> Aux;
+typedef Heap8Aux<ShadowArray> Aux;
 typedef Heap8Embed<ShadowArray> Embed;
 
 std::default_random_engine gen;
@@ -53,8 +53,8 @@ std::function<std::pair<value_type, aux_type>(size_type)>
 transform_ascending_pair(size_type sz) {
   const double mult1 = (std::numeric_limits<value_type>::max() + 1.0) / sz;
   const double mult2 = (std::numeric_limits<uint16_t>::max() + 1.0) / sz;
-  return [mult1, mult2](size_type i) { 
-    return std::make_pair(boost::numeric_cast<value_type>(i * mult1), 
+  return [mult1, mult2](size_type i) {
+    return std::make_pair(boost::numeric_cast<value_type>(i * mult1),
                           boost::numeric_cast<uint16_t>(i * mult2));
   };
 }
@@ -62,9 +62,9 @@ transform_ascending_pair(size_type sz) {
 template<class value_type, class aux_type, class size_type>
 std::function<std::pair<value_type, aux_type>(size_type)>
 transform_random_pair(size_type sz) {
-  return [](size_type i) { 
+  return [](size_type i) {
     return std::make_pair(Random<value_type>::distr(gen),
-                          Random<uint16_t>::distr(gen)); 
+                          Random<uint16_t>::distr(gen));
   };
 }
 
@@ -152,7 +152,7 @@ struct AppendableVector : public std::vector<std::pair<uint16_t, uint32_t>> {
   }
 };
 
-bool sortPair(const std::pair<uint16_t, uint32_t> &v1, 
+bool sortPair(const std::pair<uint16_t, uint32_t> &v1,
 	      const std::pair<uint16_t, uint32_t> &v2) {
   return v1.first < v2.first;
 }

@@ -35,7 +35,7 @@ bool operator==(uint16_t i, ShadowArray const& sa) {
   return i == sa.shadow[0] && i == sa.shadow[1] && i == sa.shadow[2];
 }
 
-typedef Heap8Aux<int> Aux;
+typedef Heap8Aux<ShadowArray> Aux;
 typedef Heap8Embed<ShadowArray> Embed;
 
 template <class T>
