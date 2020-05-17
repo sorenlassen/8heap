@@ -1,6 +1,7 @@
 #pragma once
 
 #include "StdMinHeap.hpp"
+#include "FirstCompare.hpp"
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -11,35 +12,28 @@
 #include <utility>
 #include <vector>
 
-template<class M, class V = uint16_t, class Compare = std::greater<V>>
+template<class M, class K = uint16_t, class Compare = std::greater<K>>
 class StdMinHeapMap {
  public:
-  typedef V key_type;
+  typedef K key_type;
   typedef M mapped_type;
-  typedef std::pair<V, M> entry_type;
+  typedef std::pair<K, M> entry_type;
 
  private:
-  class ValueCompare {
-    Compare cmp_;
-   public:
-    ValueCompare(const Compare& cmp = Compare()) : cmp_(cmp) { }
-    ~ValueCompare() = default;
-    constexpr bool operator()(const entry_type& a, const entry_type& b) const {
-      return cmp_(a.first, b.first);
-    }
-  };
-
-  typedef StdMinHeap<entry_type, ValueCompare> heap_type;
+  typedef FirstCompare<K, M, Compare> EntryCompare;
+  typedef StdMinHeap<entry_type, EntryCompare> heap_type;
 
  public:
   typedef typename heap_type::size_type size_type;
 
-  StdMinHeapMap(const Compare& cmp = Compare()) : heap_(ValueCompare(cmp)) { }
+  StdMinHeapMap(const Compare& cmp = Compare()) : heap_(cmp) { }
   ~StdMinHeapMap() = default;
   StdMinHeapMap(const StdMinHeapMap&) = delete;
   StdMinHeapMap& operator=(const StdMinHeapMap&) = delete;
 
   size_type size() const { return heap_.size(); }
+
+  key_type key(size_type index) const { return entry(index).first; }
 
   entry_type entry(size_type index) const { return heap_[index]; }
 

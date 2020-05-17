@@ -7,8 +7,7 @@
 #include "Heap8Aux.hpp"
 #include "Heap8Embed.hpp"
 #include "StdMinHeapMap.hpp"
-#include <cstdint>
-#include <array>
+#include "U48.hpp"
 #include <vector>
 #include <boost/iterator/counting_iterator.hpp>
 #include <boost/iterator/transform_iterator.hpp>
@@ -18,25 +17,6 @@ namespace {
 
 using boost::iterators::counting_iterator;
 using boost::iterators::transform_iterator;
-using testing::Types;
-
-struct ShadowArray {
-  ShadowArray(uint16_t i) : shadow{i, i, i} {}
-  std::array<uint16_t, 3> shadow;
-  bool operator==(ShadowArray const& other) const {
-    return shadow[0] == other.shadow[0]
-        && shadow[1] == other.shadow[1]
-        && shadow[2] == other.shadow[2];
-  }
-};
-
-bool operator==(uint16_t i, ShadowArray const& sa) {
-  return i == sa.shadow[0] && i == sa.shadow[1] && i == sa.shadow[2];
-}
-
-typedef Heap8Aux<ShadowArray> Aux;
-typedef Heap8Embed<ShadowArray> Embed;
-typedef StdMinHeapMap<ShadowArray> Std;
 
 template <class T>
 class HeapAuxTest : public testing::Test {
@@ -44,7 +24,11 @@ class HeapAuxTest : public testing::Test {
   T heap_;
 };
 
-typedef Types<Aux, Embed, Std> Implementations;
+typedef testing::Types<
+  Heap8Aux<U48>,
+  Heap8Embed<U48>,
+  StdMinHeapMap<U48>
+> Implementations;
 
 TYPED_TEST_SUITE(HeapAuxTest, Implementations);
 

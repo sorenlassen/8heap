@@ -7,7 +7,10 @@
 #include "H8.hpp"
 #include "Heap8.hpp"
 #include "Heap8Aux.hpp"
+#include "Heap8Embed.hpp"
 #include "StdMinHeap.hpp"
+#include "StdMinHeapMap.hpp"
+#include "U48.hpp"
 #include <vector>
 #include <boost/iterator/counting_iterator.hpp>
 #include <boost/iterator/transform_iterator.hpp>
@@ -17,7 +20,6 @@ namespace {
 
 using boost::iterators::counting_iterator;
 using boost::iterators::transform_iterator;
-using testing::Types;
 
 template <class T>
 class HeapTest : public testing::Test {
@@ -25,22 +27,32 @@ class HeapTest : public testing::Test {
   T heap_;
 };
 
-class Heap8AuxDummy : public Heap8Aux<int> {
+template<class HeapMap>
+class HeapFrom : public HeapMap {
  public:
-  value_type operator[](size_type i) const { return key(i); }
+  typedef typename HeapMap::size_type size_type;
+  typedef typename HeapMap::key_type value_type;
+  value_type operator[](size_type i) const { return this->key(i); }
   template<class InputIterator>
   void append(InputIterator begin, InputIterator end) {
     auto transform = [=](value_type i) { return std::make_pair(i, 42); };
     auto begin_entries = transform_iterator(begin, transform);
     auto end_entries = transform_iterator(end, transform);
-    append_entries(begin_entries, end_entries);
+    this->append_entries(begin_entries, end_entries);
   }
-  void push(value_type v) { return push_entry(v, 42); }
-  value_type const top() { return top_entry().first; }
-  value_type pop() { return pop_entry().first; }
+  void push(value_type v) { return this->push_entry(v, 42); }
+  value_type const top() { return this->top_entry().first; }
+  value_type pop() { return this->pop_entry().first; }
 };
 
-typedef Types<H8, Heap8, Heap8AuxDummy, StdMinHeap<>> Implementations;
+typedef testing::Types<
+  H8,
+  Heap8,
+  StdMinHeap<>,
+  HeapFrom<Heap8Aux<int>>,
+  HeapFrom<Heap8Embed<U48>>,
+  HeapFrom<StdMinHeapMap<int>>
+> Implementations;
 
 TYPED_TEST_SUITE(HeapTest, Implementations);
 

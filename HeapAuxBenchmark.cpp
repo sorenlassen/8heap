@@ -1,70 +1,51 @@
 #include "Heap8Aux.hpp"
 #include "Heap8Embed.hpp"
-#include <utility>
-#include <cstddef>
+#include "StdMinHeapMap.hpp"
+#include "U48.hpp"
+#include "FirstCompare.hpp"
 #include <cstdint>
 #include <iterator>
 #include <limits>
 #include <random>
+#include <utility>
 #include <boost/iterator/counting_iterator.hpp>
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <folly/Benchmark.h>
 #include <gflags/gflags.h>
 
-
 using namespace folly;
-
 
 namespace {
 
-struct ShadowArray {
-  ShadowArray(uint16_t i) : shadow{i, i, i} {}
-  std::array<uint16_t, 3> shadow;
-  bool operator==(ShadowArray const& other) const {
-    return shadow[0] == other.shadow[0]
-        && shadow[1] == other.shadow[1]
-        && shadow[2] == other.shadow[2];
-  }
-};
-
-bool operator==(uint16_t i, ShadowArray const& sa) {
-  return i == sa.shadow[0] && i == sa.shadow[1] && i == sa.shadow[2];
-}
-
-typedef Heap8Aux<ShadowArray> Aux;
-typedef Heap8Embed<ShadowArray> Embed;
-
 std::default_random_engine gen;
 
-template<class value_type>
+template<class key_type>
 struct Random {
-  static std::uniform_int_distribution<value_type> distr;
+  static std::uniform_int_distribution<key_type> distr;
 };
 
+template<class key_type>
+std::uniform_int_distribution<key_type> Random<key_type>::distr(
+  std::numeric_limits<key_type>::min(),
+  std::numeric_limits<key_type>::max());
 
-template<class value_type>
-std::uniform_int_distribution<value_type> Random<value_type>::distr(
-  std::numeric_limits<value_type>::min(),
-  std::numeric_limits<value_type>::max());
-
-template<class value_type, class aux_type, class size_type>
-std::function<std::pair<value_type, aux_type>(size_type)>
+template<class key_type, class mapped_type, class size_type>
+std::function<std::pair<key_type, mapped_type>(size_type)>
 transform_ascending_pair(size_type sz) {
-  const double mult1 = (std::numeric_limits<value_type>::max() + 1.0) / sz;
-  const double mult2 = (std::numeric_limits<uint16_t>::max() + 1.0) / sz;
-  return [mult1, mult2](size_type i) {
-    return std::make_pair(boost::numeric_cast<value_type>(i * mult1),
-                          boost::numeric_cast<uint16_t>(i * mult2));
+  const double mult = (std::numeric_limits<key_type>::max() + 1.0) / sz;
+  return [mult](size_type i) {
+    key_type key = boost::numeric_cast<key_type>(i * mult);
+    return std::make_pair(key, static_cast<mapped_type>(key));
   };
 }
 
-template<class value_type, class aux_type, class size_type>
-std::function<std::pair<value_type, aux_type>(size_type)>
+template<class key_type, class mapped_type, class size_type>
+std::function<std::pair<key_type, mapped_type>(size_type)>
 transform_random_pair(size_type sz) {
   return [](size_type i) {
-    return std::make_pair(Random<value_type>::distr(gen),
-                          Random<uint16_t>::distr(gen));
+    key_type key = Random<key_type>::distr(gen);
+    return std::make_pair(key, static_cast<mapped_type>(key));
   };
 }
 
@@ -78,10 +59,11 @@ auto iter(CountType n, FunctionType f) -> decltype(auto) {
 template<class Appendable>
 void push(Appendable& out, typename Appendable::size_type sz, bool ascending) {
   typedef typename Appendable::size_type size_type;
-  typedef typename Appendable::value_type value_type;
+  typedef typename Appendable::key_type key_type;
+  typedef typename Appendable::mapped_type mapped_type;
   auto transform = ascending
-    ? transform_ascending_pair<value_type, uint32_t, size_type>(sz)
-    : transform_random_pair<value_type, uint32_t, size_type>(sz);
+    ? transform_ascending_pair<key_type, mapped_type, size_type>(sz)
+    : transform_random_pair<key_type, mapped_type, size_type>(sz);
   auto begin = iter(size_type(0), transform);
   auto end = begin + sz;
   out.clear();
@@ -91,11 +73,11 @@ void push(Appendable& out, typename Appendable::size_type sz, bool ascending) {
 template<class Appendable>
 void fill(Appendable& out, typename Appendable::size_type sz, bool ascending) {
   typedef typename Appendable::size_type size_type;
-  typedef typename Appendable::value_type value_type;
-  typedef typename Appendable::shadow_type aux_type;
+  typedef typename Appendable::key_type key_type;
+  typedef typename Appendable::mapped_type mapped_type;
   auto transform = ascending
-    ? transform_ascending_pair<value_type, aux_type, size_type>(sz)
-    : transform_random_pair<value_type, aux_type, size_type>(sz);
+    ? transform_ascending_pair<key_type, mapped_type, size_type>(sz)
+    : transform_random_pair<key_type, mapped_type, size_type>(sz);
   auto begin = iter(size_type(0), transform);
   auto end = begin + sz;
   out.clear();
@@ -104,29 +86,35 @@ void fill(Appendable& out, typename Appendable::size_type sz, bool ascending) {
 
 template<class Heap>
 void push(uint32_t n, size_t sz, bool ascending) {
-  typedef typename Heap::value_type value_type;
+  typedef typename Heap::key_type key_type;
   Heap h;
-  value_type x = 0;
+  key_type x = 0;
+  uint64_t y = 0;
   for (int i = 0; i < n; ++i) {
     push(h, sz, ascending);
     x ^= h.top_entry().first;
+    y ^= h.top_entry().second;
   }
   doNotOptimizeAway(x);
+  doNotOptimizeAway(y);
 }
 
 template<class Heap>
 void heapify(uint32_t n, size_t sz, bool ascending) {
-  typedef typename Heap::value_type value_type;
+  typedef typename Heap::key_type key_type;
   Heap h;
-  value_type x = 0;
+  key_type x = 0;
+  uint64_t y = 0;
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {
       fill(h, sz, ascending);
     }
     h.heapify();
     x ^= h.top_entry().first;
+    y ^= h.top_entry().second;
   }
   doNotOptimizeAway(x);
+  doNotOptimizeAway(y);
 }
 
 template<class Heap>
@@ -139,90 +127,115 @@ void heapsort(uint32_t n, size_t sz, bool ascending) {
     h.heapify();
     h.sort();
   }
-  doNotOptimizeAway(h.entry(0));
+  doNotOptimizeAway(h.key(0));
+  doNotOptimizeAway(static_cast<uint64_t>(h.entry(0).second));
 }
 
 // vector with added append() method
-struct AppendableVector : public std::vector<std::pair<uint16_t, uint32_t>> {
-  typedef uint16_t value_type;
-  typedef uint32_t shadow_type;
+struct AppendableVector : public std::vector<std::pair<uint16_t, U48>> {
+  typedef uint16_t key_type;
+  typedef U48 mapped_type;
   template<class InputIterator>
   void append_entries(InputIterator from, InputIterator to) {
     insert(end(), from, to);
   }
 };
 
-bool sortPair(const std::pair<uint16_t, uint32_t> &v1,
-	      const std::pair<uint16_t, uint32_t> &v2) {
-  return v1.first < v2.first;
-}
-
 void sort(uint32_t n, size_t sz, bool ascending) {
+  typedef typename AppendableVector::key_type key_type;
+  typedef typename AppendableVector::mapped_type mapped_type;
+  FirstCompare<key_type, mapped_type> cmp;
   AppendableVector result;
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {
       fill(result, sz, ascending);
     }
-    std::sort(result.begin(), result.end(), sortPair);
+    std::sort(result.begin(), result.end(), cmp);
   }
   doNotOptimizeAway(result[0]);
 }
 
+typedef Heap8Aux<U48> Aux;
+typedef Heap8Embed<U48> Embed;
+typedef StdMinHeapMap<U48> Std;
 
 void push_heap8aux_sorted(uint32_t n, size_t sz) { push<Aux>(n, sz, true); }
 void push_heap8embed_sorted(uint32_t n, size_t sz) { push<Embed>(n, sz, true); }
+void push_stdheapmap_sorted(uint32_t n, size_t sz) { push<Std>(n, sz, true); }
 void push_heap8aux_unsorted(uint32_t n, size_t sz) { push<Aux>(n, sz, true); }
 void push_heap8embed_unsorted(uint32_t n, size_t sz) { push<Embed>(n, sz, true); }
+void push_stdheapmap_unsorted(uint32_t n, size_t sz) { push<Std>(n, sz, true); }
 void heapify_heap8aux_sorted(uint32_t n, size_t sz) { heapify<Aux>(n, sz, true); }
 void heapify_heap8embed_sorted(uint32_t n, size_t sz) { heapify<Embed>(n, sz, true); }
+void heapify_stdheapmap_sorted(uint32_t n, size_t sz) { heapify<Std>(n, sz, true); }
 void heapify_heap8aux_unsorted(uint32_t n, size_t sz) { heapify<Aux>(n, sz, true); }
 void heapify_heap8embed_unsorted(uint32_t n, size_t sz) { heapify<Embed>(n, sz, true); }
+void heapify_stdheapmap_unsorted(uint32_t n, size_t sz) { heapify<Std>(n, sz, true); }
 void heapsort_heap8aux_sorted(uint32_t n, size_t sz) { heapsort<Aux>(n, sz, true); }
 void heapsort_heap8embed_sorted(uint32_t n, size_t sz) { heapsort<Embed>(n, sz, true); }
+void heapsort_stdheapmap_sorted(uint32_t n, size_t sz) { heapsort<Std>(n, sz, true); }
 void heapsort_heap8aux_unsorted(uint32_t n, size_t sz) { heapsort<Aux>(n, sz, true); }
 void heapsort_heap8embed_unsorted(uint32_t n, size_t sz) { heapsort<Embed>(n, sz, true); }
-
+void heapsort_stdheapmap_unsorted(uint32_t n, size_t sz) { heapsort<Std>(n, sz, true); }
 
 } // namespace
 
 BENCHMARK_PARAM(push_heap8aux_sorted, 1000)
 BENCHMARK_PARAM(push_heap8embed_sorted, 1000)
+BENCHMARK_PARAM(push_stdheapmap_sorted, 1000)
 BENCHMARK_PARAM(push_heap8aux_sorted, 100000)
 BENCHMARK_PARAM(push_heap8embed_sorted, 100000)
+BENCHMARK_PARAM(push_stdheapmap_sorted, 100000)
 BENCHMARK_PARAM(push_heap8aux_sorted, 10000000)
 BENCHMARK_PARAM(push_heap8embed_sorted, 10000000)
+BENCHMARK_PARAM(push_stdheapmap_sorted, 10000000)
 BENCHMARK_PARAM(push_heap8aux_unsorted, 1000)
 BENCHMARK_PARAM(push_heap8embed_unsorted, 1000)
+BENCHMARK_PARAM(push_stdheapmap_unsorted, 1000)
 BENCHMARK_PARAM(push_heap8aux_unsorted, 100000)
 BENCHMARK_PARAM(push_heap8embed_unsorted, 100000)
+BENCHMARK_PARAM(push_stdheapmap_unsorted, 100000)
 BENCHMARK_PARAM(push_heap8aux_unsorted, 10000000)
 BENCHMARK_PARAM(push_heap8embed_unsorted, 10000000)
+BENCHMARK_PARAM(push_stdheapmap_unsorted, 10000000)
 BENCHMARK_DRAW_LINE();
 BENCHMARK_PARAM(heapify_heap8aux_sorted, 1000)
 BENCHMARK_PARAM(heapify_heap8embed_sorted, 1000)
+BENCHMARK_PARAM(heapify_stdheapmap_sorted, 1000)
 BENCHMARK_PARAM(heapify_heap8aux_sorted, 100000)
 BENCHMARK_PARAM(heapify_heap8embed_sorted, 100000)
+BENCHMARK_PARAM(heapify_stdheapmap_sorted, 100000)
 BENCHMARK_PARAM(heapify_heap8aux_sorted, 10000000)
 BENCHMARK_PARAM(heapify_heap8embed_sorted, 10000000)
+BENCHMARK_PARAM(heapify_stdheapmap_sorted, 10000000)
 BENCHMARK_PARAM(heapify_heap8aux_unsorted, 1000)
 BENCHMARK_PARAM(heapify_heap8embed_unsorted, 1000)
+BENCHMARK_PARAM(heapify_stdheapmap_unsorted, 1000)
 BENCHMARK_PARAM(heapify_heap8aux_unsorted, 100000)
 BENCHMARK_PARAM(heapify_heap8embed_unsorted, 100000)
+BENCHMARK_PARAM(heapify_stdheapmap_unsorted, 100000)
 BENCHMARK_PARAM(heapify_heap8aux_unsorted, 10000000)
 BENCHMARK_PARAM(heapify_heap8embed_unsorted, 10000000)
+BENCHMARK_PARAM(heapify_stdheapmap_unsorted, 10000000)
 BENCHMARK_DRAW_LINE();
 BENCHMARK_PARAM(heapsort_heap8aux_sorted, 1000)
 BENCHMARK_PARAM(heapsort_heap8embed_sorted, 1000)
+BENCHMARK_PARAM(heapsort_stdheapmap_sorted, 1000)
 BENCHMARK_PARAM(heapsort_heap8aux_sorted, 100000)
 BENCHMARK_PARAM(heapsort_heap8embed_sorted, 100000)
+BENCHMARK_PARAM(heapsort_stdheapmap_sorted, 100000)
 BENCHMARK_PARAM(heapsort_heap8aux_sorted, 10000000)
 BENCHMARK_PARAM(heapsort_heap8embed_sorted, 10000000)
+BENCHMARK_PARAM(heapsort_stdheapmap_sorted, 10000000)
 BENCHMARK_PARAM(heapsort_heap8aux_unsorted, 1000)
 BENCHMARK_PARAM(heapsort_heap8embed_unsorted, 1000)
+BENCHMARK_PARAM(heapsort_stdheapmap_unsorted, 1000)
 BENCHMARK_PARAM(heapsort_heap8aux_unsorted, 100000)
 BENCHMARK_PARAM(heapsort_heap8embed_unsorted, 100000)
+BENCHMARK_PARAM(heapsort_stdheapmap_unsorted, 100000)
 BENCHMARK_PARAM(heapsort_heap8aux_unsorted, 10000000)
 BENCHMARK_PARAM(heapsort_heap8embed_unsorted, 10000000)
+BENCHMARK_PARAM(heapsort_stdheapmap_unsorted, 10000000)
 
 int main(int argc, char** argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);

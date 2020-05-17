@@ -16,23 +16,22 @@
 template<class S> class Heap8Embed {
  public:
   typedef std::uint16_t key_type;
-  typedef key_type value_type;
-  typedef S shadow_type;
-  typedef std::pair<value_type, S> entry_type;
+  typedef S mapped_type;
+  typedef std::pair<key_type, S> entry_type;
   typedef std::size_t size_type;
 
  private:
-  static constexpr value_type kMax = std::numeric_limits<value_type>::max();
+  static constexpr key_type kMax = std::numeric_limits<key_type>::max();
   static constexpr size_type kArity = 8;
   static constexpr size_type kSizeMax = align_down(std::numeric_limits<size_type>::max(), kArity);
 
   static size_type parent(size_type q) { return (q / kArity) - 1; }
   static size_type children(size_type p) { return (p + 1) * kArity; }
 
-  static_assert(sizeof(v128) == kArity * sizeof(value_type));
+  static_assert(sizeof(v128) == kArity * sizeof(key_type));
 
   struct node {
-    typedef std::array<shadow_type, kArity> shadow_vector;
+    typedef std::array<mapped_type, kArity> shadow_vector;
     node(v128 vals) : values(vals), shadows{0,0,0,0,0,0,0,0} { }
     v128 values;
     shadow_vector shadows;
@@ -48,7 +47,7 @@ template<class S> class Heap8Embed {
 
   size_type size() const { return size_; }
 
-  value_type key(size_type index) const {
+  key_type key(size_type index) const {
     return nod(index)->values.values[index % kArity];
   }
 
@@ -90,7 +89,7 @@ template<class S> class Heap8Embed {
     }
   }
 
-  void pull_up(value_type b, shadow_type t, size_type q) {
+  void pull_up(key_type b, mapped_type t, size_type q) {
     assert(q < size_);
     node* n = nod(q);
     size_type j = q % kArity;
@@ -98,7 +97,7 @@ template<class S> class Heap8Embed {
       size_t p = parent(q);
       node* m = nod(p);
       size_type i = p % kArity;
-      value_type a = m->values.values[i];
+      key_type a = m->values.values[i];
       if (a <= b) break;
       n->values.values[j] = a;
       n->shadows[j] = m->shadows[i];
@@ -110,7 +109,7 @@ template<class S> class Heap8Embed {
     n->shadows[j] = t;
   }
 
-  void push_down(value_type a, shadow_type s, size_type p) {
+  void push_down(key_type a, mapped_type s, size_type p) {
     assert(p < size_);
     node* m = nod(p);
     size_type i = p % kArity;
@@ -119,7 +118,7 @@ template<class S> class Heap8Embed {
       if (q >= size_) break;
       node* n = nod(q);
       minpos_type x = n->minpos();
-      value_type b = minpos_min(x);
+      key_type b = minpos_min(x);
       if (a <= b) break;
       size_type j = minpos_pos(x);
       m->values.values[i] = b;
@@ -143,14 +142,14 @@ template<class S> class Heap8Embed {
     while (q > r) {
       node* n = nod(q);
       minpos_type x = n->minpos();
-      value_type b = minpos_min(x);
+      key_type b = minpos_min(x);
       size_t p = parent(q);
       node* m = nod(p);
       size_type i = p % kArity;
-      value_type a = m->values.values[i];
+      key_type a = m->values.values[i];
       if (b < a) {
         size_type j = minpos_pos(x);
-        shadow_type s = m->shadows[i];
+        mapped_type s = m->shadows[i];
         m->shadows[i] = n->shadows[j];
         m->values.values[i] = b;
         // The next line inlines push_down(a, s, q + j)
@@ -164,14 +163,14 @@ template<class S> class Heap8Embed {
     while (q > 0) {
       node* n = nod(q);
       minpos_type x = n->minpos();
-      value_type b = minpos_min(x);
+      key_type b = minpos_min(x);
       size_t p = parent(q);
       node* m = nod(p);
       size_type i = p % kArity;
-      value_type a = m->values.values[i];
+      key_type a = m->values.values[i];
       if (b < a) {
         size_type j = minpos_pos(x);
-        shadow_type s = m->shadows[i];
+        mapped_type s = m->shadows[i];
         m->shadows[i] = n->shadows[j];
         m->values.values[i] = b;
         push_down(a, s, q + j);
@@ -185,9 +184,9 @@ template<class S> class Heap8Embed {
     size_t q = align_down(size_ - 1, kArity);
     while (q > 0) {
       minpos_type x = nod(q)->minpos();
-      value_type b = minpos_min(x);
+      key_type b = minpos_min(x);
       size_t p = parent(q);
-      value_type a = key(p);
+      key_type a = key(p);
       if (b < a) return false;
       q -= kArity;
     }
@@ -198,7 +197,7 @@ template<class S> class Heap8Embed {
     push_entry(e.first, e.second);
   }
 
-  void push_entry(value_type b, shadow_type t) {
+  void push_entry(key_type b, mapped_type t) {
     if (size_ == kArity * nodes_.size()) nodes_.emplace_back(kV128Max);
     size_++;
     pull_up(b, t, size_ - 1);
@@ -214,17 +213,17 @@ template<class S> class Heap8Embed {
     assert(size_ > 0);
     node* n = nod(0);
     minpos_type x = n->minpos();
-    value_type b = minpos_min(x);
+    key_type b = minpos_min(x);
     size_type q = minpos_pos(x);
-    shadow_type t = n->shadows[q];
+    mapped_type t = n->shadows[q];
     size_type p = size_ - 1;
     node* m = nod(p);
     size_type i = p % kArity;
-    value_type a = m->values.values[i];
+    key_type a = m->values.values[i];
     m->values.values[i] = kMax;
     size_--;
     if (q != size_) {
-      shadow_type s = m->shadows[i];
+      mapped_type s = m->shadows[i];
       push_down(a, s, q);
     }
     return std::make_pair(b, t);
@@ -259,9 +258,9 @@ template<class S> class Heap8Embed {
 
   bool is_sorted(size_type sz) const {
     if (sz == 0) return true;
-    value_type v = key(0);
+    key_type v = key(0);
     for (size_type p = 1; p < sz; ++p) {
-      value_type w = key(p);
+      key_type w = key(p);
       if (v < w) return false;
       v = w;
     }

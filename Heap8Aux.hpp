@@ -15,20 +15,19 @@
 template<class S> class Heap8Aux {
  public:
   typedef std::uint16_t key_type;
-  typedef key_type value_type;
-  typedef S shadow_type;
-  typedef std::pair<value_type, S> entry_type;
+  typedef S mapped_type;
+  typedef std::pair<key_type, S> entry_type;
   typedef std::size_t size_type;
 
  private:
-  static constexpr value_type kMax = std::numeric_limits<value_type>::max();
+  static constexpr key_type kMax = std::numeric_limits<key_type>::max();
   static constexpr size_type kArity = 8;
   static constexpr size_type kSizeMax = align_down(std::numeric_limits<size_type>::max(), kArity);
 
   static size_type parent(size_type q) { return (q / kArity) - 1; }
   static size_type children(size_type p) { return (p + 1) * kArity; }
 
-  static_assert(sizeof(v128) == kArity * sizeof(value_type));
+  static_assert(sizeof(v128) == kArity * sizeof(key_type));
 
  public:
   Heap8Aux() : size_(0) { }
@@ -38,7 +37,7 @@ template<class S> class Heap8Aux {
 
   size_type size() const { return size_; }
 
-  value_type key(size_type index) const { return data()[index]; }
+  key_type key(size_type index) const { return data()[index]; }
 
   S& shadow(size_type index) { return shadow_[index]; }
 
@@ -46,7 +45,7 @@ template<class S> class Heap8Aux {
     return std::make_pair(data()[index], shadow_[index]);
   }
 
-  value_type* extend(size_type n) {
+  key_type* extend(size_type n) {
     if (n > kSizeMax - size_) throw_bad_alloc();
     size_type new_size = size_ + n;
     if (new_size > kArity * vectors_.size()) {
@@ -58,13 +57,13 @@ template<class S> class Heap8Aux {
       shadow_.resize(new_size);
     }
     size_ = new_size;
-    value_type* array = data();
+    key_type* array = data();
     return array + (size_ - n);
   }
 
   template<class InputIterator>
   void append_entries(InputIterator begin, InputIterator end) {
-    value_type* array = data();
+    key_type* array = data();
     while (begin != end) {
       if (size_ == kArity * vectors_.size()) {
         vectors_.push_back(kV128Max);
@@ -77,12 +76,12 @@ template<class S> class Heap8Aux {
     }
   }
 
-  void pull_up(value_type b, shadow_type t, size_type q) {
+  void pull_up(key_type b, mapped_type t, size_type q) {
     assert(q < size_);
-    value_type* array = data();
+    key_type* array = data();
     while (q >= kArity) {
       size_t p = parent(q);
-      value_type a = array[p];
+      key_type a = array[p];
       if (a <= b) break;
       array[q] = a;
       shadow_[q] = shadow_[p];
@@ -92,14 +91,14 @@ template<class S> class Heap8Aux {
     shadow_[q] = t;
   }
 
-  void push_down(value_type a, shadow_type s, size_type p) {
+  void push_down(key_type a, mapped_type s, size_type p) {
     assert(p < size_);
-    value_type* array = data();
+    key_type* array = data();
     while (true) {
       size_t q = children(p);
       if (q >= size_) break;
       minpos_type x = minpos(vectors_[q / kArity].mm);
-      value_type b = minpos_min(x);
+      key_type b = minpos_min(x);
       if (a <= b) break;
       array[p] = b;
       q += minpos_pos(x);
@@ -112,7 +111,7 @@ template<class S> class Heap8Aux {
 
   void heapify() {
     if (size_ <= kArity) return;
-    value_type* array = data();
+    key_type* array = data();
     size_t q = align_down(size_ - 1, kArity);
 
     // The first while loop is an optimization for the bottom level of the heap,
@@ -121,12 +120,12 @@ template<class S> class Heap8Aux {
     size_t r = parent(q);
     while (q > r) {
       minpos_type x = minpos(vectors_[q / kArity].mm);
-      value_type b = minpos_min(x);
+      key_type b = minpos_min(x);
       size_t p = parent(q);
-      value_type a = array[p];
+      key_type a = array[p];
       if (b < a) {
         size_t q_new = q + minpos_pos(x);
-        shadow_type s = shadow_[p];
+        mapped_type s = shadow_[p];
         shadow_[p] = shadow_[q_new];
         array[p] = b;
         // The next line inlines push_down(a, s, q_new)
@@ -139,12 +138,12 @@ template<class S> class Heap8Aux {
 
     while (q > 0) {
       minpos_type x = minpos(vectors_[q / kArity].mm);
-      value_type b = minpos_min(x);
+      key_type b = minpos_min(x);
       size_t p = parent(q);
-      value_type a = array[p];
+      key_type a = array[p];
       if (b < a) {
         size_t q_new = q + minpos_pos(x);
-        shadow_type s = shadow_[p];
+        mapped_type s = shadow_[p];
         shadow_[p] = shadow_[q_new];
         array[p] = b;
         push_down(a, s, q_new);
@@ -155,13 +154,13 @@ template<class S> class Heap8Aux {
 
   bool is_heap() const {
     if (size_ <= kArity) return true;
-    value_type const* array = data();
+    key_type const* array = data();
     size_t q = align_down(size_ - 1, kArity);
     while (q > 0) {
       minpos_type x = minpos(vectors_[q / kArity].mm);
-      value_type b = minpos_min(x);
+      key_type b = minpos_min(x);
       size_t p = parent(q);
-      value_type a = array[p];
+      key_type a = array[p];
       if (b < a) return false;
       q -= kArity;
     }
@@ -172,7 +171,7 @@ template<class S> class Heap8Aux {
     push_entry(e.first, e.second);
   }
 
-  void push_entry(value_type b, shadow_type t) {
+  void push_entry(key_type b, mapped_type t) {
     if (size_ == kArity * vectors_.size()) vectors_.push_back(kV128Max);
     size_++;
     shadow_.push_back(t); // to grow shadow_; pull_up overwrites the value
@@ -188,15 +187,15 @@ template<class S> class Heap8Aux {
   entry_type pop_entry() {
     assert(size_ > 0);
     minpos_type x = minpos(vectors_[0].mm);
-    value_type b = minpos_min(x);
+    key_type b = minpos_min(x);
     size_type q = minpos_pos(x);
-    shadow_type t = shadow_[q];
-    value_type* array = data();
-    value_type a = array[size_ - 1];
+    mapped_type t = shadow_[q];
+    key_type* array = data();
+    key_type a = array[size_ - 1];
     array[size_ - 1] = kMax;
     size_--;
     if (q != size_) {
-      shadow_type s = shadow_[size_];
+      mapped_type s = shadow_[size_];
       push_down(a, s, q);
     }
     shadow_.pop_back();
@@ -229,7 +228,7 @@ template<class S> class Heap8Aux {
   }
 
   bool is_sorted(size_type sz) const {
-    return std::is_sorted(data(), data() + sz, std::greater<value_type>());
+    return std::is_sorted(data(), data() + sz, std::greater<key_type>());
   }
 
   void clear() {
@@ -245,8 +244,8 @@ template<class S> class Heap8Aux {
     std::bad_alloc exception;
     throw exception;
   }
-  value_type* data() { return reinterpret_cast<value_type*>(vectors_.data()); }
-  value_type const* data() const { return reinterpret_cast<value_type const*>(vectors_.data()); }
+  key_type* data() { return reinterpret_cast<key_type*>(vectors_.data()); }
+  key_type const* data() const { return reinterpret_cast<key_type const*>(vectors_.data()); }
   typedef std::vector<v128> vectors_type;
   vectors_type vectors_;
   std::vector<S> shadow_;
