@@ -6,6 +6,7 @@
 
 #include "Heap8Aux.hpp"
 #include "Heap8Embed.hpp"
+#include "StdMinHeapMap.hpp"
 #include <cstdint>
 #include <array>
 #include <vector>
@@ -35,6 +36,7 @@ bool operator==(uint16_t i, ShadowArray const& sa) {
 
 typedef Heap8Aux<ShadowArray> Aux;
 typedef Heap8Embed<ShadowArray> Embed;
+typedef StdMinHeapMap<ShadowArray> Std;
 
 template <class T>
 class HeapAuxTest : public testing::Test {
@@ -42,7 +44,7 @@ class HeapAuxTest : public testing::Test {
   T heap_;
 };
 
-typedef Types<Aux, Embed> Implementations;
+typedef Types<Aux, Embed, Std> Implementations;
 
 TYPED_TEST_SUITE(HeapAuxTest, Implementations);
 
