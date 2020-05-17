@@ -18,16 +18,16 @@ class StdMinHeap {
  public:
   typedef typename array_type::size_type size_type;
 
-  StdMinHeap(const Compare& compare = Compare()) : comp_(compare) { }
+  StdMinHeap(const Compare& cmp = Compare()) : cmp_(cmp) { }
   ~StdMinHeap() = default;
   StdMinHeap(const StdMinHeap&) = delete;
   StdMinHeap& operator=(const StdMinHeap&) = delete;
 
   size_type size() const { return array_.size(); }
 
-  value_type& operator[](size_type index) {
-    return array_[index];
-  }
+  value_type& operator[](size_type index) { return array_[index]; }
+
+  value_type const& operator[](size_type index) const { return array_[index]; }
 
   value_type* extend(size_type n) {
     size_type old_size = array_.size();
@@ -46,7 +46,7 @@ class StdMinHeap {
     while (q > 0) {
       size_type p = parent(q);
       value_type a = array_[p];
-      if (a <= b) break;
+      if (!cmp_(a, b)) break;
       array_[q] = a;
       q = p;
     }
@@ -62,12 +62,12 @@ class StdMinHeap {
       value_type b = array_[q];
       if (q + 1 < sz) {
         value_type c = array_[q + 1];
-        if (c < b) {
+        if (cmp_(b, c)) {
           q += 1;
           b = c;
         }
       }
-      if (a <= b) break;
+      if (!cmp_(a, b)) break;
       array_[p] = b;
       p = q;
     }
@@ -75,17 +75,17 @@ class StdMinHeap {
   }
 
   void heapify() {
-    std::make_heap(array_.begin(), array_.end(), comp_);
+    std::make_heap(array_.begin(), array_.end(), cmp_);
   }
 
   bool is_heap() const {
-    return std::is_heap(array_.begin(), array_.end(), comp_);
+    return std::is_heap(array_.begin(), array_.end(), cmp_);
   }
 
   void push(value_type b) {
     array_.push_back(b);
 #ifdef STD_PUSH_HEAP
-    std::push_heap(array_.begin(), array_.end(), comp_);
+    std::push_heap(array_.begin(), array_.end(), cmp_);
 #else
     pull_up(b, size() - 1);
 #endif
@@ -99,7 +99,7 @@ class StdMinHeap {
   value_type pop() {
     value_type a = top();
 #ifdef STD_POP_HEAP
-    std::pop_heap(array_.begin(), array_.end(), comp_);
+    std::pop_heap(array_.begin(), array_.end(), cmp_);
     array_.pop_back();
 #else
     value_type b = array_.back();
@@ -116,7 +116,7 @@ class StdMinHeap {
   }
 
   bool is_sorted(size_type sz) const {
-    return std::is_sorted(array_.begin(), array_.begin() + sz, comp_);
+    return std::is_sorted(array_.begin(), array_.begin() + sz, cmp_);
   }
 
   void clear() {
@@ -131,6 +131,6 @@ class StdMinHeap {
     std::bad_alloc exception;
     throw exception;
   }
-  Compare comp_;
+  Compare cmp_;
   array_type array_;
 };
