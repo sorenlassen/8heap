@@ -14,7 +14,8 @@
 
 template<class S> class Heap8Aux {
  public:
-  typedef std::uint16_t value_type;
+  typedef std::uint16_t key_type;
+  typedef key_type value_type;
   typedef S shadow_type;
   typedef std::pair<value_type, S> entry_type;
   typedef std::size_t size_type;
@@ -37,13 +38,9 @@ template<class S> class Heap8Aux {
 
   size_type size() const { return size_; }
 
-  value_type& operator[](size_type index) {
-    return data()[index];
-  }
+  value_type key(size_type index) const { return data()[index]; }
 
-  S& shadow(size_type index) {
-    return shadow_[index];
-  }
+  S& shadow(size_type index) { return shadow_[index]; }
 
   entry_type entry(size_type index) const {
     return std::make_pair(data()[index], shadow_[index]);

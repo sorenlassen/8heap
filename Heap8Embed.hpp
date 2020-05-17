@@ -15,7 +15,8 @@
 
 template<class S> class Heap8Embed {
  public:
-  typedef std::uint16_t value_type;
+  typedef std::uint16_t key_type;
+  typedef key_type value_type;
   typedef S shadow_type;
   typedef std::pair<value_type, S> entry_type;
   typedef std::size_t size_type;
@@ -47,7 +48,7 @@ template<class S> class Heap8Embed {
 
   size_type size() const { return size_; }
 
-  value_type operator[](size_type index) const {
+  value_type key(size_type index) const {
     return nod(index)->values.values[index % kArity];
   }
 
@@ -58,8 +59,7 @@ template<class S> class Heap8Embed {
   entry_type entry(size_type index) const {
     node const* n = nod(index);
     size_type i = index % kArity;
-    auto a = n->values.values[i];
-    return std::make_pair(a, n->shadows[i]);
+    return std::make_pair(n->values.values[i], n->shadows[i]);
   }
 
   void extend(size_type n) {
@@ -187,7 +187,7 @@ template<class S> class Heap8Embed {
       minpos_type x = nod(q)->minpos();
       value_type b = minpos_min(x);
       size_t p = parent(q);
-      value_type a = this->operator[](p);
+      value_type a = key(p);
       if (b < a) return false;
       q -= kArity;
     }
@@ -259,9 +259,9 @@ template<class S> class Heap8Embed {
 
   bool is_sorted(size_type sz) const {
     if (sz == 0) return true;
-    value_type v = this->operator[](0);
+    value_type v = key(0);
     for (size_type p = 1; p < sz; ++p) {
-      value_type w = this->operator[](p);
+      value_type w = key(p);
       if (v < w) return false;
       v = w;
     }

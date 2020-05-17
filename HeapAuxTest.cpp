@@ -100,12 +100,12 @@ TYPED_TEST(HeapAuxTest, Sort3) {
 }
 
 TYPED_TEST(HeapAuxTest, Heapify100) {
-  typedef typename TypeParam::value_type value_type;
+  typedef typename TypeParam::key_type key_type;
   typedef typename TypeParam::entry_type entry_type;
-  value_type const count = 100;
-  counting_iterator<value_type> zero(0);
-  auto revert = [=](value_type i) {
-    value_type j = count - 1 - i;
+  key_type const count = 100;
+  counting_iterator<key_type> zero(0);
+  auto revert = [=](key_type i) {
+    key_type j = count - 1 - i;
     return entry_type(j, 40 + j);
   };
   auto begin = transform_iterator(zero, revert);
@@ -116,7 +116,7 @@ TYPED_TEST(HeapAuxTest, Heapify100) {
   this->heap_.heapify();
   EXPECT_TRUE(this->heap_.is_heap());
   EXPECT_EQ(entry_type(0, 40), this->heap_.top_entry());
-  for (value_type i = 0; i < count; ++i) {
+  for (key_type i = 0; i < count; ++i) {
     EXPECT_EQ(entry_type(i, i + 40), this->heap_.pop_entry());
   }
 }

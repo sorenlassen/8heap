@@ -139,7 +139,7 @@ void heapsort(uint32_t n, size_t sz, bool ascending) {
     h.heapify();
     h.sort();
   }
-  doNotOptimizeAway(h[0]);
+  doNotOptimizeAway(h.entry(0));
 }
 
 // vector with added append() method

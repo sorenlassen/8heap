@@ -27,6 +27,7 @@ class HeapTest : public testing::Test {
 
 class Heap8AuxDummy : public Heap8Aux<int> {
  public:
+  value_type operator[](size_type i) const { return key(i); }
   template<class InputIterator>
   void append(InputIterator begin, InputIterator end) {
     auto transform = [=](value_type i) { return std::make_pair(i, 42); };
