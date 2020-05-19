@@ -8,13 +8,12 @@ matrix:
       - COMPILER=g++-9
     addons:
       apt:
-         sources: 
-          - ubuntu-toolchain-r-test
-      packages:
+        packages: 
         - libboost-all-dev
         - g++-9
 
 script:
+ - make h8.o
  - mkdir build
  - cd build
  - cmake ..
