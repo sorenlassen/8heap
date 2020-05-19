@@ -33,6 +33,8 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
                         "${gmock_SOURCE_DIR}/include")
 endif()
 
+
+
 # Trivial example using gtest and gmock
 set (CMAKE_CXX_FLAGS "-g -std=c++17")
 set (CMAKE_C_FLAGS "-g -std=c11")
@@ -40,9 +42,13 @@ set (CMAKE_C_FLAGS "-g -std=c11")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -msse4 -O2")
 
 # Add boost
-find_package(Boost REQUIRED)
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
-
+#find_package(Boost REQUIRED)
+#INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+FIND_PACKAGE(Boost)
+IF (Boost_FOUND)
+    INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+    ADD_DEFINITIONS( "-DHAS_BOOST" )
+ENDIF()
 # Prevent GoogleTest from overriding our compiler/linker options
 # when building with Visual Studio
 
