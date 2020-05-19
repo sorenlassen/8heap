@@ -34,8 +34,8 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
 endif()
 
 # Trivial example using gtest and gmock
-set (CMAKE_CXX_FLAGS "-g -std=c++17")
-set (CMAKE_C_FLAGS "-g -std=c11")
+set (CMAKE_CXX_FLAGS "-g -msse4 -02 -std=c++17")
+set (CMAKE_C_FLAGS "-g -msse4 -02 -std=c11")
 # Libraries to Include
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -msse4.1 -O2")
 
