@@ -14,18 +14,8 @@ matrix:
         packages: 
         - libboost-all-dev
         - g++-9
-
-before_install:
- - sudo apt-get -qq update
- - sudo apt-get install -qq g++-9
- - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 90
-#- sudo apt-get install libboost-all-dev
- - cd "${TRAVIS_BUILD_DIR}"
- - g++ --version
-
 script:
  - mkdir build
  - cd build
  - cmake ..
- - make HeapTest
- - ./HeapTest
+ - make runtests
