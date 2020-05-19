@@ -69,7 +69,7 @@ add_executable(HeapTest HeapTest.cpp StdMinHeap.hpp
 # Link libraries
 #TARGET_LINK_LIBRARIES(HeapAuxTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest_test) 
 set (CMAKE_CXX_STANDARD 17)
-TARGET_LINK_LIBRARIES(HeapTest LINK_PUBLIC ${Boost_LIBRARIES} gtest gtest_main h8.o) 
+TARGET_LINK_LIBRARIES(HeapTest LINK_PUBLIC ${Boost_LIBRARIES} gtest gtest_main H8) 
 add_test(NAME example_test COMMAND HeapTest)
 #TARGET_LINK_LIBRARIES(H8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest_test H8) 
 #TARGET_LINK_LIBRARIES(Sort8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest_test Sort8) 
