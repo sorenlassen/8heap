@@ -4,16 +4,10 @@ matrix:
   - os: linux
     dist: bionic
     compiler: gcc
-    env:
-      - COMPILER=g++-9
     addons:
       apt:
-        sources: 
-        #          - sourceline: 'ppa:mhier/libboost-latest'
-          - ubuntu-toolchain-r-test
-        packages: 
+        packages:
         - libboost-all-dev
-        - g++-9
 script:
  - mkdir build
  - cd build
