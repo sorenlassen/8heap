@@ -10,6 +10,7 @@
 #include <limits>
 #include <new>
 #include <utility>
+#include <functional>
 #include <vector>
 
 template<class S> class Heap8Aux {

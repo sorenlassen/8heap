@@ -3,6 +3,7 @@
 #include "h8.h"
 #include <new>
 #include <algorithm>
+#include <functional>
 #include <iterator>
 
 class H8 {

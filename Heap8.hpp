@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <algorithm>
 #include <limits>
+#include <functional>
 #include <new>
 #include <vector>
 
