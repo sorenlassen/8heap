@@ -33,18 +33,11 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
                         "${gmock_SOURCE_DIR}/include")
 endif()
 
-add_library(sse4_1 INTERFACE IMPORTED)
-if(MSVC)
-    target_compile_options(sse4_1 INTERFACE /arch:SSE4.1)
-else()
-    target_compile_options(sse4_1 INTERFACE -msse4.1)
-endif()
-
 # Trivial example using gtest and gmock
 set (CMAKE_CXX_FLAGS "-g -std=c++17")
 set (CMAKE_C_FLAGS "-g -std=c11")
 # Libraries to Include
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -msse4 -O2")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -msse4.1 -O2")
 
 # Add boost
 #find_package(Boost REQUIRED)
