@@ -33,7 +33,12 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
                         "${gmock_SOURCE_DIR}/include")
 endif()
 
-
+add_library(sse4_1 INTERFACE IMPORTED)
+if(MSVC)
+    target_compile_options(sse4_1 INTERFACE /arch:SSE4.1)
+else()
+    target_compile_options(sse4_1 INTERFACE -msse4.1)
+endif()
 
 # Trivial example using gtest and gmock
 set (CMAKE_CXX_FLAGS "-g -std=c++17")
