@@ -27,4 +27,15 @@ inline bool operator==(v128 a, v128 b) {
   }
   return true;
 }
+
+#include <iostream>
+inline std::ostream& operator<<(std::ostream& os, const v128& a) {
+  os << "[";
+  for (int i = 0; i < 8; ++i) {
+    if (i > 0) os << ',';
+    os << a.values[i];
+  }
+  os << "]";
+  return os;
+}
 #endif
