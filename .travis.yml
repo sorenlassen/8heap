@@ -8,7 +8,9 @@ matrix:
       - COMPILER=g++-9
     addons:
       apt:
-        sources: ['ubuntu-toolchain-r-test']
+        sources: 
+          - sourceline: 'ppa:mhier/libboost-latest'
+          - ubuntu-toolchain-r-test
         packages: 
         - g++-9
 
