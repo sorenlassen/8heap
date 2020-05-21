@@ -1,38 +1,50 @@
-cmake_minimum_required(VERSION 2.8.2)
+cmake_minimum_required(VERSION 3.11)
 
 project(DP_Example)
 
 include(CTest)
 set (CMAKE_CXX_STANDARD 17)
 
-if (CMAKE_VERSION VERSION_LESS 3.2)
-    set(UPDATE_DISCONNECTED_IF_AVAILABLE "")
-else()
-    set(UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
-endif()
-
-include(DownloadProject.cmake)
-download_project(PROJ                googletest
-                 GIT_REPOSITORY      https://github.com/google/googletest.git
-                 GIT_TAG             master
-                 ${UPDATE_DISCONNECTED_IF_AVAILABLE}
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG        release-1.10.0
 )
 
-# Prevent GoogleTest from overriding our compiler/linker options
-# when building with Visual Studio
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
-
-# When using CMake 2.8.11 or later, header path dependencies
-# are automatically added to the gtest and gmock targets.
-# For earlier CMake versions, we have to explicitly add the
-# required directories to the header search path ourselves.
-if (CMAKE_VERSION VERSION_LESS 2.8.11)
-    include_directories("${gtest_SOURCE_DIR}/include"
-                        "${gmock_SOURCE_DIR}/include")
+FetchContent_GetProperties(googletest)
+if(NOT googletest_POPULATED)
+  FetchContent_Populate(googletest)
+  add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
 endif()
-
+#if (CMAKE_VERSION VERSION_LESS 3.2)
+#    set(UPDATE_DISCONNECTED_IF_AVAILABLE "")
+#else()
+#    set(UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
+#endif()
+#
+#include(DownloadProject.cmake)
+#download_project(PROJ                googletest
+#                 GIT_REPOSITORY      https://github.com/google/googletest.git
+#                 GIT_TAG             master
+#                 ${UPDATE_DISCONNECTED_IF_AVAILABLE}
+#)
+#
+## Prevent GoogleTest from overriding our compiler/linker options
+## when building with Visual Studio
+#set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+#
+#add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+#
+## When using CMake 2.8.11 or later, header path dependencies
+## are automatically added to the gtest and gmock targets.
+## For earlier CMake versions, we have to explicitly add the
+## required directories to the header search path ourselves.
+#if (CMAKE_VERSION VERSION_LESS 2.8.11)
+#    include_directories("${gtest_SOURCE_DIR}/include"
+#                        "${gmock_SOURCE_DIR}/include")
+#endif()
+#
 # Trivial example using gtest and gmock
 set (CMAKE_CXX_FLAGS "-g -msse4 -O2 -std=c++17")
 set (CMAKE_C_FLAGS "-g -msse4 -O2 -std=c11")
