@@ -5,8 +5,8 @@ An implementation of an 8-ary heap using SSE instruction phminposuw to calculate
 
 # Requirements
 
-- [Google Test](https://github.com/diku-dk/futhark) 
-- [Boost](https://www.boost.org/)
+- [CMake](https://cmake.org/download/) >= 3.11
+- [Boost](https://www.boost.org/) >= 1.65
 
 
 # Installation
