@@ -29,18 +29,15 @@ if(Boost_FOUND)
 endif()
 
 # Add object file libraries
-add_library(H8 h8.c h8.h v128.h minpos.h align.h)
-add_library(Sort8 Sort8.cpp Sort8.hpp minpos.h)
+add_library(H8 h8.c)
+add_library(Sort8 Sort8.cpp)
 
 # Add Executable
-add_executable(HeapAuxTest HeapAuxTest.cpp Heap8Aux.hpp
-			         minpos.h v128.h align.h)
-add_executable(HeapTest HeapTest.cpp StdMinHeap.hpp
-			         Heap8.hpp Heap8Aux.hpp H8.hpp
-			         minpos.h v128.h align.h h8.h)
-add_executable(H8Test h8Test.cpp minpos.h h8.h)
-add_executable(Sort8Test Sort8Test.cpp Sort8.hpp v128.h)
-add_executable(minposTest minposTest.cpp v128.h minpos.h)
+add_executable(HeapAuxTest HeapAuxTest.cpp)
+add_executable(HeapTest HeapTest.cpp)
+add_executable(H8Test h8Test.cpp)
+add_executable(Sort8Test Sort8Test.cpp)
+add_executable(minposTest minposTest.cpp)
 
 # Link libraries
 TARGET_LINK_LIBRARIES(HeapAuxTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
