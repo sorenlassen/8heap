@@ -11,14 +11,18 @@ build: buildbenchmarks buildtests
 
 runbenchmarks: buildbenchmarks
 	./minposBenchmark.out
+	./minposFollyBenchmark.out
 	./HeapBenchmark.out
 	./HeapAuxBenchmark.out
 	./Sort8Benchmark.out
 
-buildbenchmarks: HeapBenchmark.out Sort8Benchmark.out minposBenchmark.out HeapAuxBenchmark.out
+buildbenchmarks: minposBenchmark.out minposFollyBenchmark.out HeapBenchmark.out HeapAuxBenchmark.out Sort8Benchmark.out
 
 minposBenchmark.out: minposBenchmark.cpp minpos.h
 	$(BMARK) minposBenchmark.cpp -o minposBenchmark.out
+
+minposFollyBenchmark.out: minposFollyBenchmark.cpp minpos.h
+	$(FOLLY_BMARK) minposFollyBenchmark.cpp -o minposFollyBenchmark.out
 
 HeapBenchmark.out: HeapBenchmark.cpp StdMinHeap.hpp Heap8.hpp H8.hpp minpos.h v128.h align.h h8.h h8.o
 	$(FOLLY_BMARK) h8.o HeapBenchmark.cpp -o HeapBenchmark.out
