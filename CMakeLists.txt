@@ -50,12 +50,12 @@ target_link_libraries(U48Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
 
 # Add runtests command
 add_custom_target(runtests
-	COMMAND HeapAuxTest
-	COMMAND HeapTest
-	COMMAND h8Test
-	COMMAND Sort8Test
-	COMMAND minposTest
-	COMMAND U48Test
-  	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  	COMMENT "run generated tests in ${CMAKE_CURRENT_SOURCE_DIR}"
+  COMMAND HeapAuxTest
+  COMMAND HeapTest
+  COMMAND h8Test
+  COMMAND Sort8Test
+  COMMAND minposTest
+  COMMAND U48Test
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMENT "run generated tests in ${CMAKE_CURRENT_SOURCE_DIR}"
 )
