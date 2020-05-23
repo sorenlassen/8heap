@@ -29,30 +29,33 @@ if(Boost_FOUND)
 endif()
 
 # Add object file libraries
-add_library(H8 h8.c)
+add_library(h8 h8.c)
 add_library(Sort8 Sort8.cpp)
 
 # Add Executable
 add_executable(HeapAuxTest HeapAuxTest.cpp)
 add_executable(HeapTest HeapTest.cpp)
-add_executable(H8Test h8Test.cpp)
+add_executable(h8Test h8Test.cpp)
 add_executable(Sort8Test Sort8Test.cpp)
 add_executable(minposTest minposTest.cpp)
+add_executable(U48Test U48Test.cpp)
 
 # Link libraries
 target_link_libraries(HeapAuxTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
-target_link_libraries(HeapTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest H8)
-target_link_libraries(H8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest H8)
+target_link_libraries(HeapTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest h8)
+target_link_libraries(h8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest h8)
 target_link_libraries(Sort8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest Sort8)
 target_link_libraries(minposTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
+target_link_libraries(U48Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
 
 # Add runtests command
 add_custom_target(runtests
 	COMMAND HeapAuxTest
 	COMMAND HeapTest
-	COMMAND H8Test
+	COMMAND h8Test
 	COMMAND Sort8Test
 	COMMAND minposTest
+	COMMAND U48Test
   	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   	COMMENT "run generated tests in ${CMAKE_CURRENT_SOURCE_DIR}"
 )
