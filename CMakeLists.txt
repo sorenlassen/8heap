@@ -40,11 +40,11 @@ add_executable(Sort8Test Sort8Test.cpp)
 add_executable(minposTest minposTest.cpp)
 
 # Link libraries
-TARGET_LINK_LIBRARIES(HeapAuxTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
-TARGET_LINK_LIBRARIES(HeapTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest H8)
-TARGET_LINK_LIBRARIES(H8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest H8)
-TARGET_LINK_LIBRARIES(Sort8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest Sort8)
-TARGET_LINK_LIBRARIES(minposTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
+target_link_libraries(HeapAuxTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
+target_link_libraries(HeapTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest H8)
+target_link_libraries(H8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest H8)
+target_link_libraries(Sort8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest Sort8)
+target_link_libraries(minposTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
 
 # Add runtests command
 add_custom_target(runtests
