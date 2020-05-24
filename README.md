@@ -8,10 +8,15 @@ An implementation of an 8-ary heap using SSE instruction phminposuw to calculate
 - [CMake](https://cmake.org/download/) >= 3.11
 - [Boost](https://www.boost.org/) >= 1.65
 
+You can install these with
+```shell
+brew install cmake boost
+```
+
 # Installation
 
 Installing from this git repository is as simple as
-```bash
+```shell
 git clone https://github.com/sorenlassen/8heap.git
 ```
 
