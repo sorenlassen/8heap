@@ -8,8 +8,31 @@ matrix:
       apt:
         packages:
         - libboost-all-dev
+        - libgflags-dev
+        # all the following are needed for cmake to configure folly
+        - libevent-dev
+        - libdouble-conversion-dev
+        - libgoogle-glog-dev
+        - libiberty-dev
+        - liblz4-dev
+        - libsnappy-dev
+        - binutils-dev
+        - libjemalloc-dev
+        - libunwind-dev
 script:
- - mkdir build
- - cd build
+ # build and install fmt needed to build folly
+ - git clone https://github.com/fmtlib/fmt.git
+ - pushd fmt
+ - mkdir _build && cd _build
  - cmake ..
+ - make
+ - sudo make install
+ - popd
+ #
+ - mkdir build && cd build
+ - cmake -DCMAKE_BUILD_TYPE=Debug ..
  - make runtests
+ - make clean
+ - cmake -DCMAKE_BUILD_TYPE=Release ..
+ - make runbenchmarks
+ - make runfollybenchmarks
