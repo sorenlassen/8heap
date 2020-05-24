@@ -39,6 +39,7 @@ find_package(gflags REQUIRED)
 
 if(APPLE)
   find_package(folly REQUIRED)
+  set(FOLLYBENCHMARK Folly::follybenchmark)
 else()
   FetchContent_Declare(
     folly
@@ -50,6 +51,7 @@ else()
     FetchContent_Populate(folly)
     add_subdirectory(${folly_SOURCE_DIR} ${folly_BINARY_DIR})
   endif()
+  set(FOLLYBENCHMARK follybenchmark)
 endif()
 
 # Set compiler flags
@@ -100,16 +102,16 @@ add_custom_target(runbenchmarks
 )
 
 add_executable(minposFollyBenchmark minposFollyBenchmark.cpp)
-target_link_libraries(minposFollyBenchmark Folly::follybenchmark gflags)
+target_link_libraries(minposFollyBenchmark ${FOLLYBENCHMARK} gflags)
 
 add_executable(HeapBenchmark HeapBenchmark.cpp)
-target_link_libraries(HeapBenchmark Folly::follybenchmark gflags h8)
+target_link_libraries(HeapBenchmark ${FOLLYBENCHMARK} gflags h8)
 
 add_executable(HeapMapBenchmark HeapMapBenchmark.cpp)
-target_link_libraries(HeapMapBenchmark Folly::follybenchmark gflags)
+target_link_libraries(HeapMapBenchmark ${FOLLYBENCHMARK} gflags)
 
 add_executable(Sort8Benchmark Sort8Benchmark.cpp)
-target_link_libraries(Sort8Benchmark Folly::follybenchmark gflags Sort8)
+target_link_libraries(Sort8Benchmark ${FOLLYBENCHMARK} gflags Sort8)
 
 add_custom_target(runfollybenchmarks
   COMMAND minposFollyBenchmark
