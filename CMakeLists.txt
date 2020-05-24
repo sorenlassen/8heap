@@ -7,6 +7,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(gflags REQUIRED)
 
+if(UNIX AND NOT APPLE)
+  set(LINUX TRUE)
+endif()
+
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -31,15 +36,19 @@ if(NOT benchmark_POPULATED)
   add_subdirectory(${benchmark_SOURCE_DIR} ${benchmark_BINARY_DIR})
 endif()
 
-FetchContent_Declare(
-  folly
-  GIT_REPOSITORY https://github.com/facebook/folly.git
-  GIT_TAG        v2020.05.18.00
-)
-FetchContent_GetProperties(folly)
-if(NOT folly_POPULATED)
-  FetchContent_Populate(folly)
-  add_subdirectory(${folly_SOURCE_DIR} ${folly_BINARY_DIR})
+if(APPLE)
+  find_package(folly REQUIRED)
+else()
+  FetchContent_Declare(
+    folly
+    GIT_REPOSITORY https://github.com/facebook/folly.git
+    GIT_TAG        v2020.05.18.00
+  )
+  FetchContent_GetProperties(folly)
+  if(NOT folly_POPULATED)
+    FetchContent_Populate(folly)
+    add_subdirectory(${folly_SOURCE_DIR} ${folly_BINARY_DIR})
+  endif()
 endif()
 
 # Set compiler flags
@@ -96,16 +105,21 @@ add_custom_target(runbenchmarks
 )
 
 add_executable(minposFollyBenchmark minposFollyBenchmark.cpp)
-target_link_libraries(minposFollyBenchmark LINK_PUBLIC follybenchmark gflags)
+target_link_libraries(minposFollyBenchmark Folly::follybenchmark gflags)
 
 add_executable(HeapBenchmark HeapBenchmark.cpp)
-target_link_libraries(HeapBenchmark LINK_PUBLIC follybenchmark gflags h8)
+target_link_libraries(HeapBenchmark Folly::follybenchmark gflags h8)
 
+<<<<<<< HEAD
 add_executable(HeapMapBenchmark HeapMapBenchmark.cpp)
 target_link_libraries(HeapMapBenchmark LINK_PUBLIC follybenchmark gflags)
+=======
+add_executable(HeapAuxBenchmark HeapAuxBenchmark.cpp)
+target_link_libraries(HeapAuxBenchmark Folly::follybenchmark gflags)
+>>>>>>> cmake-more-tweaks
 
 add_executable(Sort8Benchmark Sort8Benchmark.cpp)
-target_link_libraries(Sort8Benchmark LINK_PUBLIC follybenchmark gflags Sort8)
+target_link_libraries(Sort8Benchmark Folly::follybenchmark gflags Sort8)
 
 add_custom_target(runfollybenchmarks
   COMMAND minposFollyBenchmark
