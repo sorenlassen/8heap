@@ -8,7 +8,6 @@ An implementation of an 8-ary heap using SSE instruction phminposuw to calculate
 - [CMake](https://cmake.org/download/) >= 3.11
 - [Boost](https://www.boost.org/) >= 1.65
 
-
 # Installation
 
 Installing from this git repository is as simple as
@@ -18,7 +17,7 @@ git clone https://github.com/sorenlassen/8heap.git
 
 # Building and Tests
 
-You can either use make or CMake to to run 
+You can either use make or CMake to run.
 
 ## Make
 
@@ -31,6 +30,6 @@ make runtests
 With CMake simply run the following commands
 ```bash
 mkdir build && cd build
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Debug ..
 make runtests
 ```
