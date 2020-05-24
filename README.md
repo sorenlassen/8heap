@@ -15,7 +15,7 @@ Installing from this git repository is as simple as
 git clone https://github.com/sorenlassen/8heap.git
 ```
 
-# Building and Tests
+# Build, Tests, Benchmarks
 
 You can either use make or CMake to run.
 
@@ -39,6 +39,15 @@ Then run the following command
 make runtests
 ```
 
+To run the benchmarks install
+```shell
+brew install google-benchmark gflags folly
+```
+and then
+```shell
+make runbenchmarks
+```
+
 ## CMake
 
 To use CMake you first need to install gflags and openssl
@@ -59,4 +68,14 @@ Then run the following commands
 mkdir build && cd build
 cmake -DOPENSSL_ROOT_DIR=${LIBSSL_PATH%/lib/libssl.a} -DCMAKE_BUILD_TYPE=Debug ..
 make runtests
+```
+
+To benchmark, still in the build directory, clean the test libraries built above
+```shell
+make clean
+```
+and then
+```shell
+cmake -DOPENSSL_ROOT_DIR=${LIBSSL_PATH%/lib/libssl.a} -DCMAKE_BUILD_TYPE=Release ..
+make runbenchmarks
 ```
