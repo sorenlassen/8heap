@@ -55,23 +55,15 @@ make runbenchmarks
 
 ## CMake
 
-To use CMake you first need to install gflags and openssl
+To use CMake you first need to install gflags
 ```shell
-brew install openssl gflags
+brew install gflags
 ```
-and then capture the libssl library path
-```shell
-LIBSSL_PATH=$(brew list openssl | grep /lib/libssl.a)
-```
-which is used in the call to cmake below.
-(The gflags and openssl stuff is needed to configure the folly library and
-folly benchmarks. Given these complications we may remove the folly dependency
-and only use Google's benchmark library instead.)
 
 Then run the following commands
 ```shell
 mkdir build && cd build
-cmake -DOPENSSL_ROOT_DIR=${LIBSSL_PATH%/lib/libssl.a} -DCMAKE_BUILD_TYPE=Debug ..
+cmake -DCMAKE_BUILD_TYPE=Debug ..
 make runtests
 ```
 
@@ -81,7 +73,7 @@ make clean
 ```
 and then
 ```shell
-cmake -DOPENSSL_ROOT_DIR=${LIBSSL_PATH%/lib/libssl.a} -DCMAKE_BUILD_TYPE=Release ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make runbenchmarks
 make runfollybenchmarks
 ```

@@ -5,14 +5,13 @@ project(8HEAP)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(gflags REQUIRED)
-
-if(UNIX AND NOT APPLE)
-  set(LINUX TRUE)
-endif()
-
-
 include(FetchContent)
+
+find_package(Boost)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIR})
+  add_definitions("-DHAS_BOOST")
+endif()
 
 FetchContent_Declare(
   googletest
@@ -36,6 +35,8 @@ if(NOT benchmark_POPULATED)
   add_subdirectory(${benchmark_SOURCE_DIR} ${benchmark_BINARY_DIR})
 endif()
 
+find_package(gflags REQUIRED)
+
 if(APPLE)
   find_package(folly REQUIRED)
 else()
@@ -53,12 +54,6 @@ endif()
 
 # Set compiler flags
 add_compile_options(-msse4)
-
-find_package(Boost)
-if(Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIR})
-  add_definitions("-DHAS_BOOST")
-endif()
 
 # Add object file libraries
 add_library(h8 h8.c)
@@ -110,13 +105,8 @@ target_link_libraries(minposFollyBenchmark Folly::follybenchmark gflags)
 add_executable(HeapBenchmark HeapBenchmark.cpp)
 target_link_libraries(HeapBenchmark Folly::follybenchmark gflags h8)
 
-<<<<<<< HEAD
 add_executable(HeapMapBenchmark HeapMapBenchmark.cpp)
-target_link_libraries(HeapMapBenchmark LINK_PUBLIC follybenchmark gflags)
-=======
-add_executable(HeapAuxBenchmark HeapAuxBenchmark.cpp)
-target_link_libraries(HeapAuxBenchmark Folly::follybenchmark gflags)
->>>>>>> cmake-more-tweaks
+target_link_libraries(HeapMapBenchmark Folly::follybenchmark gflags)
 
 add_executable(Sort8Benchmark Sort8Benchmark.cpp)
 target_link_libraries(Sort8Benchmark Folly::follybenchmark gflags Sort8)
