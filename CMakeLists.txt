@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.11)
 
 project(8HEAP)
 
-set (CMAKE_CXX_STANDARD 17)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 include(FetchContent)
 
@@ -19,43 +20,42 @@ if(NOT googletest_POPULATED)
 endif()
 
 # Set compiler flags
-set (CMAKE_CXX_FLAGS "-g -msse4 -O2 -std=c++17")
-set (CMAKE_C_FLAGS "-g -msse4 -O2 -std=c11")
+add_compile_options(-g -msse4)
 
-FIND_PACKAGE(Boost)
-IF (Boost_FOUND)
-    INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
-    ADD_DEFINITIONS( "-DHAS_BOOST" )
-ENDIF()
+find_package(Boost)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIR})
+  add_definitions("-DHAS_BOOST")
+endif()
 
 # Add object file libraries
-add_library(H8 h8.c h8.h v128.h minpos.h align.h)
-add_library(Sort8 Sort8.cpp Sort8.hpp minpos.h)
+add_library(h8 h8.c)
+add_library(Sort8 Sort8.cpp)
 
 # Add Executable
-add_executable(HeapAuxTest HeapAuxTest.cpp Heap8Aux.hpp 
-			         minpos.h v128.h align.h)
-add_executable(HeapTest HeapTest.cpp StdMinHeap.hpp 
-			         Heap8.hpp Heap8Aux.hpp H8.hpp 
-			         minpos.h v128.h align.h h8.h)
-add_executable(H8Test h8Test.cpp minpos.h h8.h)
-add_executable(Sort8Test Sort8Test.cpp Sort8.hpp v128.h)
-add_executable(minposTest minposTest.cpp v128.h minpos.h)
+add_executable(HeapAuxTest HeapAuxTest.cpp)
+add_executable(HeapTest HeapTest.cpp)
+add_executable(h8Test h8Test.cpp)
+add_executable(Sort8Test Sort8Test.cpp)
+add_executable(minposTest minposTest.cpp)
+add_executable(U48Test U48Test.cpp)
 
 # Link libraries
-TARGET_LINK_LIBRARIES(HeapAuxTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest) 
-TARGET_LINK_LIBRARIES(HeapTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest H8) 
-TARGET_LINK_LIBRARIES(H8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest H8) 
-TARGET_LINK_LIBRARIES(Sort8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest Sort8) 
-TARGET_LINK_LIBRARIES(minposTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest) 
+target_link_libraries(HeapAuxTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
+target_link_libraries(HeapTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest h8)
+target_link_libraries(h8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest h8)
+target_link_libraries(Sort8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest Sort8)
+target_link_libraries(minposTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
+target_link_libraries(U48Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
 
 # Add runtests command
 add_custom_target(runtests
-	COMMAND HeapAuxTest 
+	COMMAND HeapAuxTest
 	COMMAND HeapTest
-	COMMAND H8Test
+	COMMAND h8Test
 	COMMAND Sort8Test
 	COMMAND minposTest
+	COMMAND U48Test
   	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   	COMMENT "run generated tests in ${CMAKE_CURRENT_SOURCE_DIR}"
 )
