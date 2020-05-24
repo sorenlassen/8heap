@@ -13,3 +13,5 @@ script:
  - cd build
  - cmake -DCMAKE_BUILD_TYPE=Debug ..
  - make VERBOSE=1 runtests
+ - cmake -DCMAKE_BUILD_TYPE=Release ..
+ - make VERBOSE=1 runbenchmarks
