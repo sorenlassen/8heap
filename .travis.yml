@@ -9,6 +9,7 @@ matrix:
         packages:
         - libboost-all-dev
         - libgflags-dev
+        # all the following are needed for cmake to configure folly
         - libevent-dev
         - libdouble-conversion-dev
         - libgoogle-glog-dev
