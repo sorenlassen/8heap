@@ -7,6 +7,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(gflags REQUIRED)
 
+if(UNIX AND NOT APPLE)
+  set(LINUX TRUE)
+endif()
+  
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -31,15 +36,30 @@ if(NOT benchmark_POPULATED)
   add_subdirectory(${benchmark_SOURCE_DIR} ${benchmark_BINARY_DIR})
 endif()
 
-FetchContent_Declare(
-  folly
-  GIT_REPOSITORY https://github.com/facebook/folly.git
-  GIT_TAG        v2020.05.18.00
-)
-FetchContent_GetProperties(folly)
-if(NOT folly_POPULATED)
-  FetchContent_Populate(folly)
-  add_subdirectory(${folly_SOURCE_DIR} ${folly_BINARY_DIR})
+if(APPLE)
+  find_package(folly REQUIRED)
+  #set_and_check(FOLLY_INCLUDE_DIR /usr/local/include/folly)
+  #set_and_check(FOLLY_CMAKE_DIR /usr/local/lib/cmake/folly)
+  #if (NOT TARGET Folly::folly)
+  #  include("${FOLLY_CMAKE_DIR}/folly-targets.cmake")
+  #endif()
+  #set(FOLLY_LIBRARIES Folly::folly)
+  #if (NOT folly_FIND_QUIETLY)
+  #  message(STATUS "Found folly: ${PACKAGE_PREFIX_DIR}")
+  #endif()
+endif()
+
+if(LINUX)
+  FetchContent_Declare(
+    folly
+    GIT_REPOSITORY https://github.com/facebook/folly.git
+    GIT_TAG        v2020.05.18.00
+  )
+  FetchContent_GetProperties(folly)
+  if(NOT folly_POPULATED)
+    FetchContent_Populate(folly)
+    add_subdirectory(${folly_SOURCE_DIR} ${folly_BINARY_DIR})
+  endif()
 endif()
 
 # Set compiler flags
