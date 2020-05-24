@@ -34,4 +34,5 @@ script:
  - make runtests
  - make clean
  - cmake -DCMAKE_BUILD_TYPE=Release ..
- - make -j10 runbenchmarks
+ - make runbenchmarks
+ - make runfollybenchmarks

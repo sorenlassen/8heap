@@ -89,12 +89,29 @@ add_custom_target(runtests
 add_executable(minposBenchmark minposBenchmark.cpp)
 target_link_libraries(minposBenchmark LINK_PUBLIC benchmark)
 
+add_custom_target(runbenchmarks
+  COMMAND minposBenchmark
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMENT "run benchmarks in ${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
 add_executable(minposFollyBenchmark minposFollyBenchmark.cpp)
 target_link_libraries(minposFollyBenchmark LINK_PUBLIC follybenchmark gflags)
 
-add_custom_target(runbenchmarks
-  COMMAND minposBenchmark
+add_executable(HeapBenchmark HeapBenchmark.cpp)
+target_link_libraries(HeapBenchmark LINK_PUBLIC follybenchmark gflags h8)
+
+add_executable(HeapAuxBenchmark HeapAuxBenchmark.cpp)
+target_link_libraries(HeapAuxBenchmark LINK_PUBLIC follybenchmark gflags)
+
+add_executable(Sort8Benchmark Sort8Benchmark.cpp)
+target_link_libraries(Sort8Benchmark LINK_PUBLIC follybenchmark gflags Sort8)
+
+add_custom_target(runfollybenchmarks
   COMMAND minposFollyBenchmark
+  COMMAND HeapBenchmark
+  COMMAND HeapAuxBenchmark
+  COMMAND Sort8Benchmark
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMENT "run benchmarks in ${CMAKE_CURRENT_SOURCE_DIR}"
+  COMMENT "run folly benchmarks in ${CMAKE_CURRENT_SOURCE_DIR}"
 )
