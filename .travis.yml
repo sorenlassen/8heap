@@ -8,6 +8,8 @@ matrix:
       apt:
         packages:
         - libboost-all-dev
+        - libgflags-dev
+        - libssl-dev
 script:
  - mkdir build
  - cd build

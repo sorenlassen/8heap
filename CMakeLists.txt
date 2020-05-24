@@ -5,6 +5,8 @@ project(8HEAP)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
+find_package(gflags REQUIRED)
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -29,6 +31,17 @@ if(NOT benchmark_POPULATED)
   add_subdirectory(${benchmark_SOURCE_DIR} ${benchmark_BINARY_DIR})
 endif()
 
+FetchContent_Declare(
+  folly
+  GIT_REPOSITORY https://github.com/facebook/folly.git
+  GIT_TAG        v2020.05.18.00
+)
+FetchContent_GetProperties(folly)
+if(NOT folly_POPULATED)
+  FetchContent_Populate(folly)
+  add_subdirectory(${folly_SOURCE_DIR} ${folly_BINARY_DIR})
+endif()
+
 # Set compiler flags
 add_compile_options(-msse4)
 
@@ -43,41 +56,45 @@ add_library(h8 h8.c)
 add_library(Sort8 Sort8.cpp)
 
 # Tests
-add_executable(HeapAuxTest HeapAuxTest.cpp)
-target_link_libraries(HeapAuxTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
+add_executable(minposTest minposTest.cpp)
+target_link_libraries(minposTest LINK_PUBLIC gtest_main gtest)
+
+add_executable(U48Test U48Test.cpp)
+target_link_libraries(U48Test LINK_PUBLIC gtest_main gtest)
+
+add_executable(h8Test h8Test.cpp)
+target_link_libraries(h8Test LINK_PUBLIC gtest_main gtest h8)
 
 add_executable(HeapTest HeapTest.cpp)
 target_link_libraries(HeapTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest h8)
 
-add_executable(h8Test h8Test.cpp)
-target_link_libraries(h8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest h8)
+add_executable(HeapAuxTest HeapAuxTest.cpp)
+target_link_libraries(HeapAuxTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
 
 add_executable(Sort8Test Sort8Test.cpp)
-target_link_libraries(Sort8Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest Sort8)
-
-add_executable(minposTest minposTest.cpp)
-target_link_libraries(minposTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
-
-add_executable(U48Test U48Test.cpp)
-target_link_libraries(U48Test LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
+target_link_libraries(Sort8Test LINK_PUBLIC gtest_main gtest Sort8)
 
 add_custom_target(runtests
-  COMMAND HeapAuxTest
-  COMMAND HeapTest
-  COMMAND h8Test
-  COMMAND Sort8Test
   COMMAND minposTest
   COMMAND U48Test
+  COMMAND h8Test
+  COMMAND HeapTest
+  COMMAND HeapAuxTest
+  COMMAND Sort8Test
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   COMMENT "run tests in ${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 # Benchmarks
 add_executable(minposBenchmark minposBenchmark.cpp)
-target_link_libraries(minposBenchmark LINK_PUBLIC ${Boost_LIBRARIES} benchmark)
+target_link_libraries(minposBenchmark LINK_PUBLIC benchmark)
+
+add_executable(minposFollyBenchmark minposFollyBenchmark.cpp)
+target_link_libraries(minposFollyBenchmark LINK_PUBLIC follybenchmark gflags)
 
 add_custom_target(runbenchmarks
   COMMAND minposBenchmark
+  COMMAND minposFollyBenchmark
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   COMMENT "run benchmarks in ${CMAKE_CURRENT_SOURCE_DIR}"
 )
