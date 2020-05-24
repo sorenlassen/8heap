@@ -10,7 +10,7 @@ find_package(gflags REQUIRED)
 if(UNIX AND NOT APPLE)
   set(LINUX TRUE)
 endif()
-  
+
 
 include(FetchContent)
 
@@ -116,16 +116,16 @@ add_custom_target(runbenchmarks
 )
 
 add_executable(minposFollyBenchmark minposFollyBenchmark.cpp)
-target_link_libraries(minposFollyBenchmark LINK_PUBLIC follybenchmark gflags)
+target_link_libraries(minposFollyBenchmark Folly::follybenchmark gflags)
 
 add_executable(HeapBenchmark HeapBenchmark.cpp)
-target_link_libraries(HeapBenchmark LINK_PUBLIC follybenchmark gflags h8)
+target_link_libraries(HeapBenchmark Folly::follybenchmark gflags h8)
 
 add_executable(HeapAuxBenchmark HeapAuxBenchmark.cpp)
-target_link_libraries(HeapAuxBenchmark LINK_PUBLIC follybenchmark gflags)
+target_link_libraries(HeapAuxBenchmark Folly::follybenchmark gflags)
 
 add_executable(Sort8Benchmark Sort8Benchmark.cpp)
-target_link_libraries(Sort8Benchmark LINK_PUBLIC follybenchmark gflags Sort8)
+target_link_libraries(Sort8Benchmark Folly::follybenchmark gflags Sort8)
 
 add_custom_target(runfollybenchmarks
   COMMAND minposFollyBenchmark
