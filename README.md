@@ -78,4 +78,5 @@ and then
 ```shell
 cmake -DOPENSSL_ROOT_DIR=${LIBSSL_PATH%/lib/libssl.a} -DCMAKE_BUILD_TYPE=Release ..
 make runbenchmarks
+make runfollybenchmarks
 ```
