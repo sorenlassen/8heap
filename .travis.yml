@@ -36,4 +36,4 @@ script:
  - cmake -DCMAKE_BUILD_TYPE=Release ..
  - make runbenchmarks
  # the folly benchmarks are slow because travis builds folly from source
- # - make runfollybenchmarks
+ - make runfollybenchmarks
