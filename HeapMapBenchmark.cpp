@@ -131,10 +131,13 @@ void heapsort(uint32_t n, size_t sz, bool ascending) {
   doNotOptimizeAway(static_cast<uint64_t>(h.entry(0).second));
 }
 
+typedef uint16_t KeyType;
+typedef U48 MappedType;
+
 // vector with added append() method
-struct AppendableVector : public std::vector<std::pair<uint16_t, U48>> {
-  typedef uint16_t key_type;
-  typedef U48 mapped_type;
+struct AppendableVector : public std::vector<std::pair<KeyType, MappedType>> {
+  typedef KeyType key_type;
+  typedef MappedType mapped_type;
   template<class InputIterator>
   void append_entries(InputIterator from, InputIterator to) {
     insert(end(), from, to);
@@ -155,9 +158,9 @@ void sort(uint32_t n, size_t sz, bool ascending) {
   doNotOptimizeAway(result[0]);
 }
 
-typedef Heap8Aux<U48> Aux;
-typedef Heap8Embed<U48> Embed;
-typedef StdMinHeapMap<U48> Std;
+typedef Heap8Aux<MappedType> Aux;
+typedef Heap8Embed<MappedType> Embed;
+typedef StdMinHeapMap<MappedType> Std;
 
 void push_heap8aux_sorted(uint32_t n, size_t sz) { push<Aux>(n, sz, true); }
 void push_heap8embed_sorted(uint32_t n, size_t sz) { push<Embed>(n, sz, true); }
