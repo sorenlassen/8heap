@@ -20,7 +20,7 @@ if(NOT googletest_POPULATED)
 endif()
 
 # Set compiler flags
-add_compile_options(-g -msse4)
+add_compile_options(-msse4)
 
 find_package(Boost)
 if(Boost_FOUND)
