@@ -22,7 +22,7 @@ matrix:
         - libssl-dev
         - pkg-config
         - libunwind-dev
-        - fmtlib
+        - libfmt-dev
 script:
  - mkdir build
  - cd build
