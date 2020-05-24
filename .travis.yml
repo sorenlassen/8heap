@@ -15,15 +15,10 @@ matrix:
         - libgoogle-glog-dev
         - libiberty-dev
         - liblz4-dev
-        - liblzma-dev
         - libsnappy-dev
-        - zlib1g-dev
         - binutils-dev
         - libjemalloc-dev
-        - libssl-dev
-        - pkg-config
         - libunwind-dev
-        # - libfmt-dev
 script:
  # build and install fmt needed to build folly
  - git clone https://github.com/fmtlib/fmt.git
@@ -34,10 +29,9 @@ script:
  - sudo make install
  - popd
  #
- - mkdir build
- - cd build
+ - mkdir build && cd build
  - cmake -DCMAKE_BUILD_TYPE=Debug ..
  - make runtests
  - make clean
  - cmake -DCMAKE_BUILD_TYPE=Release ..
- - make runbenchmarks
+ - make -j10 runbenchmarks
