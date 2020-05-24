@@ -81,7 +81,7 @@ template<class S> class Heap8Aux {
     assert(q < size_);
     key_type* array = data();
     while (q >= kArity) {
-      size_t p = parent(q);
+      size_type p = parent(q);
       key_type a = array[p];
       if (a <= b) break;
       array[q] = a;
@@ -96,7 +96,7 @@ template<class S> class Heap8Aux {
     assert(p < size_);
     key_type* array = data();
     while (true) {
-      size_t q = children(p);
+      size_type q = children(p);
       if (q >= size_) break;
       minpos_type x = minpos(vectors_[q / kArity].mm);
       key_type b = minpos_min(x);
@@ -113,19 +113,19 @@ template<class S> class Heap8Aux {
   void heapify() {
     if (size_ <= kArity) return;
     key_type* array = data();
-    size_t q = align_down(size_ - 1, kArity);
+    size_type q = align_down(size_ - 1, kArity);
 
     // The first while loop is an optimization for the bottom level of the heap,
     // inlining the call to heap_push_down which is trivial at the bottom level.
     // Here "bottom level" means the 8-vectors without children.
-    size_t r = parent(q);
+    size_type r = parent(q);
     while (q > r) {
       minpos_type x = minpos(vectors_[q / kArity].mm);
       key_type b = minpos_min(x);
-      size_t p = parent(q);
+      size_type p = parent(q);
       key_type a = array[p];
       if (b < a) {
-        size_t q_new = q + minpos_pos(x);
+        size_type q_new = q + minpos_pos(x);
         mapped_type s = shadow_[p];
         shadow_[p] = shadow_[q_new];
         array[p] = b;
@@ -140,10 +140,10 @@ template<class S> class Heap8Aux {
     while (q > 0) {
       minpos_type x = minpos(vectors_[q / kArity].mm);
       key_type b = minpos_min(x);
-      size_t p = parent(q);
+      size_type p = parent(q);
       key_type a = array[p];
       if (b < a) {
-        size_t q_new = q + minpos_pos(x);
+        size_type q_new = q + minpos_pos(x);
         mapped_type s = shadow_[p];
         shadow_[p] = shadow_[q_new];
         array[p] = b;
@@ -156,11 +156,11 @@ template<class S> class Heap8Aux {
   bool is_heap() const {
     if (size_ <= kArity) return true;
     key_type const* array = data();
-    size_t q = align_down(size_ - 1, kArity);
+    size_type q = align_down(size_ - 1, kArity);
     while (q > 0) {
       minpos_type x = minpos(vectors_[q / kArity].mm);
       key_type b = minpos_min(x);
-      size_t p = parent(q);
+      size_type p = parent(q);
       key_type a = array[p];
       if (b < a) return false;
       q -= kArity;

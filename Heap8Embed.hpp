@@ -94,7 +94,7 @@ template<class S> class Heap8Embed {
     node* n = nod(q);
     size_type j = q % kArity;
     while (q >= kArity) {
-      size_t p = parent(q);
+      size_type p = parent(q);
       node* m = nod(p);
       size_type i = p % kArity;
       key_type a = m->values.values[i];
@@ -114,7 +114,7 @@ template<class S> class Heap8Embed {
     node* m = nod(p);
     size_type i = p % kArity;
     while (true) {
-      size_t q = children(p);
+      size_type q = children(p);
       if (q >= size_) break;
       node* n = nod(q);
       minpos_type x = n->minpos();
@@ -133,17 +133,17 @@ template<class S> class Heap8Embed {
 
   void heapify() {
     if (size_ <= kArity) return;
-    size_t q = align_down(size_ - 1, kArity);
+    size_type q = align_down(size_ - 1, kArity);
 
     // The first while loop is an optimization for the bottom level of the heap,
     // inlining the call to heap_push_down which is trivial at the bottom level.
     // Here "bottom level" means the 8-vectors without children.
-    size_t r = parent(q);
+    size_type r = parent(q);
     while (q > r) {
       node* n = nod(q);
       minpos_type x = n->minpos();
       key_type b = minpos_min(x);
-      size_t p = parent(q);
+      size_type p = parent(q);
       node* m = nod(p);
       size_type i = p % kArity;
       key_type a = m->values.values[i];
@@ -164,7 +164,7 @@ template<class S> class Heap8Embed {
       node* n = nod(q);
       minpos_type x = n->minpos();
       key_type b = minpos_min(x);
-      size_t p = parent(q);
+      size_type p = parent(q);
       node* m = nod(p);
       size_type i = p % kArity;
       key_type a = m->values.values[i];
@@ -181,11 +181,11 @@ template<class S> class Heap8Embed {
 
   bool is_heap() const {
     if (size_ <= kArity) return true;
-    size_t q = align_down(size_ - 1, kArity);
+    size_type q = align_down(size_ - 1, kArity);
     while (q > 0) {
       minpos_type x = nod(q)->minpos();
       key_type b = minpos_min(x);
-      size_t p = parent(q);
+      size_type p = parent(q);
       key_type a = key(p);
       if (b < a) return false;
       q -= kArity;

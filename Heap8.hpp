@@ -70,7 +70,7 @@ class Heap8 {
     assert(q < size_);
     value_type* array = data();
     while (q >= kArity) {
-      size_t p = parent(q);
+      size_type p = parent(q);
       value_type a = array[p];
       if (a <= b) break;
       array[q] = a;
@@ -83,7 +83,7 @@ class Heap8 {
     assert(p < size_);
     value_type* array = data();
     while (true) {
-      size_t q = children(p);
+      size_type q = children(p);
       if (q >= size_) break;
       minpos_type x = minpos(vectors_[q / kArity].mm);
       value_type b = minpos_min(x);
@@ -97,16 +97,16 @@ class Heap8 {
   void heapify() {
     if (size_ <= kArity) return;
     value_type* array = data();
-    size_t q = align_down(size_ - 1, kArity);
+    size_type q = align_down(size_ - 1, kArity);
 
     // The first while loop is an optimization for the bottom level of the heap,
     // inlining the call to heap_push_down which is trivial at the bottom level.
     // Here "bottom level" means the 8-vectors without children.
-    size_t r = parent(q);
+    size_type r = parent(q);
     while (q > r) {
       minpos_type x = minpos(vectors_[q / kArity].mm);
       value_type b = minpos_min(x);
-      size_t p = parent(q);
+      size_type p = parent(q);
       value_type a = array[p];
       if (b < a) {
         array[p] = b;
@@ -120,7 +120,7 @@ class Heap8 {
     while (q > 0) {
       minpos_type x = minpos(vectors_[q / kArity].mm);
       value_type b = minpos_min(x);
-      size_t p = parent(q);
+      size_type p = parent(q);
       value_type a = array[p];
       if (b < a) {
         array[p] = b;
@@ -133,11 +133,11 @@ class Heap8 {
   bool is_heap() const {
     if (size_ <= kArity) return true;
     value_type const* array = data();
-    size_t q = align_down(size_ - 1, kArity);
+    size_type q = align_down(size_ - 1, kArity);
     while (q > 0) {
       minpos_type x = minpos(vectors_[q / kArity].mm);
       value_type b = minpos_min(x);
-      size_t p = parent(q);
+      size_type p = parent(q);
       value_type a = array[p];
       if (b < a) return false;
       q -= kArity;
