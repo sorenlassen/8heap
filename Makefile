@@ -5,6 +5,8 @@ BMARK=$(CXX) $(OPT) -lbenchmark
 FOLLY_BMARK=$(CXX) $(OPT) -lfollybenchmark -lgflags
 CXXTEST=$(CXX) -lgtest -lgtest_main
 
+.PHONY: all build runbenchmarks buildbenchmarks runtests buildtests clean
+
 all: runbenchmarks runtests
 
 build: buildbenchmarks buildtests
