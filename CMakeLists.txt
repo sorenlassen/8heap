@@ -68,8 +68,8 @@ target_link_libraries(h8Test LINK_PUBLIC gtest_main gtest h8)
 add_executable(HeapTest HeapTest.cpp)
 target_link_libraries(HeapTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest h8)
 
-add_executable(HeapAuxTest HeapAuxTest.cpp)
-target_link_libraries(HeapAuxTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
+add_executable(HeapMapTest HeapMapTest.cpp)
+target_link_libraries(HeapMapTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
 
 add_executable(Sort8Test Sort8Test.cpp)
 target_link_libraries(Sort8Test LINK_PUBLIC gtest_main gtest Sort8)
@@ -79,7 +79,7 @@ add_custom_target(runtests
   COMMAND U48Test
   COMMAND h8Test
   COMMAND HeapTest
-  COMMAND HeapAuxTest
+  COMMAND HeapMapTest
   COMMAND Sort8Test
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   COMMENT "run tests in ${CMAKE_CURRENT_SOURCE_DIR}"
@@ -101,8 +101,8 @@ target_link_libraries(minposFollyBenchmark LINK_PUBLIC follybenchmark gflags)
 add_executable(HeapBenchmark HeapBenchmark.cpp)
 target_link_libraries(HeapBenchmark LINK_PUBLIC follybenchmark gflags h8)
 
-add_executable(HeapAuxBenchmark HeapAuxBenchmark.cpp)
-target_link_libraries(HeapAuxBenchmark LINK_PUBLIC follybenchmark gflags)
+add_executable(HeapMapBenchmark HeapMapBenchmark.cpp)
+target_link_libraries(HeapMapBenchmark LINK_PUBLIC follybenchmark gflags)
 
 add_executable(Sort8Benchmark Sort8Benchmark.cpp)
 target_link_libraries(Sort8Benchmark LINK_PUBLIC follybenchmark gflags Sort8)
@@ -110,7 +110,7 @@ target_link_libraries(Sort8Benchmark LINK_PUBLIC follybenchmark gflags Sort8)
 add_custom_target(runfollybenchmarks
   COMMAND minposFollyBenchmark
   COMMAND HeapBenchmark
-  COMMAND HeapAuxBenchmark
+  COMMAND HeapMapBenchmark
   COMMAND Sort8Benchmark
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   COMMENT "run folly benchmarks in ${CMAKE_CURRENT_SOURCE_DIR}"

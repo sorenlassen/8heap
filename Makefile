@@ -13,10 +13,10 @@ runbenchmarks: buildbenchmarks
 	./minposBenchmark.out
 	./minposFollyBenchmark.out
 	./HeapBenchmark.out
-	./HeapAuxBenchmark.out
+	./HeapMapBenchmark.out
 	./Sort8Benchmark.out
 
-buildbenchmarks: minposBenchmark.out minposFollyBenchmark.out HeapBenchmark.out HeapAuxBenchmark.out Sort8Benchmark.out
+buildbenchmarks: minposBenchmark.out minposFollyBenchmark.out HeapBenchmark.out HeapMapBenchmark.out Sort8Benchmark.out
 
 minposBenchmark.out: minposBenchmark.cpp minpos.h
 	$(BMARK) minposBenchmark.cpp -o minposBenchmark.out
@@ -27,8 +27,8 @@ minposFollyBenchmark.out: minposFollyBenchmark.cpp minpos.h
 HeapBenchmark.out: HeapBenchmark.cpp StdMinHeap.hpp Heap8.hpp H8.hpp minpos.h v128.h align.h h8.h h8.o
 	$(FOLLY_BMARK) h8.o HeapBenchmark.cpp -o HeapBenchmark.out
 
-HeapAuxBenchmark.out: HeapAuxBenchmark.cpp Heap8Aux.hpp Heap8Embed.hpp StdMinHeapMap.hpp StdMinHeap.hpp FirstCompare.hpp U48.hpp minpos.h v128.h align.h
-	$(FOLLY_BMARK) HeapAuxBenchmark.cpp -o HeapAuxBenchmark.out
+HeapMapBenchmark.out: HeapMapBenchmark.cpp Heap8Aux.hpp Heap8Embed.hpp StdMinHeapMap.hpp StdMinHeap.hpp FirstCompare.hpp U48.hpp minpos.h v128.h align.h
+	$(FOLLY_BMARK) HeapMapBenchmark.cpp -o HeapMapBenchmark.out
 
 Sort8Benchmark.out: Sort8Benchmark.cpp Sort8.hpp Sort8.o
 	$(FOLLY_BMARK) Sort8.o Sort8Benchmark.cpp -o Sort8Benchmark.out
@@ -38,10 +38,10 @@ runtests: buildtests
 	./U48Test.out
 	./h8Test.out
 	./HeapTest.out
-	./HeapAuxTest.out
+	./HeapMapTest.out
 	./Sort8Test.out
 
-buildtests: minposTest.out U48Test.out h8Test.out HeapTest.out HeapAuxTest.out Sort8Test.out
+buildtests: minposTest.out U48Test.out h8Test.out HeapTest.out HeapMapTest.out Sort8Test.out
 
 U48Test.out: U48Test.cpp U48.hpp
 	$(CXXTEST) U48Test.cpp -o U48Test.out
@@ -55,8 +55,8 @@ h8Test.out: h8Test.cpp minpos.h h8.h h8.dbg.o
 HeapTest.out: HeapTest.cpp H8.hpp Heap8.hpp StdMinHeap.hpp Heap8Aux.hpp Heap8Embed.hpp StdMinHeapMap.hpp FirstCompare.hpp U48.hpp minpos.h v128.h align.h h8.h h8.dbg.o
 	$(CXXTEST) h8.dbg.o HeapTest.cpp -o HeapTest.out
 
-HeapAuxTest.out: HeapAuxTest.cpp Heap8Aux.hpp Heap8Embed.hpp StdMinHeapMap.hpp StdMinHeap.hpp FirstCompare.hpp U48.hpp minpos.h v128.h align.h
-	$(CXXTEST) HeapAuxTest.cpp -o HeapAuxTest.out
+HeapMapTest.out: HeapMapTest.cpp Heap8Aux.hpp Heap8Embed.hpp StdMinHeapMap.hpp StdMinHeap.hpp FirstCompare.hpp U48.hpp minpos.h v128.h align.h
+	$(CXXTEST) HeapMapTest.cpp -o HeapMapTest.out
 
 Sort8Test.out: Sort8Test.cpp Sort8.hpp v128.h Sort8.dbg.o
 	$(CXXTEST) Sort8.dbg.o Sort8Test.cpp -o Sort8Test.out

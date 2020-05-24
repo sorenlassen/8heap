@@ -1,6 +1,7 @@
 /*
    # first install gtest as described in h8Test.cpp
-   g++ -g -std=c++17 -msse4 -lgtest -lgtest_main HeapAuxTest.cpp
+   brew install boost
+   g++ -g -std=c++17 -msse4 -lgtest -lgtest_main HeapMapTest.cpp
    ./a.out
 */
 
@@ -19,7 +20,7 @@ using boost::iterators::counting_iterator;
 using boost::iterators::transform_iterator;
 
 template <class T>
-class HeapAuxTest : public testing::Test {
+class HeapMapTest : public testing::Test {
  protected:
   T heap_;
 };
@@ -30,9 +31,9 @@ typedef testing::Types<
   StdMinHeapMap<U48>
 > Implementations;
 
-TYPED_TEST_SUITE(HeapAuxTest, Implementations);
+TYPED_TEST_SUITE(HeapMapTest, Implementations);
 
-TYPED_TEST(HeapAuxTest, Clear) {
+TYPED_TEST(HeapMapTest, Clear) {
   EXPECT_EQ(0, this->heap_.size());
   this->heap_.push_entry(1, 100);
   EXPECT_EQ(1, this->heap_.size());
@@ -40,7 +41,7 @@ TYPED_TEST(HeapAuxTest, Clear) {
   EXPECT_EQ(0, this->heap_.size());
 }
 
-TYPED_TEST(HeapAuxTest, Push3) {
+TYPED_TEST(HeapMapTest, Push3) {
   typedef typename TypeParam::entry_type entry_type;
   entry_type p1(1, 100), p2(2, 200), p3(3, 300);
   EXPECT_TRUE(this->heap_.is_heap());
@@ -58,7 +59,7 @@ TYPED_TEST(HeapAuxTest, Push3) {
   EXPECT_TRUE(this->heap_.is_heap());
 }
 
-TYPED_TEST(HeapAuxTest, Heapify3) {
+TYPED_TEST(HeapMapTest, Heapify3) {
   typedef typename TypeParam::entry_type entry_type;
   entry_type p1(1, 41), p2(2, 42), p3(3, 43);
   std::vector<entry_type> entries{p2, p1, p3};
@@ -71,7 +72,7 @@ TYPED_TEST(HeapAuxTest, Heapify3) {
   EXPECT_EQ(p3, this->heap_.pop_entry());
 }
 
-TYPED_TEST(HeapAuxTest, Sort3) {
+TYPED_TEST(HeapMapTest, Sort3) {
   typedef typename TypeParam::entry_type entry_type;
   entry_type p1(1, 41), p2(2, 42), p3(3, 43);
   std::vector<entry_type> entries{p2, p1, p3};
@@ -85,7 +86,7 @@ TYPED_TEST(HeapAuxTest, Sort3) {
   EXPECT_TRUE(this->heap_.is_sorted(entries.size()));
 }
 
-TYPED_TEST(HeapAuxTest, Heapify100) {
+TYPED_TEST(HeapMapTest, Heapify100) {
   typedef typename TypeParam::key_type key_type;
   typedef typename TypeParam::entry_type entry_type;
   key_type const count = 100;
