@@ -38,7 +38,7 @@ void bm_minpos(benchmark::State& state, F fn) {
 }
 
 // Parameters in ascending order.
-const std::vector<const size_t> kParams = { 32000, 3200000, 320000000 };
+const std::vector<const size_t> kParams{ 32000, 3200000, 320000000 };
 const size_t kLargestParam = kParams.back();
 
 void Arguments(benchmark::internal::Benchmark* b) {
