@@ -5,7 +5,7 @@ An implementation of an 8-ary heap using SSE instruction phminposuw to calculate
 
 # Requirements
 
-- [CMake](https://cmake.org/download/) >= 3.11
+- [CMake](https://cmake.org/download/) >= 3.14
 - [Boost](https://www.boost.org/) >= 1.65
 
 You can install these with

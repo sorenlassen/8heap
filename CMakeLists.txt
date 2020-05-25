@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.14)
 
 project(8HEAP)
 
@@ -7,33 +7,21 @@ set(CMAKE_CXX_STANDARD 17)
 
 include(FetchContent)
 
-find_package(Boost)
-if(Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIR})
-  add_definitions("-DHAS_BOOST")
-endif()
+find_package(Boost REQUIRED)
 
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
   GIT_TAG        release-1.10.0
 )
-FetchContent_GetProperties(googletest)
-if(NOT googletest_POPULATED)
-  FetchContent_Populate(googletest)
-  add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
-endif()
+FetchContent_MakeAvailable(googletest)
 
 FetchContent_Declare(
   benchmark
   GIT_REPOSITORY https://github.com/google/benchmark.git
   GIT_TAG        v1.5.0
 )
-FetchContent_GetProperties(benchmark)
-if(NOT benchmark_POPULATED)
-  FetchContent_Populate(benchmark)
-  add_subdirectory(${benchmark_SOURCE_DIR} ${benchmark_BINARY_DIR})
-endif()
+FetchContent_MakeAvailable(benchmark)
 
 find_package(gflags REQUIRED)
 
@@ -46,11 +34,7 @@ else()
     GIT_REPOSITORY https://github.com/facebook/folly.git
     GIT_TAG        v2020.05.18.00
   )
-  FetchContent_GetProperties(folly)
-  if(NOT folly_POPULATED)
-    FetchContent_Populate(folly)
-    add_subdirectory(${folly_SOURCE_DIR} ${folly_BINARY_DIR})
-  endif()
+  FetchContent_MakeAvailable(folly)
   set(FOLLYBENCHMARK follybenchmark)
 endif()
 
