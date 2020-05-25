@@ -51,14 +51,17 @@ template<class S> class Heap8Embed {
     return nod(index)->values.values[index % kArity];
   }
 
-  S& shadow(size_type index) {
-    return nod(index)->shadows[index % kArity];
-  }
-
   entry_type entry(size_type index) const {
     node const* n = nod(index);
     size_type i = index % kArity;
     return std::make_pair(n->values.values[i], n->shadows[i]);
+  }
+
+  void set_entry(size_type index, entry_type a) {
+    node const* n = nod(index);
+    size_type i = index % kArity;
+    n->values.values[i] = a.first;
+    n->shadows[i] = a.second;
   }
 
   void extend(size_type n) {
@@ -205,17 +208,17 @@ template<class S> class Heap8Embed {
 
   entry_type const top_entry() {
     assert(size_ > 0);
-    minpos_type x = nod(0)->minpos();
-    return std::make_pair(minpos_min(x), nodes_[0].shadows[minpos_pos(x)]);
+    node const* n = nod(0);
+    minpos_type x = n->minpos();
+    return std::make_pair(minpos_min(x), n->shadows[minpos_pos(x)]);
   }
 
   entry_type pop_entry() {
     assert(size_ > 0);
     node* n = nod(0);
     minpos_type x = n->minpos();
-    key_type b = minpos_min(x);
     size_type q = minpos_pos(x);
-    mapped_type t = n->shadows[q];
+    entry_type e(minpos_min(x), n->shadows[q]);
     size_type p = size_ - 1;
     node* m = nod(p);
     size_type i = p % kArity;
@@ -226,7 +229,7 @@ template<class S> class Heap8Embed {
       mapped_type s = m->shadows[i];
       push_down(a, s, q);
     }
-    return std::make_pair(b, t);
+    return e;
   }
 
   void sort() {

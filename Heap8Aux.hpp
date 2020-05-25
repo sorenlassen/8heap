@@ -40,13 +40,16 @@ template<class S> class Heap8Aux {
 
   key_type key(size_type index) const { return data()[index]; }
 
-  S& shadow(size_type index) { return shadow_[index]; }
-
   entry_type entry(size_type index) const {
     return std::make_pair(data()[index], shadow_[index]);
   }
 
-  key_type* extend(size_type n) {
+  void set_entry(size_type index, entry_type a) {
+    data()[index] = a.first;
+    shadow_[index] = a.second;
+  }
+
+  void extend(size_type n) {
     if (n > kSizeMax - size_) throw_bad_alloc();
     size_type new_size = size_ + n;
     if (new_size > kArity * vectors_.size()) {
@@ -59,7 +62,6 @@ template<class S> class Heap8Aux {
     }
     size_ = new_size;
     key_type* array = data();
-    return array + (size_ - n);
   }
 
   template<class InputIterator>
@@ -188,9 +190,8 @@ template<class S> class Heap8Aux {
   entry_type pop_entry() {
     assert(size_ > 0);
     minpos_type x = minpos(vectors_[0].mm);
-    key_type b = minpos_min(x);
     size_type q = minpos_pos(x);
-    mapped_type t = shadow_[q];
+    entry_type e(minpos_min(x), shadow_[q]);
     key_type* array = data();
     key_type a = array[size_ - 1];
     array[size_ - 1] = kMax;
@@ -200,7 +201,7 @@ template<class S> class Heap8Aux {
       push_down(a, s, q);
     }
     shadow_.pop_back();
-    return std::make_pair(b, t);
+    return e;
   }
 
   void sort() {

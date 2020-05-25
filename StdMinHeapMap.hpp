@@ -39,7 +39,7 @@ class StdMinHeapMap {
 
   void set_entry(size_type index, entry_type a) { heap_[index] = a; }
 
-  entry_type* extend(size_type n) { return heap_.extend(n); }
+  void extend(size_type n) { heap_.extend(n); }
 
   template<class InputIterator>
   void append_entries(InputIterator begin, InputIterator end) {
