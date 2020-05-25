@@ -84,37 +84,30 @@ void fill(Appendable& out, typename Appendable::size_type sz, bool ascending) {
   out.append_entries(begin, end);
 }
 
+template<typename Pair>
+void doNotOptimizeAway_pair(Pair const& pair) {
+  doNotOptimizeAway(pair.first + pair.second);
+}
+
 template<class Heap>
 void push(uint32_t n, size_t sz, bool ascending) {
-  typedef typename Heap::key_type key_type;
   Heap h;
-  key_type x = 0;
-  uint64_t y = 0;
   for (int i = 0; i < n; ++i) {
     push(h, sz, ascending);
-    x ^= h.top_entry().first;
-    y ^= h.top_entry().second;
+    doNotOptimizeAway_pair(h.top_entry());
   }
-  doNotOptimizeAway(x);
-  doNotOptimizeAway(y);
 }
 
 template<class Heap>
 void heapify(uint32_t n, size_t sz, bool ascending) {
-  typedef typename Heap::key_type key_type;
   Heap h;
-  key_type x = 0;
-  uint64_t y = 0;
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {
       fill(h, sz, ascending);
     }
     h.heapify();
-    x ^= h.top_entry().first;
-    y ^= h.top_entry().second;
+    doNotOptimizeAway_pair(h.top_entry());
   }
-  doNotOptimizeAway(x);
-  doNotOptimizeAway(y);
 }
 
 template<class Heap>
@@ -126,9 +119,8 @@ void heapsort(uint32_t n, size_t sz, bool ascending) {
     }
     h.heapify();
     h.sort();
+    doNotOptimizeAway_pair(h.entry(0));
   }
-  doNotOptimizeAway(h.key(0));
-  doNotOptimizeAway(static_cast<uint64_t>(h.entry(0).second));
 }
 
 typedef uint16_t KeyType;
@@ -154,8 +146,8 @@ void sort(uint32_t n, size_t sz, bool ascending) {
       fill(result, sz, ascending);
     }
     std::sort(result.begin(), result.end(), cmp);
+    doNotOptimizeAway_pair(result[0]);
   }
-  doNotOptimizeAway(result[0]);
 }
 
 typedef Heap8Aux<MappedType> Aux;

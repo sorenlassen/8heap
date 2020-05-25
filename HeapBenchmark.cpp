@@ -88,27 +88,22 @@ template<class Heap>
 void push(uint32_t n, size_t sz, bool ascending) {
   typedef typename Heap::value_type value_type;
   Heap h;
-  value_type x = 0;
   for (int i = 0; i < n; ++i) {
     push(h, sz, ascending);
-    x ^= h.top();
+    doNotOptimizeAway(h.top());
   }
-  doNotOptimizeAway(x);
 }
 
 template<class Heap>
 void heapify(uint32_t n, size_t sz, bool ascending) {
-  typedef typename Heap::value_type value_type;
   Heap h;
-  value_type x = 0;
   for (int i = 0; i < n; ++i) {
     BENCHMARK_SUSPEND {
       fill(h, sz, ascending);
     }
     h.heapify();
-    x ^= h.top();
+    doNotOptimizeAway(h.top());
   }
-  doNotOptimizeAway(x);
 }
 
 template<class Heap>
@@ -120,12 +115,14 @@ void heapsort(uint32_t n, size_t sz, bool ascending) {
     }
     h.heapify();
     h.sort();
+    doNotOptimizeAway(h[0]);
   }
-  doNotOptimizeAway(h[0]);
 }
 
+typedef uint16_t ValueType;
+
 // vector with added append() method
-struct AppendableVector : public std::vector<uint16_t> {
+struct AppendableVector : public std::vector<ValueType> {
   template<class InputIterator>
   void append(InputIterator from, InputIterator to) {
     insert(end(), from, to);
@@ -139,8 +136,8 @@ void sort(uint32_t n, size_t sz, bool ascending) {
       fill(result, sz, ascending);
     }
     std::sort(result.begin(), result.end());
+    doNotOptimizeAway(result[0]);
   }
-  doNotOptimizeAway(result[0]);
 }
 
 void push_h8_sorted(uint32_t n, size_t sz) { push<H8>(n, sz, true); }
