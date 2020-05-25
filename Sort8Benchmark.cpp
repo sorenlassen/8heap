@@ -46,7 +46,7 @@ BENCHMARK_RELATIVE(std_sort) {
     __m128i tmp = mms[j];
     uint16_t* vs = reinterpret_cast<uint16_t*>(&tmp);
     std::sort(vs, vs + kArity);
-    x ^= sort8(tmp);
+    x ^= tmp;
   }
   doNotOptimizeAway(x);
 }
