@@ -16,20 +16,20 @@ using namespace folly;
 
 namespace {
 
-constexpr std::size_t kAlign = 64; // cache line
+constexpr size_t kAlign = 64; // cache line
 
 uint16_t* vs;
 
-void initData(std::size_t sz) {
+void initData(size_t sz) {
   vs = (uint16_t*)aligned_alloc(kAlign, sz * sizeof(uint16_t));
   std::default_random_engine gen;
   std::uniform_int_distribution<uint16_t> distr(0, std::numeric_limits<uint16_t>::max());
   for (int i = 0; i < sz; ++i) vs[i] = distr(gen);
 }
 
-constexpr std::size_t kLineLen = kAlign / sizeof(uint16_t);
+constexpr size_t kLineLen = kAlign / sizeof(uint16_t);
 
-void bm_minpos8(uint32_t n, std::size_t sz) {
+void bm_minpos8(uint32_t n, size_t sz) {
   minpos_type x = 0;
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j + kLineLen <= sz; j += kLineLen) {
@@ -39,7 +39,7 @@ void bm_minpos8(uint32_t n, std::size_t sz) {
   doNotOptimizeAway(x);
 }
 
-void bm_minpos16(uint32_t n, std::size_t sz) {
+void bm_minpos16(uint32_t n, size_t sz) {
   minpos_type x = 0;
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j + kLineLen <= sz; j += kLineLen) {
@@ -49,7 +49,7 @@ void bm_minpos16(uint32_t n, std::size_t sz) {
   doNotOptimizeAway(x);
 }
 
-void bm_minpos32(uint32_t n, std::size_t sz) {
+void bm_minpos32(uint32_t n, size_t sz) {
   minpos_type x = 0;
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j + kLineLen <= sz; j += kLineLen) {
@@ -72,7 +72,7 @@ BENCHMARK_DRAW_LINE();
 BENCHMARK_PARAM         (bm_minpos8 , 320000000);
 BENCHMARK_RELATIVE_PARAM(bm_minpos16, 320000000);
 BENCHMARK_RELATIVE_PARAM(bm_minpos32, 320000000);
-constexpr std::size_t kLargestParam = 320000000;
+constexpr size_t kLargestParam = 320000000;
 
 int main(int argc, char** argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
