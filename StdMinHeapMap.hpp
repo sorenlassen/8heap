@@ -46,17 +46,23 @@ class StdMinHeapMap {
     heap_.append(begin, end);
   }
 
-  void pull_up(entry_type b, size_type q) { heap_.pull_up(b, q); }
+  void pull_up(key_type b, mapped_type t, size_type q) {
+    heap_.pull_up(entry_type(b, t), q);
+  }
 
-  void push_down(entry_type a, size_type p) { heap_.push_down(a, p); }
+  void push_down(key_type a, mapped_type s, size_type p) {
+    heap_.push_down(entry_type(a, s), p);
+  }
 
   void heapify() { heap_.heapify(); }
 
   bool is_heap() const { return heap_.is_heap(); }
 
-  void push_entry(entry_type b) { heap_.push(b); }
+  void push_entry(entry_type e) { heap_.push(e); }
 
-  void push_entry(key_type k, mapped_type m) { heap_.push(entry_type(k, m)); }
+  void push_entry(key_type b, mapped_type t) { heap_.push(entry_type(b, t)); }
+
+  size_type top_index() const { return 0; }
 
   entry_type top_entry() const { return heap_.top(); }
 

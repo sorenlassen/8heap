@@ -32,6 +32,7 @@ template<class S> class Heap8Embed {
 
   struct node {
     typedef std::array<mapped_type, kArity> shadow_vector;
+    node() = default;
     node(v128 vals) : values(vals), shadows{0,0,0,0,0,0,0,0} { }
     v128 values;
     shadow_vector shadows;
@@ -58,7 +59,7 @@ template<class S> class Heap8Embed {
   }
 
   void set_entry(size_type index, entry_type a) {
-    node const* n = nod(index);
+    node* n = nod(index);
     size_type i = index % kArity;
     n->values.values[i] = a.first;
     n->shadows[i] = a.second;
@@ -206,7 +207,14 @@ template<class S> class Heap8Embed {
     pull_up(b, t, size_ - 1);
   }
 
-  entry_type const top_entry() {
+  size_type top_index() const {
+    assert(size_ > 0);
+    node const* n = nod(0);
+    minpos_type x = n->minpos();
+    return minpos_pos(x);
+  }
+
+  entry_type top_entry() const {
     assert(size_ > 0);
     node const* n = nod(0);
     minpos_type x = n->minpos();
