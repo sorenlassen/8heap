@@ -18,7 +18,7 @@ using namespace folly;
 
 namespace {
 
-std::default_random_engine gen;
+std::default_random_engine gen(0);
 
 template<class key_type>
 struct Random {

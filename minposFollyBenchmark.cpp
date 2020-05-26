@@ -22,7 +22,7 @@ uint16_t* vs;
 
 void initData(size_t sz) {
   vs = (uint16_t*)aligned_alloc(kAlign, sz * sizeof(uint16_t));
-  std::default_random_engine gen;
+  std::default_random_engine gen(0);
   std::uniform_int_distribution<uint16_t> distr(0, std::numeric_limits<uint16_t>::max());
   for (int i = 0; i < sz; ++i) vs[i] = distr(gen);
 }
