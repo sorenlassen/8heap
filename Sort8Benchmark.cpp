@@ -24,7 +24,7 @@ constexpr size_t kCount = 10000;
 __m128i mms[kCount];
 
 void initData() {
-  default_random_engine gen;
+  default_random_engine gen(0);
   uniform_int_distribution<uint16_t> distr(0, numeric_limits<uint16_t>::max());
   uint16_t* vs = reinterpret_cast<uint16_t*>(mms);
   for (size_t i = 0; i < kCount * kArity; ++i) vs[i] = distr(gen);

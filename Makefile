@@ -16,9 +16,10 @@ runbenchmarks: buildbenchmarks
 	./minposFollyBenchmark.out
 	./HeapBenchmark.out
 	./HeapMapBenchmark.out
+	./MergeBenchmark.out
 	./Sort8Benchmark.out
 
-buildbenchmarks: minposBenchmark.out minposFollyBenchmark.out HeapBenchmark.out HeapMapBenchmark.out Sort8Benchmark.out
+buildbenchmarks: minposBenchmark.out minposFollyBenchmark.out HeapBenchmark.out HeapMapBenchmark.out MergeBenchmark.out Sort8Benchmark.out
 
 minposBenchmark.out: minposBenchmark.cpp minpos.h
 	$(BMARK) minposBenchmark.cpp -o minposBenchmark.out
@@ -31,6 +32,9 @@ HeapBenchmark.out: HeapBenchmark.cpp StdMinHeap.hpp Heap8.hpp H8.hpp minpos.h v1
 
 HeapMapBenchmark.out: HeapMapBenchmark.cpp Heap8Aux.hpp Heap8Embed.hpp StdMinHeapMap.hpp StdMinHeap.hpp FirstCompare.hpp U48.hpp minpos.h v128.h align.h
 	$(FOLLY_BMARK) HeapMapBenchmark.cpp -o HeapMapBenchmark.out
+
+MergeBenchmark.out: MergeBenchmark.cpp Heap8Aux.hpp Heap8Embed.hpp StdMinHeapMap.hpp StdMinHeap.hpp FirstCompare.hpp minpos.h v128.h align.h
+	$(BMARK) -lbenchmark_main MergeBenchmark.cpp -o MergeBenchmark.out
 
 Sort8Benchmark.out: Sort8Benchmark.cpp Sort8.hpp Sort8.o
 	$(FOLLY_BMARK) Sort8.o Sort8Benchmark.cpp -o Sort8Benchmark.out

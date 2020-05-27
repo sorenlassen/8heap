@@ -93,10 +93,14 @@ add_custom_target(runtests
 
 # Benchmarks
 add_executable(minposBenchmark minposBenchmark.cpp)
-target_link_libraries(minposBenchmark LINK_PUBLIC benchmark)
+target_link_libraries(minposBenchmark benchmark)
+
+add_executable(MergeBenchmark MergeBenchmark.cpp)
+target_link_libraries(MergeBenchmark benchmark benchmark_main)
 
 add_custom_target(runbenchmarks
   COMMAND minposBenchmark
+  COMMAND MergeBenchmark
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   COMMENT "run benchmarks in ${CMAKE_CURRENT_SOURCE_DIR}"
 )

@@ -181,7 +181,13 @@ template<class S> class Heap8Aux {
     pull_up(b, t, size_ - 1);
   }
 
-  entry_type const top_entry() {
+  size_type top_index() const {
+    assert(size_ > 0);
+    minpos_type x = minpos(vectors_[0].mm);
+    return minpos_pos(x);
+  }
+
+  entry_type top_entry() const {
     assert(size_ > 0);
     minpos_type x = minpos(vectors_[0].mm);
     return std::make_pair(minpos_min(x), shadow_[minpos_pos(x)]);
