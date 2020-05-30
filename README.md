@@ -63,7 +63,7 @@ brew install gflags
 Then run the following commands
 ```shell
 mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Debug ..
+cmake -DCMAKE_BUILD_TYPE=Debug -DBENCHMARK_ENABLE_TESTING=OFF ..
 make runtests
 ```
 

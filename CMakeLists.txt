@@ -24,6 +24,11 @@ if(NOT googletest_POPULATED)
   add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
 endif()
 
+# Doesn't work to turn BENCHMARK_ENABLE_TESTING off like this, therefore
+# cmake must be invoked with -DBENCHMARK_ENABLE_TESTING=OFF to exclude
+# the google benchmark tests from make test
+#set(BENCHMARK_ENABLE_TESTING OFF)
+
 FetchContent_Declare(
   benchmark
   GIT_REPOSITORY https://github.com/google/benchmark.git
@@ -62,33 +67,41 @@ add_library(h8 h8.c)
 add_library(Sort8 Sort8.cpp)
 
 # Tests
+enable_testing()
+include(GoogleTest)
+
 add_executable(minposTest minposTest.cpp)
-target_link_libraries(minposTest LINK_PUBLIC gtest_main gtest)
+target_link_libraries(minposTest gtest_main gtest)
+gtest_discover_tests(minposTest)
 
 add_executable(U48Test U48Test.cpp)
-target_link_libraries(U48Test LINK_PUBLIC gtest_main gtest)
+target_link_libraries(U48Test gtest_main gtest)
+gtest_discover_tests(U48Test)
 
 add_executable(h8Test h8Test.cpp)
-target_link_libraries(h8Test LINK_PUBLIC gtest_main gtest h8)
+target_link_libraries(h8Test gtest_main gtest h8)
+gtest_discover_tests(h8Test)
 
 add_executable(HeapTest HeapTest.cpp)
-target_link_libraries(HeapTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest h8)
+target_link_libraries(HeapTest ${Boost_LIBRARIES} gtest_main gtest h8)
+gtest_discover_tests(HeapTest)
 
 add_executable(HeapMapTest HeapMapTest.cpp)
-target_link_libraries(HeapMapTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main gtest)
+target_link_libraries(HeapMapTest ${Boost_LIBRARIES} gtest_main gtest)
+gtest_discover_tests(HeapMapTest)
 
 add_executable(Sort8Test Sort8Test.cpp)
-target_link_libraries(Sort8Test LINK_PUBLIC gtest_main gtest Sort8)
+target_link_libraries(Sort8Test gtest_main gtest Sort8)
+gtest_discover_tests(Sort8Test)
 
-add_custom_target(runtests
-  COMMAND minposTest
-  COMMAND U48Test
-  COMMAND h8Test
-  COMMAND HeapTest
-  COMMAND HeapMapTest
-  COMMAND Sort8Test
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMENT "run tests in ${CMAKE_CURRENT_SOURCE_DIR}"
+# Adapted from https://stackoverflow.com/a/736838
+add_custom_target(runtests COMMAND ${CMAKE_CTEST_COMMAND} DEPENDS
+  minposTest
+  U48Test
+  h8Test
+  HeapTest
+  HeapMapTest
+  Sort8Test
 )
 
 # Benchmarks

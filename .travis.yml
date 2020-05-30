@@ -30,7 +30,7 @@ script:
  - popd
  #
  - mkdir build && cd build
- - cmake -DCMAKE_BUILD_TYPE=Debug ..
+ - cmake -DCMAKE_BUILD_TYPE=Debug -DBENCHMARK_ENABLE_TESTING=OFF ..
  - make runtests
  - make clean
  - cmake -DCMAKE_BUILD_TYPE=Release ..
